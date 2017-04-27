@@ -7,6 +7,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.opensrp.dto.AlertStatus.normal;
 import static org.opensrp.dto.BeneficiaryType.mother;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -28,9 +29,9 @@ public class AllActionsIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        allActions.removeAll();
+       allActions.removeAll();
     }
-
+    
     @Test
     public void shouldSaveAReminder() throws Exception {
         Action alertAction = new Action("Case X", "ANM phone no", alert());
@@ -44,11 +45,11 @@ public class AllActionsIntegrationTest {
 
     @Test
     public void shouldNotFindAnyAlertsIfNoneExistForGivenANM() throws Exception {
-        assertEquals(0, allActions.findByANMIDAndTimeStamp("ANM 1", 0).size());
+        assertEquals(0, allActions.findByProviderIdAndTimeStamp("ANM 1", 0).size());
     }
 
     @Test
-    public void shouldReturnAlertActionsBasedOnANMIDAndTimeStamp() throws Exception {
+    public void shouldReturnAlertActionsBasedOnProviderIdAndTimeStamp() throws Exception {
         Action firstAction = new Action("Case X", "ANM 1", alert());
         allActions.add(firstAction);
 
@@ -58,11 +59,11 @@ public class AllActionsIntegrationTest {
         Action thirdAction = new Action("Case Z", "ANM 1", alert());
         allActions.add(thirdAction);
 
-        assertEquals(asList(firstAction, secondAction, thirdAction), allActions.findByANMIDAndTimeStamp("ANM 1", 0));
-        assertEquals(asList(secondAction, thirdAction), allActions.findByANMIDAndTimeStamp("ANM 1", firstAction.timestamp()));
-        assertEquals(asList(thirdAction), allActions.findByANMIDAndTimeStamp("ANM 1", secondAction.timestamp()));
+        assertEquals(asList(firstAction, secondAction, thirdAction), allActions.findByProviderIdAndTimeStamp("ANM 1", 0));
+        assertEquals(asList(secondAction, thirdAction), allActions.findByProviderIdAndTimeStamp("ANM 1", firstAction.timestamp()));
+        assertEquals(asList(thirdAction), allActions.findByProviderIdAndTimeStamp("ANM 1", secondAction.timestamp()));
 
-        assertEquals(0, allActions.findByANMIDAndTimeStamp("ANM 1", thirdAction.timestamp()).size());
+        assertEquals(0, allActions.findByProviderIdAndTimeStamp("ANM 1", thirdAction.timestamp()).size());
     }
 
     @Test
@@ -73,8 +74,8 @@ public class AllActionsIntegrationTest {
         Action secondAction = new Action("Case Y", "ANM 2", alert());
         allActions.add(secondAction);
 
-        assertEquals(asList(firstAction), allActions.findByANMIDAndTimeStamp("ANM 1", 0));
-        assertEquals(asList(secondAction), allActions.findByANMIDAndTimeStamp("ANM 2", 0));
+        assertEquals(asList(firstAction), allActions.findByProviderIdAndTimeStamp("ANM 1", 0));
+        assertEquals(asList(secondAction), allActions.findByProviderIdAndTimeStamp("ANM 2", 0));
     }
 
     @Test
@@ -88,8 +89,8 @@ public class AllActionsIntegrationTest {
 
         allActions.markAllAsInActiveFor("Case X");
 
-        assertEquals(asList(firstAction.markAsInActive(), secondAction.markAsInActive()), allActions.findByANMIDAndTimeStamp("ANM 1", 0));
-        assertEquals(asList(thirdAction), allActions.findByANMIDAndTimeStamp("ANM 2", 0));
+        assertEquals(asList(firstAction.markAsInActive(), secondAction.markAsInActive()), allActions.findByProviderIdAndTimeStamp("ANM 1", 0));
+        assertEquals(asList(thirdAction), allActions.findByProviderIdAndTimeStamp("ANM 2", 0));
     }
 
     @Test
@@ -104,7 +105,7 @@ public class AllActionsIntegrationTest {
         allActions.add(latestAction);
         allActions.add(earlierAction);
 
-        assertEquals(asList(earlierAction, laterAction, latestAction), allActions.findByANMIDAndTimeStamp("ANM 1", 0));
+        assertEquals(asList(earlierAction, laterAction, latestAction), allActions.findByProviderIdAndTimeStamp("ANM 1", 0));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class AllActionsIntegrationTest {
 
         allActions.deleteAllByTarget("report");
 
-        assertEquals(asList(alertAction), allActions.findByANMIDAndTimeStamp("ANM 1", 0));
+        assertEquals(asList(alertAction), allActions.findByProviderIdAndTimeStamp("ANM 1", 0));
     }
 
     @Test
@@ -171,10 +172,10 @@ public class AllActionsIntegrationTest {
     }
 
     private ActionData alert() {
-        return ActionData.createAlert(mother, "Ante Natal Care - Normal", "ANC 1", normal, DateTime.now(), DateTime.now().plusDays(3));
+        return ActionData.createAlert(mother.value(), "Ante Natal Care - Normal", "ANC 1", normal, DateTime.now(), DateTime.now().plusDays(3));
     }
 
     private ActionData alert(String schedule, String milestone) {
-        return ActionData.createAlert(mother, schedule, milestone, normal, DateTime.now(), DateTime.now().plusDays(3));
+        return ActionData.createAlert(mother.value(), schedule, milestone, normal, DateTime.now(), DateTime.now().plusDays(3));
     }
 }

@@ -9,30 +9,42 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.http.HttpStatus.OK;
 
+<<<<<<< HEAD
 import java.io.IOException;
+=======
+import java.net.URLConnection;
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 import org.apache.http.client.ClientProtocolException;
+=======
+import org.joda.time.DateTime;
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opensrp.api.domain.Client;
-import org.opensrp.api.domain.Event;
+import org.opensrp.common.AllConstants;
 import org.opensrp.connector.openmrs.constants.OpenmrsHouseHold;
 import org.opensrp.connector.openmrs.service.EncounterService;
 import org.opensrp.connector.openmrs.service.HouseholdService;
 import org.opensrp.connector.openmrs.service.PatientService;
+import org.opensrp.domain.Client;
 import org.opensrp.domain.ErrorTrace;
+import org.opensrp.domain.Event;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.FormSubmissionDTO;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.form.domain.FormSubmission;
 import org.opensrp.form.service.FormSubmissionConverter;
 import org.opensrp.form.service.FormSubmissionService;
+<<<<<<< HEAD
 import org.opensrp.OpenSRPConstants.OpenSRPEvent;
 import org.opensrp.repository.MultimediaRepository;
+=======
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 import org.opensrp.scheduler.SystemEvent;
 import org.opensrp.scheduler.TaskSchedulerService;
 import org.opensrp.service.ErrorTraceService;
@@ -124,7 +136,7 @@ public class FormSubmissionController {
                 return new ResponseEntity<>(BAD_REQUEST);
             }
 
-            scheduler.notifyEvent(new SystemEvent<>(OpenSRPEvent.FORM_SUBMISSION, formSubmissionsDTO));
+            scheduler.notifyEvent(new SystemEvent<>(AllConstants.OpenSRPEvent.FORM_SUBMISSION, formSubmissionsDTO));
             
             try{
           
@@ -145,7 +157,7 @@ public class FormSubmissionController {
 	            	}
 	            	catch(Exception e){
 	            		e.printStackTrace();
-	            		ErrorTrace errorTrace=new ErrorTrace(new Date(), "Parse Exception", "", e.getStackTrace().toString(), "Unsolved", formSubmission.formName());
+	            		ErrorTrace errorTrace=new ErrorTrace(new DateTime(), "Parse Exception", "", e.getStackTrace().toString(), "Unsolved", formSubmission.formName());
 						errorTrace.setRecordId(formSubmission.instanceId());
 						errorTraceService.addError(errorTrace);
 	            	}
@@ -213,6 +225,7 @@ public class FormSubmissionController {
 			}
 		});
     }
+<<<<<<< HEAD
     @RequestMapping(headers = {"Accept=multipart/form-data"}, method = POST, value = "/multimedia-file")
     public ResponseEntity<String> uploadFiles(@RequestParam("anm-id") String providerId, @RequestParam("entity-id") String entityId,@RequestParam("content-type") String contentType, @RequestParam("file-category") String fileCategory, @RequestParam("file") MultipartFile file) throws ClientProtocolException, IOException {
     	
@@ -226,4 +239,7 @@ public class FormSubmissionController {
     	}
     	 return new ResponseEntity<>(new Gson().toJson(status), OK);
     }
+=======
+    
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 }

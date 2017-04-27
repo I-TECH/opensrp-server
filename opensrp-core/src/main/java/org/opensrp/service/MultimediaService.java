@@ -15,14 +15,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class MultimediaService {
+<<<<<<< HEAD
 	private static Logger logger = LoggerFactory.getLogger(MultimediaService.class
 			.toString());
+=======
+    private static Logger logger = LoggerFactory.getLogger(MultimediaService.class.toString());
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 
 	private final MultimediaRepository multimediaRepository;
 	private String multimediaDirPath;
+	@Value("#{opensrp['multimedia.directory.name']}")
+	String baseMultimediaDirPath;
 
 	@Autowired
+<<<<<<< HEAD
 	public MultimediaService(MultimediaRepository multimediaRepository, @Value("#{opensrp['multimedia.directory.name']}") String multimediaDirName) {
+=======
+	public MultimediaService(MultimediaRepository multimediaRepository) {
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 		this.multimediaRepository = multimediaRepository;
 		this.multimediaDirPath = multimediaDirName;
 	}
@@ -42,7 +52,11 @@ public class MultimediaService {
 						.withCaseId(multimediaDTO.caseId())
 						.withProviderId(multimediaDTO.providerId())
 						.withContentType(multimediaDTO.contentType())
+<<<<<<< HEAD
 						.withFilePath(multimediaDirPathDB)
+=======
+						.withFilePath(multimediaDTO.filePath())
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 						.withFileCategory(multimediaDTO.fileCategory());
 
 				multimediaRepository.add(multimediaFile);
@@ -60,6 +74,7 @@ public class MultimediaService {
 
 	public boolean uploadFile(MultimediaDTO multimediaDTO,
 			MultipartFile multimediaFile) {
+<<<<<<< HEAD
 		 
 		if (!multimediaFile.isEmpty()) {
 			try {
@@ -101,13 +116,45 @@ public class MultimediaService {
 					makeMultimediaDir(defaultDirPath);
 					multimediaDirPath += File.separator
 							+ multimediaDTO.caseId() + ".jpg";
+=======
+		
+		// String baseMultimediaDirPath = System.getProperty("user.home");
+
+		if (!multimediaFile.isEmpty()) {
+			try {
+
+				 multimediaDirPath = baseMultimediaDirPath + File.separator;
+				String fileExt=".jpg";
+				switch (multimediaDTO.contentType()) {
+				
+				case "application/octet-stream":
+					multimediaDirPath += "videos";
+					fileExt=".mp4";
+					break;
+
+				case "image/jpeg":
+					multimediaDirPath += "images";
+					fileExt=".jpg";
+					break;
+
+				case "image/gif":
+					multimediaDirPath += "images";
+					fileExt=".gif";
+					break;
+
+				case "image/png":
+					multimediaDirPath += "images"; 
+					fileExt=".png";
+>>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 					break;
 
 				}
+				new File(multimediaDirPath).mkdir();
+				String fileName=multimediaDirPath+File.separator+multimediaDTO.caseId() + fileExt;
+				multimediaDTO.withFilePath(fileName);
+				File multimediaDir = new File(fileName);
 
-				File multimediaDir = new File(multimediaDirPath);
-
-				 multimediaFile.transferTo(multimediaDir);
+				multimediaFile.transferTo(multimediaDir);
 
 			/*
 			 byte[] bytes = multimediaFile.getBytes();
@@ -120,6 +167,7 @@ public class MultimediaService {
 				return true;
 				
 			} catch (Exception e) {
+				logger.error("",e);
 				return false;
 			}
 		} else {
@@ -135,5 +183,8 @@ public class MultimediaService {
     }
 	public List<Multimedia> getMultimediaFiles(String providerId) {
 		return multimediaRepository.all(providerId);
+	}
+	public Multimedia findByCaseId(String entityId){
+		return multimediaRepository.findByCaseId(entityId);
 	}
 }

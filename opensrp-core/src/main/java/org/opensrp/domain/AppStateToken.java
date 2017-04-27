@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
+import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
 
 @TypeDiscriminator("doc.type === 'AppStateToken'")
@@ -67,6 +68,10 @@ public class AppStateToken extends MotechBaseDataObject {
 	
 	public String stringValue() {
 		return value.toString();
+	}
+	
+	public LocalDate datetimeValue() {
+		return LocalDate.parse(value.toString());
 	}
 	
 	public boolean booleanValue() {

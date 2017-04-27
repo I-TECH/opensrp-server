@@ -20,12 +20,18 @@ public class MultimediaService {
 			.toString());
 =======
     private static Logger logger = LoggerFactory.getLogger(MultimediaService.class.toString());
+<<<<<<< HEAD
 >>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 
+=======
+    public static final String IMAGES_DIR="images";
+    private static final String VIDEOS_DIR="videos";
+>>>>>>> upstream/path
 	private final MultimediaRepository multimediaRepository;
 	private String multimediaDirPath;
 	@Value("#{opensrp['multimedia.directory.name']}")
 	String baseMultimediaDirPath;
+	
 
 	@Autowired
 <<<<<<< HEAD
@@ -128,22 +134,22 @@ public class MultimediaService {
 				switch (multimediaDTO.contentType()) {
 				
 				case "application/octet-stream":
-					multimediaDirPath += "videos";
+					multimediaDirPath += VIDEOS_DIR;
 					fileExt=".mp4";
 					break;
 
 				case "image/jpeg":
-					multimediaDirPath += "images";
+					multimediaDirPath += IMAGES_DIR;
 					fileExt=".jpg";
 					break;
 
 				case "image/gif":
-					multimediaDirPath += "images";
+					multimediaDirPath += IMAGES_DIR;
 					fileExt=".gif";
 					break;
 
 				case "image/png":
-					multimediaDirPath += "images"; 
+					multimediaDirPath += IMAGES_DIR; 
 					fileExt=".png";
 >>>>>>> 719c92e27338c071e47ad4e67af50a5a0b9402df
 					break;

@@ -17,6 +17,7 @@ import org.opensrp.api.domain.User;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.common.domain.UserDetail;
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipTypeService;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.web.security.DrishtiAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +43,15 @@ public class UserController {
     private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
 	private OpenmrsLocationService openmrsLocationService;
 	private OpenmrsUserService openmrsUserService;
+	private OpenmrsRelationshipTypeService openmrsRelationshipTypeService;
 	
     @Autowired
     public UserController(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService, 
-            DrishtiAuthenticationProvider opensrpAuthenticationProvider) {
+            DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipTypeService openmrsRelationshipTypeService) {
 		this.openmrsLocationService = openmrsLocationService;
 		this.openmrsUserService = openmrsUserService;
         this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
+        this.openmrsRelationshipTypeService = openmrsRelationshipTypeService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/authenticate-user")
@@ -125,6 +128,17 @@ public class UserController {
 			e.printStackTrace();
 		}
 		map.put("locations", l);
+
+		JSONObject relationshipTypes = openmrsRelationshipTypeService.getRelationshipTypes();
+
+		try{
+			Map<String, Object> rmap = new Gson().fromJson(relationshipTypes.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
+			map.put("relationshipTypes", rmap);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
         return new ResponseEntity<>(new Gson().toJson(map), allowOrigin(opensrpSiteUrl), OK);
 	}
 	

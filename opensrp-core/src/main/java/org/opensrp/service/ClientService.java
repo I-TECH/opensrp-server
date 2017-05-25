@@ -89,13 +89,8 @@ public class ClientService {
 		}
 		Client c = findClient(client);
 		if (c != null) {
-			try {
-				updateClient(client);
-			}
-			catch (JSONException e) {
-				throw new IllegalArgumentException(
+			throw new IllegalArgumentException(
 			        "A client already exists with given list of identifiers. Consider updating data.[" + c + "]");
-			}
 		}
 		
 		client.setDateCreated(DateTime.now());

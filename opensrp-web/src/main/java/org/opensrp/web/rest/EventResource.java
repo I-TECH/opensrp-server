@@ -132,7 +132,7 @@ public class EventResource extends RestResource<Event> {
 		catch (Exception e) {
 			response.put("msg", "Error occurred");
 			logger.error("", e);
-			return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(new Gson().toJsoLn(response), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class EventResource extends RestResource<Event> {
 				    new TypeToken<ArrayList<Event>>() {}.getType());
 				for (Event event : events) {
 					event=eventService.processOutOfArea(event);
-					eventService.addorUpdateEvent(event);
+					eventService.addEvent(event);
 				}
 			}
 			

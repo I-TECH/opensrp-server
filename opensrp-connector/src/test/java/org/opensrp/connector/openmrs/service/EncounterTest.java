@@ -526,12 +526,12 @@ public class EncounterTest extends TestResourceLoader{
 		
 		for(int i = 0; i < obsArray.length(); i++) {
 			JSONObject obs = obsArray.getJSONObject(i);
-			assertNotEquals(obs.get("uuid"), "");
+			assertThat(obs.get("uuid"), is(not("")));
 			
 			if(obs.has("groupMembers")) {
 				JSONArray groupMembers = obs.getJSONArray("groupMembers");
 				for(int k = 0; k < groupMembers.length(); k++) {
-					assertNotEquals(obs.get("uuid"), "");
+					assertThat(obs.get("uuid"), is(not("")));
 				}
 			}
 		}

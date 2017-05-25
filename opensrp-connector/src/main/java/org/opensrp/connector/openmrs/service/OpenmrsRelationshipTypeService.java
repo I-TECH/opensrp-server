@@ -1,6 +1,7 @@
 package org.opensrp.connector.openmrs.service;
 
 import org.json.JSONObject;
+import org.json.JSONException;
 
 import com.mysql.jdbc.StringUtils;
 import org.opensrp.common.util.HttpResponse;
@@ -22,7 +23,7 @@ public class OpenmrsRelationshipTypeService extends OpenmrsService {
         super(openmrsUrl, user, password);
     }
 
-    public JSONObject getRelationshipTypes() {
+    public JSONObject getRelationshipTypes() throws JSONException{
         HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL) + "/" + RELATIONSHIP_TYPE_URL,
                 "", OPENMRS_USER, OPENMRS_PWD);
 

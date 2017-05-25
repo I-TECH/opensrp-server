@@ -138,9 +138,8 @@ public class UserController {
 		Time t = getServerTime();
 		map.put("time", t);
 
-		JSONObject relationshipTypes = openmrsRelationshipTypeService.getRelationshipTypes();
-
 		try{
+			JSONObject relationshipTypes = openmrsRelationshipTypeService.getRelationshipTypes();
 			Map<String, Object> rmap = new Gson().fromJson(relationshipTypes.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
 			map.put("relationshipTypes", rmap);
 		}

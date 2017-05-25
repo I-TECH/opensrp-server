@@ -16,11 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class MultimediaService {
     private static Logger logger = LoggerFactory.getLogger(MultimediaService.class.toString());
-
+    public static final String IMAGES_DIR="images";
+    private static final String VIDEOS_DIR="videos";
 	private final MultimediaRepository multimediaRepository;
 	private String multimediaDirPath;
 	@Value("#{opensrp['multimedia.directory.name']}")
 	String baseMultimediaDirPath;
+	
 
 	@Autowired
 	public MultimediaService(MultimediaRepository multimediaRepository) {
@@ -30,9 +32,14 @@ public class MultimediaService {
 	public String saveMultimediaFile(MultimediaDTO multimediaDTO, MultipartFile file) {
 		
 		boolean uploadStatus = uploadFile(multimediaDTO, file);
-
+         
+		String[] multimediaDirPathSplit =  multimediaDirPath.split("/", 3);
+		String multimediaDirPathDB = File.separator + multimediaDirPathSplit[2];
+		
 		if (uploadStatus) {
 			try {
+				logger.info("Image path : " + multimediaDirPath);
+				
 				Multimedia multimediaFile = new Multimedia()
 						.withCaseId(multimediaDTO.caseId())
 						.withProviderId(multimediaDTO.providerId())
@@ -66,22 +73,22 @@ public class MultimediaService {
 				switch (multimediaDTO.contentType()) {
 				
 				case "application/octet-stream":
-					multimediaDirPath += "videos";
+					multimediaDirPath += VIDEOS_DIR;
 					fileExt=".mp4";
 					break;
 
 				case "image/jpeg":
-					multimediaDirPath += "images";
+					multimediaDirPath += IMAGES_DIR;
 					fileExt=".jpg";
 					break;
 
 				case "image/gif":
-					multimediaDirPath += "images";
+					multimediaDirPath += IMAGES_DIR;
 					fileExt=".gif";
 					break;
 
 				case "image/png":
-					multimediaDirPath += "images"; 
+					multimediaDirPath += IMAGES_DIR; 
 					fileExt=".png";
 					break;
 
@@ -111,7 +118,13 @@ public class MultimediaService {
 			return false;
 		}
 	}
-
+    private void makeMultimediaDir(String dirPath)
+    {
+    	File file = new File(dirPath);
+		 if(!file.exists())
+			 file.mkdirs();
+			 
+    }
 	public List<Multimedia> getMultimediaFiles(String providerId) {
 		return multimediaRepository.all(providerId);
 	}

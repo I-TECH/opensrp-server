@@ -1,5 +1,7 @@
 package org.opensrp.connector.openmrs.service;
 
+import org.json.JSONObject;
+
 import com.mysql.jdbc.StringUtils;
 import org.opensrp.common.util.HttpResponse;
 import org.opensrp.common.util.HttpUtil;

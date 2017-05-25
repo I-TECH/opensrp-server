@@ -2,6 +2,7 @@ package org.opensrp.connector.openmrs.service;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONArray;
 
 import com.mysql.jdbc.StringUtils;
 import org.opensrp.common.util.HttpResponse;
@@ -28,7 +29,20 @@ public class OpenmrsRelationshipTypeService extends OpenmrsService {
                 "", OPENMRS_USER, OPENMRS_PWD);
 
         if (!StringUtils.isEmptyOrWhitespaceOnly(op.body())) {
-            return new JSONObject(op.body());
+            JSONObject response = new JSONObject(op.body());
+            JSONArray responseArray = response.getJSONArray("results");
+            JSONArray relationshipTypes = new JSONArray();
+
+            for (int i = 0; i < responseArray.length(); i++) {
+                String key = responseArray.getJSONObject(i).getString("uuid");
+                String name = responseArray.getJSONObject(i).getString("display");
+                JSONObject r = new JSONObject();
+                r.put("key", key);
+                r.put("name", name);
+                relationshipTypes.put(r);
+            }
+
+            return new JSONObject().put("relationshipTypes", relationshipTypes);
         }
         return null;
     }

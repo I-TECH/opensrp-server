@@ -39,7 +39,7 @@ public class OpenmrsRelationshipTypeService extends OpenmrsService {
                 JSONObject r = new JSONObject();
                 r.put("key", key);
                 r.put("name", name);
-                relationshipTypes.put(r);
+                relationshipTypes.put(r.toString());
             }
 
             return new JSONObject().put("relationshipTypes", relationshipTypes);

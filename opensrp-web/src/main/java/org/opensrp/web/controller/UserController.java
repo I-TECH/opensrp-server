@@ -20,7 +20,7 @@ import org.opensrp.api.domain.User;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.common.domain.UserDetail;
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
-import org.opensrp.connector.openmrs.service.OpenmrsRelationshipTypeService;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.web.security.DrishtiAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,15 +45,15 @@ public class UserController {
     private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
 	private OpenmrsLocationService openmrsLocationService;
 	private OpenmrsUserService openmrsUserService;
-	private OpenmrsRelationshipTypeService openmrsRelationshipTypeService;
+	private OpenmrsRelationshipService openmrsRelationshipService;
 
     @Autowired
     public UserController(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService, 
-            DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipTypeService openmrsRelationshipTypeService) {
+            DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
 		this.openmrsLocationService = openmrsLocationService;
 		this.openmrsUserService = openmrsUserService;
         this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
-        this.openmrsRelationshipTypeService = openmrsRelationshipTypeService;
+        this.openmrsRelationshipService = openmrsRelationshipService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/authenticate-user")
@@ -139,7 +138,7 @@ public class UserController {
 		map.put("time", t);
 
 		try{
-			JSONObject relationshipTypes = openmrsRelationshipTypeService.getRelationshipTypes();
+			JSONObject relationshipTypes = openmrsRelationshipService.getRelationshipTypes();
 			Map<String, Object> rmap = new Gson().fromJson(relationshipTypes.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
 			map.put("relationshipTypes", rmap);
 		}

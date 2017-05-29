@@ -34,7 +34,7 @@ public class Client extends BaseEntity {
 	@JsonProperty
 	private String gender;
 	@JsonProperty
-	private Map<String, List<String>> relationships;
+	private Map<String, List<Map<String, String>>> relationships;
 
 	protected Client() {
 		
@@ -168,11 +168,11 @@ public class Client extends BaseEntity {
 		this.gender = gender;
 	}
 
-	public Map<String, List<String>> getRelationships() {
+	public Map<String, List<Map<String, String>>> getRelationships() {
 		return relationships;
 	}
 
-	public void setRelationships(Map<String, List<String>> relationships) {
+	public void setRelationships(Map<String, List<Map<String,String>>> relationships) {
 		this.relationships = relationships;
 	}
 	
@@ -224,12 +224,12 @@ public class Client extends BaseEntity {
 	/**
 	 * Overrides the existing data
 	 */
-	public Client withRelationships(Map<String, List<String>> relationships) {
+	public Client withRelationships(Map<String, List<Map<String, String>>> relationships) {
 		this.relationships = relationships;
 		return this;
 	}
 	
-	public List<String> findRelatives(String relationshipType) {
+	public List<Map<String, String>> findRelatives(String relationshipType) {
 		if(relationships == null){
 			relationships = new HashMap<>();
 		}
@@ -237,27 +237,21 @@ public class Client extends BaseEntity {
 		return relationships.get(relationshipType);
 	}
 	
-	public void addRelationship(String relationType, String relativeEntityId) {
+	public void addRelationship(String relationType, String relativeEntityId, String relationshipType) {
 		if(relationships == null){
 			relationships = new HashMap<>();
 		}
 		
-		List<String> relatives = findRelatives(relationType);
+		List<Map<String, String>> relatives = findRelatives(relationType);
 		if(relatives == null){
 			relatives = new ArrayList<>();
 		}
-		relatives.add(relativeEntityId);
+
+		Map<String, String> relas = new HashMap<>();
+		relas.put("relativeEntityId", relativeEntityId);
+		relas.put("relationshipType", relationshipType);
+
 		relationships.put(relationType, relatives);
-	}
-	
-	public List<String> getRelationships(String relativeEntityId) {
-		List<String> relations = new ArrayList<String>();
-		for (Entry<String, List<String>> rl : relationships.entrySet()) {
-			if(rl.getValue().toString().equalsIgnoreCase(relativeEntityId)){
-				relations.add(rl.getKey());
-			}
-		}
-		return relations;
 	}
 
 	@Override

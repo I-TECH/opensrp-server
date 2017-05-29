@@ -1,6 +1,8 @@
 package org.opensrp.connector.openmrs.schedule;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,6 +18,7 @@ import org.opensrp.connector.dhis2.Dhis2TrackCaptureConnector;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants.SchedulerConfig;
 import org.opensrp.connector.openmrs.service.EncounterService;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.OpenmrsSchedulerService;
 import org.opensrp.connector.openmrs.service.PatientService;
 import org.opensrp.domain.AppStateToken;
@@ -47,6 +50,7 @@ public class OpenmrsSyncerListener {
 	private EncounterService encounterService;
 	private EventService eventService;
 	private ClientService clientService;
+	private OpenmrsRelationshipService openmrsRelationshipService;
 
 	@Autowired
 	private Dhis2TrackCaptureConnector dhis2TrackCaptureConnector;
@@ -54,7 +58,7 @@ public class OpenmrsSyncerListener {
 	@Autowired
 	public OpenmrsSyncerListener(OpenmrsSchedulerService openmrsSchedulerService, ScheduleService opensrpScheduleService, ActionService actionService,
 			ConfigService config, ErrorTraceService errorTraceService, PatientService patientService, EncounterService encounterService,
-			ClientService clientService, EventService eventService) {
+			ClientService clientService, EventService eventService, OpenmrsRelationshipService openmrsRelationshipService) {
 		this.openmrsSchedulerService = openmrsSchedulerService;
 		this.opensrpScheduleService = opensrpScheduleService;
 		this.actionService = actionService;
@@ -64,6 +68,7 @@ public class OpenmrsSyncerListener {
 		this.encounterService = encounterService;
 		this.eventService = eventService;
 		this.clientService = clientService;
+		this.openmrsRelationshipService = openmrsRelationshipService;
 
 		this.config.registerAppStateToken(SchedulerConfig.openmrs_syncer_sync_schedule_tracker_by_last_update_enrollment, 0,
 				"ScheduleTracker token to keep track of enrollment synced with OpenMRS", true);
@@ -129,6 +134,9 @@ public class OpenmrsSyncerListener {
 
 			List<Client> cl = clientService.findByServerVersion(start);
 			logger.info("Clients list size " + cl.size());
+
+			List<Client> clientsWithRelationships = new ArrayList<>();
+
 			for (Client c : cl) {
 //				try {
 //					//sentTrackCaptureDataToDHIS2(c);
@@ -172,9 +180,31 @@ public class OpenmrsSyncerListener {
 						}
 
 					}
+
+					if(c.getRelationships().size() > 0){
+						clientsWithRelationships.add(c);
+					}
 				} catch (Exception ex1) {
 					ex1.printStackTrace();
 					errorTraceService.log("OPENMRS FAILED CLIENT PUSH", Client.class.getName(), c.getBaseEntityId(), ExceptionUtils.getStackTrace(ex1), "");
+				}
+			}
+
+			logger.info("RUNNING FOR RELATIONSHIPS");
+			if(clientsWithRelationships.size() > 0){
+				for(Client client : clientsWithRelationships){
+					Map<String, List<Map<String, String>>> relationshipsMap = client.getRelationships();
+
+					for(String key : relationshipsMap.keySet()){
+						List<Map<String, String>> relationships = relationshipsMap.get(key);
+						for(Map<String, String> map : relationships){
+							String relativeEntityId = map.get("relativeEntityId");
+							String relationshipType = map.get("relationshipType");
+							String clientEntityId = client.getBaseEntityId();
+
+							this.openmrsRelationshipService.createRelationship(clientEntityId, relationshipType, relativeEntityId);
+						}
+					}
 				}
 			}
 

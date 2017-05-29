@@ -19,6 +19,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
@@ -64,14 +65,16 @@ public class XlsDataImportController {
 	private ClientService clientService;
 	private EventService eventService;
 	private OpenmrsIDService openmrsIDService;
+	private OpenmrsRelationshipService openmrsRelationshipService;
 	 
 	private DateTimeFormatter parseDate = DateTimeFormat.forPattern(DATE_FORMAT);
 	
 	@Autowired
-	public XlsDataImportController(ClientService clientService, EventService eventService, OpenmrsIDService openmrsIDService) {
+	public XlsDataImportController(ClientService clientService, EventService eventService, OpenmrsIDService openmrsIDService, OpenmrsRelationshipService openmrsRelationshipService) {
 		this.clientService = clientService;
 		this.eventService = eventService;
 		this.openmrsIDService = openmrsIDService;
+		this.openmrsRelationshipService = openmrsRelationshipService;
 	}
 	
 	@RequestMapping(headers = { "Accept=multipart/form-data" }, method = POST, value = "/file")
@@ -112,7 +115,7 @@ public class XlsDataImportController {
 				    openmrsIDService.assignOpenmrsIdToClient(zeirId, childClient);
 
 				    // Create mother relationship
-				    childClient.addRelationship("mother", motherClient.getBaseEntityId());
+				    childClient.addRelationship("mother", motherClient.getBaseEntityId(), openmrsRelationshipService.getDefaultRelationshipTypeId());
 
 				    // Create common observations to all events
 				    // 2017-03-20T12:40:02.000+02:00

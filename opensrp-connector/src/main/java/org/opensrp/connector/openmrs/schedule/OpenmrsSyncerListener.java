@@ -172,16 +172,23 @@ public class OpenmrsSyncerListener {
 						config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, c.getServerVersion());
 
 					} else {
-						JSONObject patientJson = patientService.createPatient(c);
-						if (patientJson != null && patientJson.has("uuid")) {
-							c.addIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE, patientJson.getString("uuid"));
+						//TODO Find a better more flexible way of identifying the difference between a patient and related person
+						JSONObject pJson;
+						if(c.getRelationships() == null){
+							pJson = patientService.createPerson(c);
+						} else {
+							pJson = patientService.createPatient(c);
+						}
+
+						if (pJson != null && pJson.has("uuid")) {
+							c.addIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE, pJson.getString("uuid"));
 							clientService.addorUpdate(c, false);
 							config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, c.getServerVersion());
 						}
 
 					}
 
-					if(c.getRelationships().size() > 0){
+					if(c.getRelationships() != null && c.getRelationships().size() > 0){
 						clientsWithRelationships.add(c);
 					}
 				} catch (Exception ex1) {
@@ -198,11 +205,11 @@ public class OpenmrsSyncerListener {
 					for(String key : relationshipsMap.keySet()){
 						List<Map<String, String>> relationships = relationshipsMap.get(key);
 						for(Map<String, String> map : relationships){
-							String relativeEntityId = map.get("relativeEntityId");
+							String relativeEntityId = clientService.getByBaseEntityId(map.get("relativeEntityId")).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
 							String relationshipType = map.get("relationshipType");
-							String clientEntityId = client.getBaseEntityId();
+							String clientEntityId = clientService.getByBaseEntityId(client.getBaseEntityId()).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
 
-							this.openmrsRelationshipService.createRelationship(clientEntityId, relationshipType, relativeEntityId);
+							this.openmrsRelationshipService.createRelationship(relativeEntityId, relationshipType, clientEntityId);
 						}
 					}
 				}

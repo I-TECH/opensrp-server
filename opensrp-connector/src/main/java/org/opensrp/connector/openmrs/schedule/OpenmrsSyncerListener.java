@@ -207,9 +207,12 @@ public class OpenmrsSyncerListener {
 						for(Map<String, String> map : relationships){
 							String relativeEntityId = clientService.getByBaseEntityId(map.get("relativeEntityId")).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
 							String relationshipType = map.get("relationshipType");
-							String clientEntityId = clientService.getByBaseEntityId(client.getBaseEntityId()).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+							String clientEntityId = client.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+							logger.info("relativeEntityId: " + relativeEntityId);
+							logger.info("clientEntityId: " + clientEntityId);
+							logger.debug("Client: " + client.toString());
 
-							this.openmrsRelationshipService.createRelationship(relativeEntityId, relationshipType, clientEntityId);
+							openmrsRelationshipService.createRelationship(relativeEntityId, relationshipType, clientEntityId);
 						}
 					}
 				}

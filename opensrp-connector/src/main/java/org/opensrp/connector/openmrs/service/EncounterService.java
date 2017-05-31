@@ -103,7 +103,13 @@ public class EncounterService extends OpenmrsService{
 	}
 	
 	public JSONObject createEncounter(Event e) throws JSONException{
-		JSONObject pt = patientService.getPatientByIdentifier(e.getBaseEntityId());
+		String openmrsUuid = clientService.getByBaseEntityId(e.getBaseEntityId()).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+		JSONObject pt;
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(openmrsUuid)) {
+			pt = patientService.getPatientByIdentifier(openmrsUuid);
+		}else{
+			pt = patientService.getPatientByIdentifier(e.getBaseEntityId());
+		}
 		JSONObject enc = new JSONObject();
 		
 		JSONObject pr = userService.getPersonByUser(e.getProviderId());

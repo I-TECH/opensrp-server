@@ -297,14 +297,14 @@ public class SearchResource extends RestResource<Client> {
 	}
 	
 	private String getRelationalId(Client c, String relationshipKey) {
-		Map<String, List<Map<String, String>>> relationships = c.getRelationships();
+		Map<String, Map<String, String>> relationships = c.getRelationships();
 		if (relationships != null) {
-			for (Map.Entry<String, List<Map<String,String>>> entry : relationships.entrySet()) {
+			for (Map.Entry<String, Map<String,String>> entry : relationships.entrySet()) {
 				String key = entry.getKey();
 				if (key.equalsIgnoreCase(relationshipKey)) {
-					List<Map<String,String>> rList = entry.getValue();
-					if (!rList.isEmpty()) {
-						return rList.get(0).get("relativeEntityId");
+					Map<String,String> rMap = entry.getValue();
+					if (!rMap.isEmpty()) {
+						return rMap.get("relativeEntityId");
 					}
 				}
 			}

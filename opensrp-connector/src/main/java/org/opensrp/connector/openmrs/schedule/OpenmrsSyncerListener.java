@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
@@ -200,16 +201,21 @@ public class OpenmrsSyncerListener {
 			logger.info("RUNNING FOR RELATIONSHIPS");
 			if(clientsWithRelationships.size() > 0){
 				for(Client client : clientsWithRelationships){
-					Map<String, List<Map<String, String>>> relationshipsMap = client.getRelationships();
+					Map<String, Map<String, String>> relationshipsMap = client.getRelationships();
 
 					for(String key : relationshipsMap.keySet()){
-						List<Map<String, String>> relationships = relationshipsMap.get(key);
-						for(Map<String, String> map : relationships){
-							String relativeEntityId = clientService.getByBaseEntityId(map.get("relativeEntityId")).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
-							String relationshipType = map.get("relationshipType");
-							String clientEntityId = client.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+						Map<String, String> relationship = relationshipsMap.get(key);
 
+						String relativeEntityId = clientService.getByBaseEntityId(relationship.get("relativeEntityId")).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+						String relationshipType = relationship.get("relationshipType");
+						String clientEntityId = client.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+
+						if(StringUtils.isNotBlank(relativeEntityId) && StringUtils.isNotBlank(relationshipType)
+								&& StringUtils.isNotBlank(clientEntityId)) {
+							logger.info("Relationship required params present, proceeding to make a rest call...");
 							openmrsRelationshipService.createRelationship(relativeEntityId, relationshipType, clientEntityId);
+						} else {
+							logger.info("Relationship required params abset, not making a rest call...");
 						}
 					}
 				}

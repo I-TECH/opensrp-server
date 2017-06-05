@@ -156,10 +156,12 @@ public class OpenmrsSyncerListener {
 					String uuid = c.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
 
 					if (uuid == null) {
+						logger.info("uuid == null");
 						JSONObject p = patientService.getPatientByIdentifier(c.getBaseEntityId());
 						for (Entry<String, String> id : c.getIdentifiers().entrySet()) {
 							p = patientService.getPatientByIdentifier(id.getValue());
 							if (p != null) {
+								logger.info("p != null: " + p.toString());
 								break;
 							}
 						}
@@ -170,9 +172,16 @@ public class OpenmrsSyncerListener {
 					if (uuid != null) {
 						logger.info("Updating patient " + uuid);
 						patientService.updatePatient(c, uuid);
+
+						if(StringUtils.isBlank(c.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE))){
+							c.addIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE, uuid);
+							clientService.addorUpdate(c, false);
+						}
+
 						config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, c.getServerVersion());
 
 					} else {
+						logger.info("uuid == null.... creating a new patient/person");
 						//TODO Find a better more flexible way of identifying the difference between a patient and related person
 						JSONObject pJson;
 						if(c.getRelationships() == null){
@@ -215,7 +224,9 @@ public class OpenmrsSyncerListener {
 							logger.info("Relationship required params present, proceeding to make a rest call...");
 							openmrsRelationshipService.createRelationship(relativeEntityId, relationshipType, clientEntityId);
 						} else {
-							logger.info("Relationship required params abset, not making a rest call...");
+							logger.info("Relationship required params absent, not making a rest call...[" +
+									"relativeEntityId ?: " + relativeEntityId +", relationshipType ?: " + relationshipType
+									+", clientEntityId ?: " + clientEntityId);
 						}
 					}
 				}

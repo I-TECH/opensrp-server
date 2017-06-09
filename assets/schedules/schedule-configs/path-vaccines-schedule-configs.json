@@ -975,51 +975,6 @@
 	
 },
 {
-					"name": "VIT A IFC 2",
-					"events": [
-						{
-							"types": ["Birth Registration"],
-							"pass_logic": "AND",
-							"enrollment_fields": [
-								{
-									"field": "eventDate",
-									"value": "NOT_EMPTY"
-								}
-							],
-							"milestone": "vitaifc2",
-							"reference_date_fields": [
-				                {
-				                  "type": "client",
-				                  "field": "birthdate"
-				                }
-				             ],
-							"action": "enroll"
-						},
-						{
-							"types": ["Recurring Service"],
-							"pass_logic": "AND",
-							"fulfillment_fields": [
-								{
-									"concept": "161534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "NOT_EMPTY"
-								},
-								{
-									"concept": "1639AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "0"
-								}
-							],
-							"fulfillment_date_fields": [
-								{
-									"field": "eventDate"
-								}
-							],
-							"milestone": "vitaifc2",
-							"action": "fulfill"
-						}
-					]
-	
-},
-{
 					"name": "VIT A 1",
 					"events": [
 						{

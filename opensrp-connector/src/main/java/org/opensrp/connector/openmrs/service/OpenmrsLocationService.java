@@ -159,19 +159,28 @@ public class OpenmrsLocationService extends OpenmrsService{
 			for (int i = 0; i < lch.length(); i++) {
 
 				JSONObject cj = lch.getJSONObject(i);
-				Location loc = null;
-				if(cj.has("name")) {
-					loc = makeLocation(cj);
-				} else {
-					String uuid = cj.has("uuid") ? cj.getString("uuid") : "";
-					if(org.apache.commons.lang3.StringUtils.isNotBlank(uuid)) {
-						HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL) + "/" + LOCATION_URL + "/" + (uuid.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
-						loc = makeLocation(op.body());
+				boolean proceed = false;
+
+				if(cj.has("tags")){
+					for (int n = 0; n < cj.getJSONArray("tags").length(); n++) {
+						String tag = cj.getJSONArray("tags").getJSONObject(n).getString("display");
+						if(tag.equals(COUNTY) || tag.equals(SUB_COUNTY) || tag.equals(WARD))
+							proceed = true;
 					}
 				}
 
-				if(loc != null && (loc.getTags().contains(COUNTY) || loc.getTags().contains(SUB_COUNTY) || loc.getTags().contains(WARD)))
-					fillTreeWithLowerHierarchy(ltr, cj);
+				if(proceed) {
+					if (cj.has("name")) {
+						fillTreeWithLowerHierarchy(ltr, cj);
+					} else {
+						String uuid = cj.has("uuid") ? cj.getString("uuid") : "";
+						if (org.apache.commons.lang3.StringUtils.isNotBlank(uuid)) {
+							HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL) + "/" + LOCATION_URL + "/" + (uuid.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
+
+							fillTreeWithLowerHierarchy(ltr, new JSONObject(op.body()));
+						}
+					}
+				}
 			}
 		}
 		return l.getLocationId();

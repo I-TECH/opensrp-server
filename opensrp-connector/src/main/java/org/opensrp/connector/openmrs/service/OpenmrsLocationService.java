@@ -135,20 +135,20 @@ public class OpenmrsLocationService extends OpenmrsService{
 		}
 	}
 
-	public LocationTree getLocationTree(String[] locationIdsOrNames) throws JSONException {
-		LocationTree ltr = new LocationTree();
+	public JSONArray getLocationTree(String[] locationIdsOrNames) throws JSONException {
+		JSONArray locations = new JSONArray();
 
 		for (String loc : locationIdsOrNames) {
 			HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL)+"/"+LOCATION_URL+"/"+(loc.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
 			JSONObject lo = new JSONObject(op.body());
 
-			fillTreeWithLowerHierarchy(ltr, lo);
+			fillTreeWithLowerHierarchy(locations, lo);
 		}
 
-		return ltr;
+		return locations;
 	}
 
-	private String fillTreeWithLowerHierarchy(LocationTree ltr, JSONObject lo) throws JSONException{
+	private String fillTreeWithLowerHierarchy(JSONArray locations, JSONObject lo) throws JSONException{
 
 		Location l = null;
 		if(lo.has("tags")){
@@ -160,7 +160,7 @@ public class OpenmrsLocationService extends OpenmrsService{
 		}
 
 		if(l != null)
-			ltr.addLocation(l);
+			locations.put(l);
 
 		if(l != null && lo.has("childLocations")){
 			JSONArray lch = lo.getJSONArray("childLocations");
@@ -184,13 +184,13 @@ public class OpenmrsLocationService extends OpenmrsService{
 
 				if(proceed) {
 					if (cj.has("name")) {
-						fillTreeWithLowerHierarchy(ltr, cj);
+						fillTreeWithLowerHierarchy(locations, cj);
 					} else {
 						String uuid = cj.has("uuid") ? cj.getString("uuid") : "";
 						if (org.apache.commons.lang3.StringUtils.isNotBlank(uuid)) {
 							HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL) + "/" + LOCATION_URL + "/" + (uuid.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
 
-							fillTreeWithLowerHierarchy(ltr, new JSONObject(op.body()));
+							fillTreeWithLowerHierarchy(locations, new JSONObject(op.body()));
 						}
 					}
 				}

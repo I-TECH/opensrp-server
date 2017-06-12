@@ -150,10 +150,19 @@ public class OpenmrsLocationService extends OpenmrsService{
 
 	private String fillTreeWithLowerHierarchy(LocationTree ltr, JSONObject lo) throws JSONException{
 
-		Location l = makeLocation(lo);
-		ltr.addLocation(l);
+		Location l = null;
+		if(lo.has("tags")){
+			for (int n = 0; n < lo.getJSONArray("tags").length(); n++) {
+				String tag = lo.getJSONArray("tags").getJSONObject(n).getString("display");
+				if(tag.equals(COUNTY) || tag.equals(SUB_COUNTY) || tag.equals(WARD))
+					l = makeLocation(lo);
+			}
+		}
 
-		if(lo.has("childLocations")){
+		if(l != null)
+			ltr.addLocation(l);
+
+		if(l != null && lo.has("childLocations")){
 			JSONArray lch = lo.getJSONArray("childLocations");
 
 			for (int i = 0; i < lch.length(); i++) {

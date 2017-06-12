@@ -167,6 +167,10 @@ public class OpenmrsLocationService extends OpenmrsService{
 						if(tag.equals(COUNTY) || tag.equals(SUB_COUNTY) || tag.equals(WARD))
 							proceed = true;
 					}
+				} else {
+					if(l.getTags().contains(COUNTY) || l.getTags().contains(SUB_COUNTY)){
+						proceed = true;
+					}
 				}
 
 				if(proceed) {

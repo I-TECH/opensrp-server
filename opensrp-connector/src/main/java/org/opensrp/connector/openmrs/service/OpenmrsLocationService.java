@@ -196,6 +196,6 @@ public class OpenmrsLocationService extends OpenmrsService{
 				}
 			}
 		}
-		return l.getLocationId();
+		return l == null ? null : l.getLocationId();
 	}
 }

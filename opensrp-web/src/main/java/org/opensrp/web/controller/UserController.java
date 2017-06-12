@@ -4,10 +4,7 @@ import static org.opensrp.web.HttpHeaderFactory.allowOrigin;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.nio.charset.Charset;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,14 +12,18 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opensrp.api.domain.Location;
 import org.opensrp.api.domain.Time;
 import org.opensrp.api.domain.User;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.api.util.TreeNode;
 import org.opensrp.common.domain.UserDetail;
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.web.security.DrishtiAuthenticationProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,9 @@ import com.mysql.jdbc.StringUtils;
 
 @Controller
 public class UserController {
+
+	private static Logger logger = LoggerFactory.getLogger(UserController.class.toString());
+
     private String opensrpSiteUrl;
     private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
 	private OpenmrsLocationService openmrsLocationService;
@@ -124,6 +128,18 @@ public class UserController {
 	        }
         }
 		LocationTree l = openmrsLocationService.getLocationTreeOf(lid.split(";;"));
+
+        Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy().get("map").getChildren();
+        String lids = "";
+        for(String k : userLocations.keySet()){
+			TreeNode<String, Location> t = userLocations.get(k);
+			lids += t.getId() + ";;";
+		}
+		LocationTree locationTree = new LocationTree();
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
+			locationTree = openmrsLocationService.getLocationTree(lid.split(";;"));
+		}
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("user", u);
 		try{
@@ -134,6 +150,7 @@ public class UserController {
 			e.printStackTrace();
 		}
 		map.put("locations", l);
+		map.put("userLocations", locationTree);
 		Time t = getServerTime();
 		map.put("time", t);
 
@@ -145,6 +162,8 @@ public class UserController {
 		catch(Exception e){
 			e.printStackTrace();
 		}
+
+		logger.info("UserController", "Response: " + new Gson().toJson(map));
 
         return new ResponseEntity<>(new Gson().toJson(map), allowOrigin(opensrpSiteUrl), OK);
 	}

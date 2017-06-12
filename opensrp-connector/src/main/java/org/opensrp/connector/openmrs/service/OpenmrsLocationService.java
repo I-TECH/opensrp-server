@@ -14,6 +14,9 @@ import com.mysql.jdbc.StringUtils;
 @Service
 public class OpenmrsLocationService extends OpenmrsService{
 	private static final String LOCATION_URL = "ws/rest/v1/location";
+	private static final String COUNTY = "County";
+	private static final String SUB_COUNTY = "Sub County";
+	private static final String WARD = "Ward";
 
 	public OpenmrsLocationService() {	}
 
@@ -124,11 +127,43 @@ public class OpenmrsLocationService extends OpenmrsService{
 	private void fillTreeWithUpperHierarchy(LocationTree ltr, String locationId) throws JSONException{
 		HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL)+"/"+LOCATION_URL+"/"+(locationId.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
 
-		Location l = makeLocation(op.body());
+		Location l = makeLocation(	op.body());
 		ltr.addLocation(l);
 		
 		if(l.getParentLocation() != null){
 			fillTreeWithUpperHierarchy(ltr, l.getParentLocation().getLocationId());
 		}
+	}
+
+	public LocationTree getLocationTree(String[] locationIdsOrNames) throws JSONException {
+		LocationTree ltr = new LocationTree();
+
+		for (String loc : locationIdsOrNames) {
+			HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL)+"/"+LOCATION_URL+"/"+(loc.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
+			JSONObject lo = new JSONObject(op.body());
+
+			fillTreeWithLowerHierarchy(ltr, lo);
+		}
+
+		return ltr;
+	}
+
+	private String fillTreeWithLowerHierarchy(LocationTree ltr, JSONObject lo) throws JSONException{
+
+		Location l = makeLocation(lo);
+		ltr.addLocation(l);
+
+		if(lo.has("childLocations")){
+			JSONArray lch = lo.getJSONArray("childLocations");
+
+			for (int i = 0; i < lch.length(); i++) {
+
+				JSONObject cj = lch.getJSONObject(i);
+				Location loc = makeLocation(cj);
+				if(loc.getTags().contains(COUNTY) || loc.getTags().contains(SUB_COUNTY) || loc.getTags().contains(WARD))
+					fillTreeWithLowerHierarchy(ltr, cj);
+			}
+		}
+		return l.getLocationId();
 	}
 }

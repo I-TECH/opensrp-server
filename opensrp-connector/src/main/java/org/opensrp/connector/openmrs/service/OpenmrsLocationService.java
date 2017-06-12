@@ -159,8 +159,18 @@ public class OpenmrsLocationService extends OpenmrsService{
 			for (int i = 0; i < lch.length(); i++) {
 
 				JSONObject cj = lch.getJSONObject(i);
-				Location loc = makeLocation(cj);
-				if(loc.getTags().contains(COUNTY) || loc.getTags().contains(SUB_COUNTY) || loc.getTags().contains(WARD))
+				Location loc = null;
+				if(cj.has("name")) {
+					loc = makeLocation(cj);
+				} else {
+					String uuid = cj.has("uuid") ? cj.getString("uuid") : "";
+					if(org.apache.commons.lang3.StringUtils.isNotBlank(uuid)) {
+						HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(OPENMRS_BASE_URL) + "/" + LOCATION_URL + "/" + (uuid.replaceAll(" ", "%20")), "v=full", OPENMRS_USER, OPENMRS_PWD);
+						loc = makeLocation(op.body());
+					}
+				}
+
+				if(loc != null && (loc.getTags().contains(COUNTY) || loc.getTags().contains(SUB_COUNTY) || loc.getTags().contains(WARD)))
 					fillTreeWithLowerHierarchy(ltr, cj);
 			}
 		}

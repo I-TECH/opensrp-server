@@ -43,7 +43,7 @@ import com.mysql.jdbc.StringUtils;
 @Controller
 public class UserController {
 
-	private static Logger logger = LoggerFactory.getLogger(UserController.class.toString());
+	private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private String opensrpSiteUrl;
     private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
@@ -129,7 +129,8 @@ public class UserController {
         }
 		LocationTree l = openmrsLocationService.getLocationTreeOf(lid.split(";;"));
 
-        Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy().get("map").getChildren();
+        Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy();
+		
         String lids = "";
         for(String k : userLocations.keySet()){
 			TreeNode<String, Location> t = userLocations.get(k);
@@ -137,7 +138,7 @@ public class UserController {
 		}
 		LocationTree locationTree = new LocationTree();
 		if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
-			locationTree = openmrsLocationService.getLocationTree(lid.split(";;"));
+			locationTree = openmrsLocationService.getLocationTree(lids.split(";;"));
 		}
 
 		Map<String, Object> map = new HashMap<>();
@@ -163,7 +164,7 @@ public class UserController {
 			e.printStackTrace();
 		}
 
-		logger.info("UserController", "Response: " + new Gson().toJson(map));
+		logger.info("UserController Response: " + new Gson().toJson(map));
 
         return new ResponseEntity<>(new Gson().toJson(map), allowOrigin(opensrpSiteUrl), OK);
 	}

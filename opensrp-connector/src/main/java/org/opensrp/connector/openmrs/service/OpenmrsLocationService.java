@@ -135,7 +135,7 @@ public class OpenmrsLocationService extends OpenmrsService{
 		}
 	}
 
-	public JSONArray getLocationTree(String[] locationIdsOrNames) throws JSONException {
+	public JSONObject getLocationTree(String[] locationIdsOrNames) throws JSONException {
 		JSONArray locations = new JSONArray();
 
 		for (String loc : locationIdsOrNames) {
@@ -145,7 +145,7 @@ public class OpenmrsLocationService extends OpenmrsService{
 			fillTreeWithLowerHierarchy(locations, lo);
 		}
 
-		return locations;
+		return new JSONObject().put("userLocations", locations);
 	}
 
 	private String fillTreeWithLowerHierarchy(JSONArray locations, JSONObject lo) throws JSONException{

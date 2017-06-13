@@ -136,11 +136,11 @@ public class UserController {
 			TreeNode<String, Location> t = userLocations.get(k);
 			lids += t.getId() + ";;";
 		}
-		JSONArray locations;
+		JSONObject locations;
 		if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
 			locations = openmrsLocationService.getLocationTree(lids.split(";;"));
 		} else{
-			locations = new JSONArray();
+			locations = new JSONObject();
 		}
 
 		Map<String, Object> map = new HashMap<>();
@@ -153,7 +153,15 @@ public class UserController {
 			e.printStackTrace();
 		}
 		map.put("locations", l);
-		map.put("userLocations", locations);
+
+		try{
+			Map<String, Object> lMap = new Gson().fromJson(locations.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
+			map.put("userLocations", lMap);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
 		Time t = getServerTime();
 		map.put("time", t);
 

@@ -136,9 +136,9 @@ public class UserController {
 			TreeNode<String, Location> t = userLocations.get(k);
 			lids += t.getId() + ";;";
 		}
-		JSONArray locations = new JSONArray();
+		JSONObject locations = new JSONObject();
 		if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
-			locations = openmrsLocationService.getLocationTree(lids.split(";;"));
+			locations.put("userLocations", openmrsLocationService.getLocationTree(lids.split(";;")));
 		}
 
 		Map<String, Object> map = new HashMap<>();

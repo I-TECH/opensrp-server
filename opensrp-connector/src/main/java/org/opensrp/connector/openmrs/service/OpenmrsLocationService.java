@@ -1,5 +1,6 @@
 package org.opensrp.connector.openmrs.service;
 
+import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -160,7 +161,7 @@ public class OpenmrsLocationService extends OpenmrsService{
 		}
 
 		if(l != null)
-			locations.put(l);
+			locations.put(new Gson().toJson(l));
 
 		if(l != null && lo.has("childLocations")){
 			JSONArray lch = lo.getJSONArray("childLocations");

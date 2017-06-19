@@ -722,54 +722,6 @@
 	
 },
 {
-					"name": "OPV 4",
-					"events": [
-						{
-							"types": ["Birth Registration"],
-							"pass_logic": "AND",
-							"enrollment_fields": [
-								{
-									"field": "eventDate",
-									"value": "NOT_EMPTY"
-								}
-							],
-							"milestone": "opv4",
-							"reference_date_fields": [
-				                {
-				                  "type": "client",
-				                  "field": "birthdate"
-				                }
-				             ],
-							"action": "enroll"
-						},
-						{
-							"types": ["Vaccination"],
-							"pass_logic": "AND",
-							"fulfillment_date_fields": [
-								{
-									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-								}
-							],
-							"fulfillment_fields": [
-								{
-									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "NOT_EMPTY"
-								},
-								{
-									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "4"
-								}
-							],
-							"milestone": "opv4",
-							"action": "fulfill"
-						}
-					]
-	
-},
-{
 					"name": "MEASLES 1",
 					"events": [
 						{

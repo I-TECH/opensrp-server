@@ -181,16 +181,20 @@ public class OpenmrsSyncerListener {
 						config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, c.getServerVersion());
 
 					} else {
-						logger.info("uuid == null.... creating a new person & patient");
-
-						JSONObject pJson = patientService.createPatient(c);
+						logger.info("uuid is null....creating a new patient/person");
+						//TODO Find a better more flexible way of identifying the difference between a patient and related person
+						JSONObject pJson;
+						if(c.getRelationships() == null){
+							pJson = patientService.createPerson(c);
+						} else {
+							pJson = patientService.createPatient(c);
+						}
 
 						if (pJson != null && pJson.has("uuid")) {
 							c.addIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE, pJson.getString("uuid"));
 							clientService.addorUpdate(c, false);
 							config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, c.getServerVersion());
 						}
-
 					}
 
 					if(c.getRelationships() != null && c.getRelationships().size() > 0){

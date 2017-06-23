@@ -45,7 +45,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "BCG 2",
@@ -99,7 +99,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "OPV 0",
@@ -147,7 +147,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "OPV 1",
@@ -195,7 +195,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PCV 1",
@@ -243,7 +243,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PENTA 1",
@@ -291,7 +291,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ROTA 1",
@@ -339,7 +339,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "OPV 2",
@@ -376,7 +376,7 @@
 									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								}
-								
+
 							],
 							"fulfillment_fields": [
 								{
@@ -394,7 +394,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PCV 2",
@@ -448,7 +448,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PENTA 2",
@@ -502,7 +502,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ROTA 2",
@@ -539,7 +539,7 @@
 									"parent_code": "159698AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								}
-								
+
 							],
 							"fulfillment_fields": [
 								{
@@ -557,7 +557,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "OPV 3",
@@ -611,7 +611,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PCV 3",
@@ -665,7 +665,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "PENTA 3",
@@ -719,7 +719,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "MEASLES 1",
@@ -767,7 +767,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "MEASLES 2",
@@ -793,7 +793,7 @@
 									"parent_code": "36AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								},
-								
+
 				             ],
 							"action": "enroll"
 						},
@@ -822,7 +822,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "MR 1",
@@ -870,7 +870,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "MR 2",
@@ -924,7 +924,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 1",
@@ -990,7 +990,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 2",
@@ -1038,7 +1038,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 3",
@@ -1086,7 +1086,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 4",
@@ -1134,7 +1134,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 5",
@@ -1182,7 +1182,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 6",
@@ -1230,7 +1230,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 7",
@@ -1278,7 +1278,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 8",
@@ -1326,7 +1326,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 9",
@@ -1374,7 +1374,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "VIT A 10",
@@ -1422,7 +1422,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 1",
@@ -1467,7 +1467,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 2",
@@ -1515,7 +1515,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 3",
@@ -1563,7 +1563,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 4",
@@ -1611,7 +1611,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 5",
@@ -1659,7 +1659,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 6",
@@ -1707,7 +1707,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 7",
@@ -1755,7 +1755,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 8",
@@ -1803,7 +1803,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "DEWORMING 9",
@@ -1851,7 +1851,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ITN 1",
@@ -1896,7 +1896,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ITN 2",
@@ -1944,7 +1944,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ITN 3",
@@ -1992,7 +1992,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ITN 4",
@@ -2040,7 +2040,7 @@
 							"action": "fulfill"
 						}
 					]
-	
+
 },
 {
 					"name": "ITN 5",
@@ -2088,5 +2088,53 @@
 							"action": "fulfill"
 						}
 					]
-	
+
+},
+{
+					"name": "YELLOW FEVER",
+					"events": [
+						{
+							"types": ["Birth RegiOstration"],
+							"pass_logic": "AND",
+							"enrollment_fields": [
+								{
+									"field": "eventDate",
+									"value": "NOT_EMPTY"
+								}
+							],
+							"milestone": "yf",
+							"reference_date_fields": [
+				                {
+				                  "type": "client",
+				                  "field": "birthdate"
+				                }
+				             ],
+							"action": "enroll"
+						},
+						{
+							"types": ["Vaccination"],
+							"pass_logic": "AND",
+							"fulfillment_date_fields": [
+								{
+									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+								}
+							],
+							"fulfillment_fields": [
+								{
+									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "NOT_EMPTY"
+								},
+								{
+									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "1"
+								}
+							],
+							"milestone": "yf",
+							"action": "fulfill"
+						}
+					]
+
 }

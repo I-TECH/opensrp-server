@@ -2094,7 +2094,7 @@
 					"name": "YELLOW FEVER",
 					"events": [
 						{
-							"types": ["Birth RegiOstration"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -2133,6 +2133,102 @@
 								}
 							],
 							"milestone": "yf",
+							"action": "fulfill"
+						}
+					]
+
+},
+{
+					"name": "MR - CE",
+					"events": [
+						{
+							"types": ["Birth Registration"],
+							"pass_logic": "AND",
+							"enrollment_fields": [
+								{
+									"field": "eventDate",
+									"value": "NOT_EMPTY"
+								}
+							],
+							"milestone": "mr_ce",
+							"reference_date_fields": [
+				                {
+				                  "type": "client",
+				                  "field": "birthdate"
+				                }
+				             ],
+							"action": "enroll"
+						},
+						{
+							"types": ["Vaccination"],
+							"pass_logic": "AND",
+							"fulfillment_date_fields": [
+								{
+									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+								}
+							],
+							"fulfillment_fields": [
+								{
+									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "NOT_EMPTY"
+								},
+								{
+									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "1"
+								}
+							],
+							"milestone": "mr_ce",
+							"action": "fulfill"
+						}
+					]
+
+},
+{
+					"name": "IPV",
+					"events": [
+						{
+							"types": ["Birth Registration"],
+							"pass_logic": "AND",
+							"enrollment_fields": [
+								{
+									"field": "eventDate",
+									"value": "NOT_EMPTY"
+								}
+							],
+							"milestone": "ipv",
+							"reference_date_fields": [
+				                {
+				                  "type": "client",
+				                  "field": "birthdate"
+				                }
+				             ],
+							"action": "enroll"
+						},
+						{
+							"types": ["Vaccination"],
+							"pass_logic": "AND",
+							"fulfillment_date_fields": [
+								{
+									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+								}
+							],
+							"fulfillment_fields": [
+								{
+									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "NOT_EMPTY"
+								},
+								{
+									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "0"
+								}
+							],
+							"milestone": "ipv",
 							"action": "fulfill"
 						}
 					]

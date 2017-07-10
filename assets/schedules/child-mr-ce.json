@@ -1,0 +1,41 @@
+{
+  "name": "MR - CE",
+  "absolute": true,
+  "milestones": [
+    {
+      "name": "mr_ce",
+      "scheduleWindows": {
+        "earliest": ["6 Months"],
+        "due": ["6 Months", "10 Days"],
+        "late": ["5 Years"],
+        "max": ["5 Years", "1 Day"]
+      },
+      "alerts": [
+        {
+          "window": "earliest",
+          "offset": ["5 Months"],
+          "interval": ["1 Day"],
+          "count": "30"
+        },
+        {
+          "window": "due",
+          "offset": ["6 Months"],
+          "interval": ["1 Day"],
+          "count": "100"
+        },
+        {
+          "window": "late",
+          "offset": ["6 Months", "10 Days"],
+          "interval": ["1 Day"],
+          "count": "1900"
+        },
+        {
+          "window": "max",
+          "offset": ["5 Years"],
+          "interval": ["1 Day"],
+          "count": "2"
+        }
+      ]
+    }
+  ]
+}

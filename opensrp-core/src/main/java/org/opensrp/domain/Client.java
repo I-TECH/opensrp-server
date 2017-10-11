@@ -1,11 +1,5 @@
 package org.opensrp.domain;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -14,6 +8,12 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.opensrp.common.Gender;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @TypeDiscriminator("doc.type == 'Client'")
 public class Client extends BaseEntity {
@@ -36,10 +36,10 @@ public class Client extends BaseEntity {
 	@JsonProperty
 	private Map<String, Map<String, String>> relationships;
 
-	protected Client() {
-		
-		
-	}
+    protected Client() {
+
+
+    }
 
 	public Client(String baseEntityId) {
 		super(baseEntityId);
@@ -94,79 +94,79 @@ public class Client extends BaseEntity {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getMiddleName() {
-		return middleName;
-	}
+    public String getMiddleName() {
+        return middleName;
+    }
 
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String fullName() {
-		String n = "";
-		if(StringUtils.isNotBlank(firstName)){
-			n += firstName;
-		}
-		if(StringUtils.isNotBlank(middleName)){
-			n += " "+ middleName;
-		}
-		if(StringUtils.isNotBlank(lastName)){
-			n += " " + lastName;
-		}
-		return n.trim();
-	}
-	
-	public DateTime getBirthdate() {
-		return birthdate;
-	}
+    public String fullName() {
+        String n = "";
+        if (StringUtils.isNotBlank(firstName)) {
+            n += firstName;
+        }
+        if (StringUtils.isNotBlank(middleName)) {
+            n += " " + middleName;
+        }
+        if (StringUtils.isNotBlank(lastName)) {
+            n += " " + lastName;
+        }
+        return n.trim();
+    }
 
-	public void setBirthdate(DateTime birthdate) {
-		this.birthdate = birthdate;
-	}
+    public DateTime getBirthdate() {
+        return birthdate;
+    }
 
-	public DateTime getDeathdate() {
-		return deathdate;
-	}
+    public void setBirthdate(DateTime birthdate) {
+        this.birthdate = birthdate;
+    }
 
-	public void setDeathdate(DateTime deathdate) {
-		this.deathdate = deathdate;
-	}
+    public DateTime getDeathdate() {
+        return deathdate;
+    }
 
-	public Boolean getBirthdateApprox() {
-		return birthdateApprox;
-	}
+    public void setDeathdate(DateTime deathdate) {
+        this.deathdate = deathdate;
+    }
 
-	public void setBirthdateApprox(Boolean birthdateApprox) {
-		this.birthdateApprox = birthdateApprox;
-	}
+    public Boolean getBirthdateApprox() {
+        return birthdateApprox;
+    }
 
-	public Boolean getDeathdateApprox() {
-		return deathdateApprox;
-	}
+    public void setBirthdateApprox(Boolean birthdateApprox) {
+        this.birthdateApprox = birthdateApprox;
+    }
 
-	public void setDeathdateApprox(Boolean deathdateApprox) {
-		this.deathdateApprox = deathdateApprox;
-	}
+    public Boolean getDeathdateApprox() {
+        return deathdateApprox;
+    }
 
-	public String getGender() {
-		return gender;
-	}
+    public void setDeathdateApprox(Boolean deathdateApprox) {
+        this.deathdateApprox = deathdateApprox;
+    }
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
 	public Map<String, Map<String, String>> getRelationships() {
 		return relationships;
@@ -181,45 +181,45 @@ public class Client extends BaseEntity {
 		return this;
 	}
 
-	public Client withMiddleName(String middleName) {
-		this.middleName = middleName;
-		return this;
-	}
+    public Client withMiddleName(String middleName) {
+        this.middleName = middleName;
+        return this;
+    }
 
-	public Client withLastName(String lastName) {
-		this.lastName = lastName;
-		return this;
-	}
+    public Client withLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
 
-	public Client withName(String firstName, String middleName,
-			String lastName) {
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
-		return this;
-	}
+    public Client withName(String firstName, String middleName,
+                           String lastName) {
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        return this;
+    }
 
-	public Client withBirthdate(DateTime birthdate, Boolean isApproximate) {
-		this.birthdate = birthdate;
-		this.birthdateApprox = isApproximate;
-		return this;
-	}
+    public Client withBirthdate(DateTime birthdate, Boolean isApproximate) {
+        this.birthdate = birthdate;
+        this.birthdateApprox = isApproximate;
+        return this;
+    }
 
-	public Client withDeathdate(DateTime deathdate, Boolean isApproximate) {
-		this.deathdate = deathdate;
-		this.deathdateApprox = isApproximate;
-		return this;
-	}
+    public Client withDeathdate(DateTime deathdate, Boolean isApproximate) {
+        this.deathdate = deathdate;
+        this.deathdateApprox = isApproximate;
+        return this;
+    }
 
-	public Client withGender(String gender) {
-		this.gender = gender;
-		return this;
-	}
+    public Client withGender(String gender) {
+        this.gender = gender;
+        return this;
+    }
 
-	public Client withGender(Gender gender) {
-		this.gender = gender.name();
-		return this;
-	}
+    public Client withGender(Gender gender) {
+        this.gender = gender.name();
+        return this;
+    }
 
 	/**
 	 * Overrides the existing data
@@ -228,20 +228,20 @@ public class Client extends BaseEntity {
 		this.relationships = relationships;
 		return this;
 	}
-	
+
 	public Map<String, String> findRelatives(String relationshipType) {
 		if(relationships == null){
 			relationships = new HashMap<>();
 		}
-		
+
 		return relationships.get(relationshipType);
 	}
-	
+
 	public void addRelationship(String relationType, String relativeEntityId, String relationshipType) {
 		if(relationships == null){
 			relationships = new HashMap<>();
 		}
-		
+
 		Map<String, String> relatives = findRelatives(relationType);
 		if(relatives == null){
 			relatives = new HashMap<>();

@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
@@ -101,12 +104,14 @@ public class Obs {
 	
 	@JsonIgnore
 	public Object getValue() {
-		if (values.size() > 1) {
-			throw new RuntimeException(
-			        "Multiset values can not be handled like single valued fields. Use function getValues");
-		}
+
 		if (values == null || values.size() == 0) {
 			return null;
+		}
+
+		if (values.size() > 1) {
+			throw new RuntimeException(
+					"Multiset values can not be handled like single valued fields. Use function getValues");
 		}
 		
 		return values.get(0);
@@ -226,5 +231,20 @@ public class Obs {
 	public Obs withHumanReadableValues(List<Object> humanReadableValues) {
 		this.humanReadableValues = humanReadableValues;
 		return this;
+	}
+
+	@Override
+	public final boolean equals(Object o) {
+		return EqualsBuilder.reflectionEquals(this, o, "set");
+	}
+
+	@Override
+	public final int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this, "set");
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
 	}
 }

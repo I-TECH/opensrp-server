@@ -17,6 +17,8 @@ import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
 import org.opensrp.domain.User;
 import org.opensrp.service.ClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class EncounterService extends OpenmrsService{
 	private static final String OBS_URL = "ws/rest/v1/obs";
 	private static final String ENCOUNTER__TYPE_URL = "ws/rest/v1/encountertype";
 	public static final String OPENMRS_UUID_IDENTIFIER_TYPE = "OPENMRS_UUID";
+
+	private static Logger logger = LoggerFactory.getLogger(EncounterService.class);
 
 	private PatientService patientService;
 	private OpenmrsUserService userService;
@@ -103,7 +107,17 @@ public class EncounterService extends OpenmrsService{
 	}
 	
 	public JSONObject createEncounter(Event e) throws JSONException{
-		String openmrsUuid = clientService.getByBaseEntityId(e.getBaseEntityId()).getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+		String openmrsUuid = null;
+		Client c = null;
+
+		if(e != null && e.getBaseEntityId() != null) {
+			c = clientService.getByBaseEntityId(e.getBaseEntityId());
+		}
+
+		if(c != null){
+			openmrsUuid = c.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
+		}
+
 		JSONObject pt;
 		if(org.apache.commons.lang3.StringUtils.isNotBlank(openmrsUuid)) {
 			pt = patientService.getPatientByIdentifier(openmrsUuid);

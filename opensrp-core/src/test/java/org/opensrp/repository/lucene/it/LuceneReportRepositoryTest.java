@@ -1,6 +1,5 @@
 package org.opensrp.repository.lucene.it;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.ektorp.DbAccessException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

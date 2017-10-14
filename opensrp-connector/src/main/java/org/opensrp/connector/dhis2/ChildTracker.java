@@ -64,8 +64,8 @@ public class ChildTracker extends DHIS2Service implements DHIS2Tracker {
 		generateTrackCaptureData.put(data);
 		
 		/**** getting mother info from Client of Mother *******/
-		Map<String, List<String>> relationships = client.getRelationships();
-		String motherbaseEntityId = relationships.get("mother").get(0);
+		Map<String, Map<String, String>> relationships = client.getRelationships();
+		String motherbaseEntityId = relationships.get("mother").get("relativeEntityId");
 		
 		Client mother = clientService.find(motherbaseEntityId);
 		JSONObject motherAsJson = new JSONObject(mother);

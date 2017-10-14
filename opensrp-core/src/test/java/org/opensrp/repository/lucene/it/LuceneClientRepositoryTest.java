@@ -291,7 +291,7 @@ public class LuceneClientRepositoryTest extends BaseIntegrationTest {
 		expectedClient.setBirthdate(EPOCH_DATE_TIME);
 		expectedClient.setAddresses(asList(getAddress()));
 		expectedClient.setDateCreated(EPOCH_DATE_TIME);
-		expectedClient.addRelationship(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE);
+		expectedClient.addRelationship(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE, IDENTIFIER_TYPE);
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 
 		List<Client> actualClients = luceneClientRepository.getByClientByMother(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE);

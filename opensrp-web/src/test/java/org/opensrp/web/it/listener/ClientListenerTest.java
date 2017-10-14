@@ -58,8 +58,11 @@ public class ClientListenerTest {
 		
 		List<String> motherRelationshipsList = new ArrayList<>();
 		motherRelationshipsList.add("130");
-		Map<String, List<String>> motherRelationships = new HashMap<>();
-		motherRelationships.put("mother", motherRelationshipsList);
+		Map<String, Map<String, String>> motherRelationships = new HashMap<>();
+		Map<String, String> r = new HashMap<>();
+		r.put("relativeEntityId", "130");
+		r.put("relationshipType", "120");
+		motherRelationships.put("mother", r);
 		child.setRelationships(motherRelationships);
 		
 		allClients.add(child);

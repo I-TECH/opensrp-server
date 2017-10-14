@@ -3,7 +3,7 @@
 					"name": "BCG",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -105,7 +105,7 @@
 					"name": "OPV 0",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -153,7 +153,7 @@
 					"name": "OPV 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -201,7 +201,7 @@
 					"name": "PCV 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -249,7 +249,7 @@
 					"name": "PENTA 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -297,7 +297,7 @@
 					"name": "ROTA 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -725,7 +725,7 @@
 					"name": "MEASLES 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -828,7 +828,7 @@
 					"name": "MR 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -930,7 +930,7 @@
 					"name": "VIT A 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -1428,7 +1428,7 @@
 					"name": "DEWORMING 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -1857,7 +1857,7 @@
 					"name": "ITN 1",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -2094,7 +2094,7 @@
 					"name": "YELLOW FEVER",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -2142,7 +2142,7 @@
 					"name": "MR - CE",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -2190,7 +2190,7 @@
 					"name": "IPV",
 					"events": [
 						{
-							"types": ["Birth Registration"],
+							"types": ["Child Enrollment"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{

@@ -43,8 +43,8 @@ public class MessageService {
 			if (data.get("beneficiaryType").equalsIgnoreCase(ClientType.child.name())) {
 				if (isEligible(data)) {
 					Client child = clientService.find(action.baseEntityId());
-					Map<String, List<String>> relationships = child.getRelationships();
-					String motherId = relationships.get("mother").get(0);
+					Map<String, Map<String, String>> relationships = child.getRelationships();
+					String motherId = relationships.get("mother").get("relativeEntityId");
 					Client mother = clientService.find(motherId);
 					generateDataAndsendMessageToRapidpro(mother, data, messageFactory);
 				}

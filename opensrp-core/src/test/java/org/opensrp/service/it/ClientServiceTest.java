@@ -109,13 +109,13 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	@Test
 	public void shouldFindAllClientsByRelationIdAndDateCreated() {
 		Client expectedClient = new Client("b1");
-		expectedClient.addRelationship("mother", "id");
+		expectedClient.addRelationship("mother", "id", "type");
 		expectedClient.setDateCreated(new DateTime(100L, DateTimeZone.UTC));
 		Client expectedClient2 = new Client("b2");
-		expectedClient2.addRelationship("mother", "id");
+		expectedClient2.addRelationship("mother", "id", "type");
 		expectedClient2.setDateCreated(new DateTime(200L, DateTimeZone.UTC));
 		Client invalidClient = new Client("b3");
-		invalidClient.addRelationship("mother", "id2");
+		invalidClient.addRelationship("mother", "id2", "type");
 		expectedClient.setDateCreated(new DateTime(300L, DateTimeZone.UTC));
 		addObjectToRepository(asList(expectedClient, expectedClient2, invalidClient), allClients);
 		List<Client> expectedClientList = asList(expectedClient, expectedClient2);
@@ -132,15 +132,15 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	@Ignore
 	public void shouldFindByRelationShip() {
 		Client expectedClient = getClient();
-		expectedClient.addRelationship("mother", "id");
+		expectedClient.addRelationship("mother", "id", "type");
 		expectedClient.setDateCreated(new DateTime(DateTimeZone.UTC));
 		Client expectedClient2 = getClient();
 		expectedClient2.setBaseEntityId("dd");
-		expectedClient2.addRelationship("mother", "id");
+		expectedClient2.addRelationship("mother", "id", "type");
 		expectedClient2.setDateCreated(new DateTime(DateTimeZone.UTC));
 		Client invalidClient = getClient();
 		invalidClient.setBaseEntityId("ddss");
-		invalidClient.addRelationship("mother", "id2");
+		invalidClient.addRelationship("mother", "id2", "type");
 		expectedClient.setDateCreated(new DateTime(DateTimeZone.UTC));
 		addObjectToRepository(asList(expectedClient, expectedClient2, invalidClient), allClients);
 		List<Client> expectedClientList = asList(expectedClient, expectedClient2);

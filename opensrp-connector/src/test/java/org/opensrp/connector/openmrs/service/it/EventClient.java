@@ -66,7 +66,8 @@ public class EventClient extends OpenmrsApiService {
 		expectedClient.setIdentifiers(identifiers);
 		return expectedClient;
 	}
-	
+
+	/*
 	public static Client getChildClient() {
 		Client expectedClient = new Client("129").withFirstName("momima").withGender("male")
 		        .withBirthdate(new DateTime(), false);
@@ -80,7 +81,7 @@ public class EventClient extends OpenmrsApiService {
 		relationships.put(mother, list);
 		expectedClient.setRelationships(relationships);
 		return expectedClient;
-	}
+	}*/
 	
 	public static Client getMother1Client() {
 		Client expectedClient = new Client("53").withFirstName("testmotherName").withGender("male")
@@ -90,7 +91,8 @@ public class EventClient extends OpenmrsApiService {
 		expectedClient.setIdentifiers(identifiers);
 		return expectedClient;
 	}
-	
+
+	/*
 	public static Client getChild1Client() {
 		Client expectedClient = new Client("52").withFirstName("testchildName").withGender("male")
 		        .withBirthdate(new DateTime(), false);
@@ -103,7 +105,7 @@ public class EventClient extends OpenmrsApiService {
 		relationships.put(mother, list);
 		expectedClient.setRelationships(relationships);
 		return expectedClient;
-	}
+	}*/
 	
 	public static JSONObject getCreatedPatientData(String fn, String mn, String ln, String OpenSRPThriveUID,
 	                                               String attributeName, String baseEntityId) throws JSONException {

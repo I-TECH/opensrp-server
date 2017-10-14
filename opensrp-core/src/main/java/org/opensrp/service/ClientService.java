@@ -1,9 +1,7 @@
 package org.opensrp.service;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -15,8 +13,9 @@ import org.opensrp.util.DateTimeTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ClientService {
@@ -277,7 +276,34 @@ public class ClientService {
 	}
 
 	public Client addorUpdate(Client client) {
-		return addorUpdate(client, true);
+		if (client.getBaseEntityId() == null) {
+			throw new RuntimeException("No baseEntityId");
+		}
+		Client c = findClient(client);
+		if (c != null) {
+			client.setRevision(c.getRevision());
+			client.setId(c.getId());
+			c.setDateEdited(DateTime.now());
+			client.setServerVersion(null);
+			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
+			allClients.update(client);
+
+		} else {
+
+			client.setDateCreated(DateTime.now());
+			allClients.add(client);
+		}
+		return client;
+	}
+
+	public Client imageUpdate(Client client) {
+		if (client.getBaseEntityId() == null) {
+			throw new RuntimeException("No baseEntityId");
+		}
+		client.setDateEdited(DateTime.now());
+		client.setServerVersion(null);
+		allClients.update(client);
+		return client;
 	}
 
 	public Client addorUpdate(Client client, boolean resetServerVersion) {
@@ -288,9 +314,9 @@ public class ClientService {
 		if (c != null) {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
-			client.setDateEdited(DateTime.now());
+			c.setDateEdited(DateTime.now());
 			if (resetServerVersion) {
-				client.setServerVersion(System.currentTimeMillis());
+				c.setServerVersion(null);
 			}
 			allClients.update(client);
 

@@ -62,6 +62,9 @@ public class AtomFeedTest extends OpenmrsApiService {
 	
 	@Autowired
 	private EncounterService encounterService;
+
+	@Autowired
+	private EventService eventService;
 	
 	public AtomFeedTest() throws IOException {
 		super();
@@ -139,7 +142,7 @@ public class AtomFeedTest extends OpenmrsApiService {
 		
 		/**** start atomfeed for patient ****/
 		PatientAtomfeed paf = new PatientAtomfeed(new AllMarkersInMemoryImpl(), new AllFailedEventsInMemoryImpl(),
-		        openmrsOpenmrsUrl, patientService, cs);
+		        openmrsOpenmrsUrl, patientService, cs, eventService);
 		
 		paf.processEvents();
 		

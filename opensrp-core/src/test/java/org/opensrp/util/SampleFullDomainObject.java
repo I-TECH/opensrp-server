@@ -1,18 +1,9 @@
 package org.opensrp.util;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.opensrp.api.domain.*;
 import org.opensrp.domain.*;
-import org.opensrp.domain.Address;
-import org.opensrp.domain.BaseEntity;
-import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
-import org.opensrp.domain.Location;
-import org.opensrp.domain.Obs;
-import org.opensrp.domain.Provider;
-import org.opensrp.domain.User;
 import org.opensrp.dto.form.MultimediaDTO;
 
 import java.util.*;

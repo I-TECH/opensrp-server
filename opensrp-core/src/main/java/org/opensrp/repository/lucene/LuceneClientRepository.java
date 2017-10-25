@@ -224,4 +224,27 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 			throw new RuntimeException(e);
 		}
 	}
+
+	public List<Client> getByFieldValuex(String field, List<String> ids) {
+		// create a simple query against the view/search function that we've created
+		if (ids == null || ids.isEmpty()) {
+			return new ArrayList<Client>();
+		}
+		LuceneQuery lq = new LuceneQuery("Client", "by_all_criteria_v2");
+		Query query = new Query(FilterType.AND);
+		query.inList(field, ids);
+		lq.setQuery(query.query());
+		lq.setLimit(ids.size());
+		// stale must not be ok, as we've only just loaded the docs
+		lq.setStaleOk(false);
+		lq.setIncludeDocs(true);
+
+		try {
+			LuceneResult result = db.queryLucene(lq);
+			return ldb.asList(result, Client.class);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

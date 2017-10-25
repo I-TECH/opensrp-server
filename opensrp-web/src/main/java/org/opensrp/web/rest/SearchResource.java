@@ -115,11 +115,11 @@ public class SearchResource extends RestResource<Client> {
 			DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);//TODO client by provider id
 			//TODO lookinto Swagger https://slack-files.com/files-pri-safe/T0EPSEJE9-F0TBD0N77/integratingswagger.pdf?c=1458211183-179d2bfd2e974585c5038fba15a86bf83097810a
 			
-			String ZEIR_ID_KEY = "ZEIR_ID";
+			String OPENMRS_ID_KEY = "OPENMRS_ID";
 			Map<String, String> identifiers = new HashMap<String, String>();
 			if (!StringUtils.isEmptyOrWhitespaceOnly(zeirId)) {
 				zeirId = formatChildUniqueId(zeirId);
-				identifiers.put(ZEIR_ID_KEY, zeirId);
+				identifiers.put(OPENMRS_ID_KEY, zeirId);
 			}
 			
 			Map<String, String> attributes = new HashMap<String, String>();
@@ -203,42 +203,18 @@ public class SearchResource extends RestResource<Client> {
 					
 				}
 			}
-			
 			// Search conjunction is "AND" find intersection
 			children = intersection(children, eventChildren);
+
+			String MOTHER_RELATIONSHIP_KEY = "mother";
+			String GUARDIAN_RELATIONSHIP_KEY = "guardian";
+
+			List<Client> linkedMothers = getLinkedMothers(children, MOTHER_RELATIONSHIP_KEY);
+			linkedMothers.addAll(getLinkedMothers(children, GUARDIAN_RELATIONSHIP_KEY));
 			
-			List<Client> linkedMothers = new ArrayList<Client>();
-			
-			String RELATIONSHIP_KEY = "mother";
-			if (!children.isEmpty()) {
-				List<String> clientIds = new ArrayList<String>();
-				for (Client c : children) {
-					String relationshipId = getRelationalId(c, RELATIONSHIP_KEY);
-					if (relationshipId != null && !clientIds.contains(relationshipId)) {
-						clientIds.add(relationshipId);
-					}
-				}
-				
-				linkedMothers = clientService.findByFieldValue(BaseEntity.BASE_ENTITY_ID, clientIds);
-				
-			}
-			
-			List<Client> linkedChildren = new ArrayList<Client>();
-			
-			String M_ZEIR_ID = "M_ZEIR_ID";
-			if (!mothers.isEmpty()) {
-				List<String> cIndentifers = new ArrayList<String>();
-				for (Client m : mothers) {
-					String childIdentifier = getChildIndentifier(m, M_ZEIR_ID, RELATIONSHIP_KEY);
-					if (childIdentifier != null && !cIndentifers.contains(childIdentifier)) {
-						cIndentifers.add(childIdentifier);
-					}
-				}
-				
-				linkedChildren = clientService.findByFieldValue(ZEIR_ID_KEY, cIndentifers);
-				
-			}
-			
+			List<Client> linkedChildren = getLinkedChildren(mothers, OPENMRS_ID_KEY, MOTHER_RELATIONSHIP_KEY);
+			linkedChildren.addAll(getLinkedChildren(mothers, OPENMRS_ID_KEY, GUARDIAN_RELATIONSHIP_KEY));
+
 			// Search conjunction is "AND" find intersection
 			children = intersection(children, linkedChildren);
 			
@@ -249,11 +225,15 @@ public class SearchResource extends RestResource<Client> {
 			}
 			
 			for (Client child : children) {
-				for (Client mother : mothers) {
-					String relationalId = getRelationalId(child, RELATIONSHIP_KEY);
-					String motherEntityId = mother.getBaseEntityId();
+				for (Client c : mothers) {
+					String relationalId = getRelationalId(child, MOTHER_RELATIONSHIP_KEY);
+					String motherEntityId = c.getBaseEntityId();
 					if (relationalId != null && motherEntityId != null && relationalId.equalsIgnoreCase(motherEntityId)) {
-						childMotherList.add(new ChildMother(child, mother));
+						childMotherList.add(new ChildMother(child, c));
+					}
+					relationalId = getRelationalId(child, GUARDIAN_RELATIONSHIP_KEY);
+					if (relationalId != null && motherEntityId != null && relationalId.equalsIgnoreCase(motherEntityId)) {
+						childMotherList.add(new ChildMother(child, c));
 					}
 				}
 			}
@@ -265,7 +245,44 @@ public class SearchResource extends RestResource<Client> {
 		
 		return childMotherList;
 	}
-	
+
+	private List<Client> getLinkedMothers(List<Client> children, String relationshipKey) {
+		List<Client> linkedMothers = new ArrayList<Client>();
+
+		if (!children.isEmpty()) {
+			List<String> clientIds = new ArrayList<String>();
+			for (Client c : children) {
+				String relationshipId = getRelationalId(c, relationshipKey);
+				if (relationshipId != null && !clientIds.contains(relationshipId)) {
+					clientIds.add(relationshipId);
+				}
+			}
+
+			linkedMothers = clientService.findByFieldValue(BaseEntity.BASE_ENTITY_ID, clientIds);
+		}
+
+		return linkedMothers;
+	}
+
+	private List<Client> getLinkedChildren(List<Client> mothers, String openmrsIdKey, String relationshipKey) {
+		List<Client> linkedChildren = new ArrayList<>();
+
+		String M_KIP_ID = "M_KIP_ID";
+		if (!mothers.isEmpty()) {
+			List<String> cIndentifers = new ArrayList<>();
+			for (Client m : mothers) {
+				String childIdentifier = getChildIndentifier(m, M_KIP_ID, relationshipKey);
+				if (childIdentifier != null && !cIndentifers.contains(childIdentifier)) {
+					cIndentifers.add(childIdentifier);
+				}
+			}
+
+			linkedChildren = clientService.findByFieldValuex(openmrsIdKey, cIndentifers);
+		}
+
+		return linkedChildren;
+	}
+
 	@Override
 	public List<Client> filter(String query) {
 		// TODO Auto-generated method stub

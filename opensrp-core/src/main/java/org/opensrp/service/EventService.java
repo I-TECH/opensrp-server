@@ -1,10 +1,7 @@
 package org.opensrp.service;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
@@ -165,13 +162,15 @@ public class EventService {
 
 			//get events identifiers;
 			String identifier = event.getIdentifier(Client.ZEIR_ID);
+
 			List<org.opensrp.domain.Client> clients = clientService
-					.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(), identifier);
+					.findAllByIdentifier(Client.OPENMRS_ID.toUpperCase(), identifier);
+
 			if (clients != null && !clients.isEmpty()) {
 				org.opensrp.domain.Client client = clients.get(0);
 
 				//set providerid to the last providerid who served this client in their catchment (assumption)
-				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), "Birth Registration");
+				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), "Child Enrollment");
 				if (existingEvents != null && !existingEvents.isEmpty()) {
 
 					event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());

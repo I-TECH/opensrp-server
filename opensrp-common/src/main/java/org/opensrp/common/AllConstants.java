@@ -81,6 +81,8 @@ public class AllConstants {
 		public static final String GENDER = "gender";
 		
 		public static final String ZEIR_ID = "zeir_id";
+
+		public static final String OPENMRS_ID = "openmrs_id";
 	}
 	
 	public static class Event {

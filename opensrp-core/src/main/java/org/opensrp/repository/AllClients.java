@@ -179,4 +179,8 @@ public class AllClients extends MotechBaseRepository<Client> {
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return lcr.getByFieldValue(field, ids);
 	}
+
+	public List<Client> findByFieldValuex(String field, List<String> ids) {
+		return lcr.getByFieldValuex(field, ids);
+	}
 }

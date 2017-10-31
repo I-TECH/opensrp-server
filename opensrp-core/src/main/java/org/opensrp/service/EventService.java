@@ -3,6 +3,7 @@ package org.opensrp.service;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -23,310 +24,333 @@ import com.google.gson.GsonBuilder;
 @Service
 public class EventService {
 
-	private final AllEvents allEvents;
+    private final AllEvents allEvents;
 
-	private ClientService clientService;
+    private ClientService clientService;
 
-	@Autowired
-	public EventService(AllEvents allEvents, ClientService clientService) {
-		this.allEvents = allEvents;
-		this.clientService = clientService;
-	}
+    @Autowired
+    public EventService(AllEvents allEvents, ClientService clientService) {
+        this.allEvents = allEvents;
+        this.clientService = clientService;
+    }
 
-	public List<Event> findAllByIdentifier(String identifier) {
-		return allEvents.findAllByIdentifier(identifier);
-	}
+    public List<Event> findAllByIdentifier(String identifier) {
+        return allEvents.findAllByIdentifier(identifier);
+    }
 
-	public List<Event> findAllByIdentifier(String identifierType, String identifier) {
-		return allEvents.findAllByIdentifier(identifierType, identifier);
-	}
+    public List<Event> findAllByIdentifier(String identifierType, String identifier) {
+        return allEvents.findAllByIdentifier(identifierType, identifier);
+    }
 
-	public Event getById(String id) {
-		return allEvents.findById(id);
-	}
+    public Event getById(String id) {
+        return allEvents.findById(id);
+    }
 
-	public Event getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
-		try {
-			List<Event> el = allEvents.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
-			return getUniqueEventFromEventList(el);
-		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalStateException(
-					"Multiple events for baseEntityId and formSubmissionId combination (" + baseEntityId + ","
-							+ formSubmissionId + ")");
-		}
-	}
+    public Event getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
+        try {
+            List<Event> el = allEvents.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
+            return getUniqueEventFromEventList(el);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                    "Multiple events for baseEntityId and formSubmissionId combination (" + baseEntityId + ","
+                            + formSubmissionId + ")");
+        }
+    }
 
-	public Event getByBaseEntityAndFormSubmissionId(CouchDbConnector targetDb, String baseEntityId,
-	                                                String formSubmissionId) {
-		try {
-			List<Event> el = allEvents.findByBaseEntityAndFormSubmissionId(targetDb, baseEntityId, formSubmissionId);
-			return getUniqueEventFromEventList(el);
-		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalStateException(
-					"Multiple events for baseEntityId and formSubmissionId combination (" + baseEntityId + ","
-							+ formSubmissionId + ")");
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
+    public Event getByBaseEntityAndFormSubmissionId(CouchDbConnector targetDb, String baseEntityId,
+                                                    String formSubmissionId) {
+        try {
+            List<Event> el = allEvents.findByBaseEntityAndFormSubmissionId(targetDb, baseEntityId, formSubmissionId);
+            return getUniqueEventFromEventList(el);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(
+                    "Multiple events for baseEntityId and formSubmissionId combination (" + baseEntityId + ","
+                            + formSubmissionId + ")");
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	public List<Event> findByBaseEntityId(String baseEntityId) {
-		return allEvents.findByBaseEntityId(baseEntityId);
-	}
+    public List<Event> findByBaseEntityId(String baseEntityId) {
+        return allEvents.findByBaseEntityId(baseEntityId);
+    }
 
-	public List<Event> findByFormSubmissionId(String formSubmissionId) {
-		return allEvents.findByFormSubmissionId(formSubmissionId);
-	}
+    public List<Event> findByFormSubmissionId(String formSubmissionId) {
+        return allEvents.findByFormSubmissionId(formSubmissionId);
+    }
 
-	public List<Event> findEventsBy(String baseEntityId, DateTime from, DateTime to, String eventType, String entityType,
-	                                String providerId, String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
-		return allEvents
-				.findEvents(baseEntityId, from, to, eventType, entityType, providerId, locationId, lastEditFrom, lastEditTo);
-	}
+    public List<Event> findEventsBy(String baseEntityId, DateTime from, DateTime to, String eventType, String entityType,
+                                    String providerId, String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
+        return allEvents
+                .findEvents(baseEntityId, from, to, eventType, entityType, providerId, locationId, lastEditFrom, lastEditTo);
+    }
 
-	public List<Event> findEventsByDynamicQuery(String query) {
-		return allEvents.findEventsByDynamicQuery(query);
-	}
+    public List<Event> findEventsByDynamicQuery(String query) {
+        return allEvents.findEventsByDynamicQuery(query);
+    }
 
-	private static Logger logger = LoggerFactory.getLogger(EventService.class.toString());
+    private static Logger logger = LoggerFactory.getLogger(EventService.class.toString());
 
-	public Event find(String uniqueId) {
-		try {
-			List<Event> el = allEvents.findAllByIdentifier(uniqueId);
-			return getUniqueEventFromEventList(el);
-		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
-		}
-	}
+    public Event find(String uniqueId) {
+        try {
+            List<Event> el = allEvents.findAllByIdentifier(uniqueId);
+            return getUniqueEventFromEventList(el);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
+        }
+    }
 
-	public Event find(Event event) {
-		for (String idt : event.getIdentifiers().keySet()) {
-			try {
-				List<Event> el = allEvents.findAllByIdentifier(event.getIdentifier(idt));
-				return getUniqueEventFromEventList(el);
-			}
-			catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(
-						"Multiple events with identifier type " + idt + " and ID " + event.getIdentifier(idt) + " exist.");
-			}
-		}
-		return null;
-	}
+    public Event find(Event event) {
+        for (String idt : event.getIdentifiers().keySet()) {
+            try {
+                List<Event> el = allEvents.findAllByIdentifier(event.getIdentifier(idt));
+                return getUniqueEventFromEventList(el);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Multiple events with identifier type " + idt + " and ID " + event.getIdentifier(idt) + " exist.");
+            }
+        }
+        return null;
+    }
 
-	public Event findById(String eventId) {
-		try {
-			if (eventId == null || eventId.isEmpty()) {
-				return null;
-			}
-			return allEvents.findById(eventId);
-		}
-		catch (Exception e) {
-			logger.error("", e);
-		}
-		return null;
-	}
+    public Event findById(String eventId) {
+        try {
+            if (eventId == null || eventId.isEmpty()) {
+                return null;
+            }
+            return allEvents.findById(eventId);
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return null;
+    }
 
-	public synchronized Event addEvent(Event event) {
-		Event e = find(event);
-		if (e != null) {
-			throw new IllegalArgumentException(
-					"An event already exists with given list of identifiers. Consider updating data.[" + e + "]");
-		}
+    public synchronized Event addEvent(Event event) {
+        Event e = find(event);
+        if (e != null) {
+            throw new IllegalArgumentException(
+                    "An event already exists with given list of identifiers. Consider updating data.[" + e + "]");
+        }
 
-		if (event.getFormSubmissionId() != null
-				&& getByBaseEntityAndFormSubmissionId(event.getBaseEntityId(), event.getFormSubmissionId()) != null) {
-			throw new IllegalArgumentException(
-					"An event already exists with given baseEntity and formSubmission combination. Consider updating");
-		}
+        if (event.getFormSubmissionId() != null
+                && getByBaseEntityAndFormSubmissionId(event.getBaseEntityId(), event.getFormSubmissionId()) != null) {
+            throw new IllegalArgumentException(
+                    "An event already exists with given baseEntity and formSubmission combination. Consider updating");
+        }
 
-		event.setDateCreated(DateTime.now());
-		allEvents.add(event);
-		return event;
-	}
+        event.setDateCreated(DateTime.now());
+        allEvents.add(event);
+        return event;
+    }
 
-	/**
-	 * An out of area event is used to record services offered outside a client's catchment area.
-	 * The event usually will have a client unique identifier(ZEIR_ID) as the only way to identify
-	 * the client.This method finds the client based on the identifier and assigns a basentityid to
-	 * the event
-	 *
-	 * @param event
-	 * @return
-	 */
-	public synchronized Event processOutOfArea(Event event) {
-		if (event.getBaseEntityId() == null || event.getBaseEntityId().isEmpty()) {
+    /**
+     * An out of area event is used to record services offered outside a client's catchment area.
+     * The event usually will have a client unique identifier(ZEIR_ID) as the only way to identify
+     * the client.This method finds the client based on the identifier and assigns a basentityid to
+     * the event
+     *
+     * @param event
+     * @return
+     */
+    public synchronized Event processOutOfArea(Event event) {
+        try {
+            final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
+            final String VACCINATION_EVENT = "Vaccination";
+            final String OUT_OF_AREA_SERVICE = "Out of Area Service";
+            final String CHILD_ENROLLMENT = "Child Enrollment";
 
-			//get events identifiers;
-			String identifier = event.getIdentifier(Client.ZEIR_ID);
+            if (StringUtils.isNotBlank(event.getBaseEntityId())) {
+                return event;
+            }
 
-			List<org.opensrp.domain.Client> clients = clientService
-					.findAllByIdentifier(Client.OPENMRS_ID.toUpperCase(), identifier);
+            //get events identifiers;
+            String identifier = event.getIdentifier(Client.ZEIR_ID);
+            if (StringUtils.isBlank(identifier)) {
+                return event;
+            }
 
-			if (clients != null && !clients.isEmpty()) {
-				org.opensrp.domain.Client client = clients.get(0);
+            List<org.opensrp.domain.Client> clients = clientService
+                    .findAllByIdentifier(Client.OPENMRS_ID.toUpperCase(), identifier);
 
-				//set providerid to the last providerid who served this client in their catchment (assumption)
-				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), "Child Enrollment");
-				if (existingEvents != null && !existingEvents.isEmpty()) {
+            if (clients == null || clients.isEmpty()) {
+                return event;
+            }
 
-					event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
-					event.setBaseEntityId(client.getBaseEntityId());
-					//Map<String, String> identifiers = event.getIdentifiers();
-					//event identifiers are unique so removing zeir_id since baseentityid has been found
-					//also out of area service events stick with the providerid so that they can sync back to them for reports generation
-					if (!event.getEventType().startsWith("Out of Area Service")) {
-						event.setProviderId(existingEvents.get(0).getProviderId());
-						Map<String, String> details = new HashMap<String, String>();
-						details.put("out_of_catchment_provider_id", event.getProviderId());
-						event.setDetails(details);
-					}
+            org.opensrp.domain.Client client = clients.get(0);
 
-				}
+            //set providerid to the last providerid who served this client in their catchment (assumption)
+            List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), CHILD_ENROLLMENT);
 
-			}
-		}
-		return event;
-	}
+            if (existingEvents == null || existingEvents.isEmpty()) {
+                return event;
+            }
 
-	public synchronized Event addEvent(CouchDbConnector targetDb, Event event) {
-		//		Event e = find(targetDb,event);
-		//		if(e != null){
-		//			throw new IllegalArgumentException("An event already exists with given list of identifiers. Consider updating data.["+e+"]");
-		//		}
-		if (event.getFormSubmissionId() != null
-				&& getByBaseEntityAndFormSubmissionId(targetDb, event.getBaseEntityId(), event.getFormSubmissionId())
-				!= null) {
-			throw new IllegalArgumentException(
-					"An event already exists with given baseEntity and formSubmission combination. Consider updating");
-		}
+            Event birthRegEvent = existingEvents.get(0);
+            event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
+            event.setBaseEntityId(client.getBaseEntityId());
 
-		event.setDateCreated(new DateTime());
+            if (!event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
+                event.setProviderId(birthRegEvent.getProviderId());
+                event.setLocationId(birthRegEvent.getLocationId());
+                Map<String, String> details = new HashMap<String, String>();
+                details.put("out_of_catchment_provider_id", event.getProviderId());
+                event.setDetails(details);
+            } else if (event.getEventType().contains(GROWTH_MONITORING_EVENT)
+                    || event.getEventType().contains(VACCINATION_EVENT)) {
 
-		allEvents.add(targetDb, event);
-		return event;
-	}
+                String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
+                        : event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
+                if (eventType != null) {
+                    Event newEvent = new Event();
+                    newEvent.withBaseEntityId(event.getBaseEntityId()).withEventType(eventType)
+                            .withEventDate(event.getEventDate()).withEntityType(event.getEntityType())
+                            .withProviderId(birthRegEvent.getProviderId()).withLocationId(birthRegEvent.getLocationId())
+                            .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
 
-	public synchronized Event addorUpdateEvent(Event event) {
-		Event existingEvent = findById(event.getId());
-		if (existingEvent != null) {
-			event.setDateEdited(DateTime.now());
-			event.setServerVersion(null);
-			event.setRevision(existingEvent.getRevision());
-			allEvents.update(event);
+                    newEvent.setObs(event.getObs());
+                    addEvent(newEvent);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return event;
+    }
 
-		} else {
-			event.setDateCreated(DateTime.now());
-			allEvents.add(event);
+    public synchronized Event addEvent(CouchDbConnector targetDb, Event event) {
+        //		Event e = find(targetDb,event);
+        //		if(e != null){
+        //			throw new IllegalArgumentException("An event already exists with given list of identifiers. Consider updating data.["+e+"]");
+        //		}
+        if (event.getFormSubmissionId() != null
+                && getByBaseEntityAndFormSubmissionId(targetDb, event.getBaseEntityId(), event.getFormSubmissionId())
+                != null) {
+            throw new IllegalArgumentException(
+                    "An event already exists with given baseEntity and formSubmission combination. Consider updating");
+        }
 
-		}
+        event.setDateCreated(new DateTime());
 
-		return event;
-	}
+        allEvents.add(targetDb, event);
+        return event;
+    }
 
-	public void updateEvent(Event updatedEvent) {
-		// If update is on original entity
-		if (updatedEvent.isNew()) {
-			throw new IllegalArgumentException(
-					"Event to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
-		}
+    public synchronized Event addorUpdateEvent(Event event) {
+        Event existingEvent = findById(event.getId());
+        if (existingEvent != null) {
+            event.setDateEdited(DateTime.now());
+            event.setServerVersion(null);
+            event.setRevision(existingEvent.getRevision());
+            allEvents.update(event);
 
-		updatedEvent.setDateEdited(DateTime.now());
+        } else {
+            event.setDateCreated(DateTime.now());
+            allEvents.add(event);
 
-		allEvents.update(updatedEvent);
-	}
+        }
 
-	//TODO Review and add test cases as well
-	public Event mergeEvent(Event updatedEvent) {
-		try {
-			Event original = find(updatedEvent);
-			if (original == null) {
-				throw new IllegalArgumentException("No event found with given list of identifiers. Consider adding new!");
-			}
+        return event;
+    }
 
-			Gson gs = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-			JSONObject originalJo = new JSONObject(gs.toJson(original));
+    public void updateEvent(Event updatedEvent) {
+        // If update is on original entity
+        if (updatedEvent.isNew()) {
+            throw new IllegalArgumentException(
+                    "Event to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
+        }
 
-			JSONObject updatedJo = new JSONObject(gs.toJson(updatedEvent));
-			List<Field> fn = Arrays.asList(Event.class.getDeclaredFields());
+        updatedEvent.setDateEdited(DateTime.now());
 
-			JSONObject mergedJson = new JSONObject();
-			if (originalJo.length() > 0) {
-				mergedJson = new JSONObject(originalJo, JSONObject.getNames(originalJo));
-			}
-			if (updatedJo.length() > 0) {
-				for (Field key : fn) {
-					String jokey = key.getName();
-					if (updatedJo.has(jokey))
-						mergedJson.put(jokey, updatedJo.get(jokey));
-				}
+        allEvents.update(updatedEvent);
+    }
 
-				original = gs.fromJson(mergedJson.toString(), Event.class);
+    //TODO Review and add test cases as well
+    public Event mergeEvent(Event updatedEvent) {
+        try {
+            Event original = find(updatedEvent);
+            if (original == null) {
+                throw new IllegalArgumentException("No event found with given list of identifiers. Consider adding new!");
+            }
 
-				for (Obs o : updatedEvent.getObs()) {
-					// TODO handle parent
-					if (original.getObs(null, o.getFieldCode()) == null) {
-						original.addObs(o);
-					} else {
-						original.getObs(null, o.getFieldCode()).setComments(o.getComments());
-						original.getObs(null, o.getFieldCode()).setEffectiveDatetime(o.getEffectiveDatetime());
-						original.getObs(null, o.getFieldCode())
-								.setValue(o.getValues().size() < 2 ? o.getValue() : o.getValues());
-					}
-				}
-				for (String k : updatedEvent.getIdentifiers().keySet()) {
-					original.addIdentifier(k, updatedEvent.getIdentifier(k));
-				}
-			}
+            Gson gs = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+            JSONObject originalJo = new JSONObject(gs.toJson(original));
 
-			original.setDateEdited(DateTime.now());
-			allEvents.update(original);
-			return original;
-		}
-		catch (JSONException e) {
-			throw new RuntimeException(e);
-		}
-	}
+            JSONObject updatedJo = new JSONObject(gs.toJson(updatedEvent));
+            List<Field> fn = Arrays.asList(Event.class.getDeclaredFields());
 
-	public List<Event> findByServerVersion(long serverVersion) {
-		return allEvents.findByServerVersion(serverVersion);
-	}
+            JSONObject mergedJson = new JSONObject();
+            if (originalJo.length() > 0) {
+                mergedJson = new JSONObject(originalJo, JSONObject.getNames(originalJo));
+            }
+            if (updatedJo.length() > 0) {
+                for (Field key : fn) {
+                    String jokey = key.getName();
+                    if (updatedJo.has(jokey))
+                        mergedJson.put(jokey, updatedJo.get(jokey));
+                }
 
-	public List<Event> getAll() {
-		return allEvents.getAll();
-	}
+                original = gs.fromJson(mergedJson.toString(), Event.class);
 
-	public List<Event> findEvents(String team, String providerId, String locationId, Long serverVersion, String sortBy,
-	                              String sortOrder, int limit) {
-		return allEvents.findEvents(team, providerId, locationId, null, serverVersion, sortBy, sortOrder, limit);
-	}
+                for (Obs o : updatedEvent.getObs()) {
+                    // TODO handle parent
+                    if (original.getObs(null, o.getFieldCode()) == null) {
+                        original.addObs(o);
+                    } else {
+                        original.getObs(null, o.getFieldCode()).setComments(o.getComments());
+                        original.getObs(null, o.getFieldCode()).setEffectiveDatetime(o.getEffectiveDatetime());
+                        original.getObs(null, o.getFieldCode())
+                                .setValue(o.getValues().size() < 2 ? o.getValue() : o.getValues());
+                    }
+                }
+                for (String k : updatedEvent.getIdentifiers().keySet()) {
+                    original.addIdentifier(k, updatedEvent.getIdentifier(k));
+                }
+            }
 
-	public List<Event> findEvents(String team, String providerId, String locationId, String baseEntityId, Long serverVersion,
-	                              String sortBy, String sortOrder, int limit) {
-		return allEvents.findEvents(team, providerId, locationId, baseEntityId, serverVersion, sortBy, sortOrder, limit);
-	}
+            original.setDateEdited(DateTime.now());
+            allEvents.update(original);
+            return original;
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
-		return allEvents.findByConceptAndValue(concept, conceptValue);
+    public List<Event> findByServerVersion(long serverVersion) {
+        return allEvents.findByServerVersion(serverVersion);
+    }
 
-	}
+    public List<Event> getAll() {
+        return allEvents.getAll();
+    }
 
-	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
-		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
+    public List<Event> findEvents(String team, String providerId, String locationId, Long serverVersion, String sortBy,
+                                  String sortOrder, int limit) {
+        return allEvents.findEvents(team, providerId, locationId, null, serverVersion, sortBy, sortOrder, limit);
+    }
 
-	}
+    public List<Event> findEvents(String team, String providerId, String locationId, String baseEntityId, Long serverVersion,
+                                  String sortBy, String sortOrder, int limit) {
+        return allEvents.findEvents(team, providerId, locationId, baseEntityId, serverVersion, sortBy, sortOrder, limit);
+    }
 
-	private Event getUniqueEventFromEventList(List<Event> events) throws IllegalArgumentException {
-		if (events.size() > 1) {
-			throw new IllegalArgumentException();
-		}
-		if (events.size() == 0) {
-			return null;
-		}
-		return events.get(0);
-	}
+    public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
+        return allEvents.findByConceptAndValue(concept, conceptValue);
+
+    }
+
+    public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
+        return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
+
+    }
+
+    private Event getUniqueEventFromEventList(List<Event> events) throws IllegalArgumentException {
+        if (events.size() > 1) {
+            throw new IllegalArgumentException();
+        }
+        if (events.size() == 0) {
+            return null;
+        }
+        return events.get(0);
+    }
 
 }

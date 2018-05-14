@@ -81,10 +81,12 @@ public class EncounterAtomfeed extends OpenmrsService implements EventWorker, At
 				log.info("New Event");
 				eventService.addEvent(enc);
 			}
+			/*
 			else {
 				log.info("Update existing Event");
 				enc = eventService.mergeEvent(enc);
 			}
+			*/
 		} catch (JSONException e) {
 			throw new RuntimeException(e);
 		}

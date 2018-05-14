@@ -114,11 +114,25 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 				ids.add(providerId);
 			}
 			qf.inList(PROVIDER_ID, ids);
-		} else if ((providerId != null && !StringUtils.isEmptyOrWhitespaceOnly(providerId))) {
-			qf.eq(PROVIDER_ID, providerId);
 		}
 
-		if (locationId != null || !StringUtils.isEmptyOrWhitespaceOnly(locationId)) {
+		if ((providerId != null && !StringUtils.isEmptyOrWhitespaceOnly(providerId))
+				&& (locationId != null && !StringUtils.isEmptyOrWhitespaceOnly(locationId))) {
+			Query qOr = new Query(FilterType.OR);
+			qOr.eq(PROVIDER_ID, providerId);
+
+			if (locationId.contains(",")) {
+				String[] locationArray = org.apache.commons.lang.StringUtils.split(locationId, ",");
+				List<String> locations = new ArrayList<>(Arrays.asList(locationArray));
+				qOr.inList(LOCATION_ID, locations);
+			} else {
+				qOr.eq(LOCATION_ID, locationId);
+			}
+
+			qf.addToQuery(qOr);
+		} else if (providerId != null && !StringUtils.isEmptyOrWhitespaceOnly(providerId)){
+			qf.eq(PROVIDER_ID, providerId);
+		} else if (locationId != null && !StringUtils.isEmptyOrWhitespaceOnly(locationId)) {
 			if (locationId.contains(",")) {
 				String[] locationArray = org.apache.commons.lang.StringUtils.split(locationId, ",");
 				List<String> locations = new ArrayList<>(Arrays.asList(locationArray));

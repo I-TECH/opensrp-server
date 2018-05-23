@@ -217,4 +217,63 @@ public class OpenmrsLocationService extends OpenmrsService {
 		}
 		return l == null ? null : l.getLocationId();
 	}
+
+	public Map<String, String> getLocationsHierarchy(LocationTree locationTree) throws JSONException {
+		Map<String, String> map = new HashMap<>();
+		if (locationTree == null) {
+			return map;
+		}
+
+		Map<String, TreeNode<String, Location>> locationsHierarchy = locationTree.getLocationsHierarchy();
+		if (locationsHierarchy != null && !locationsHierarchy.isEmpty()) {
+			for (TreeNode<String, Location> value : locationsHierarchy.values()) {
+				extractLocations(map, value);
+			}
+		}
+		return map;
+	}
+
+	private void extractLocations(Map<String, String> map, TreeNode<String, Location> value) throws JSONException {
+		if (value == null || value.getNode() == null) {
+			return;
+		}
+
+		final String[] allowedLevels = { AllowedLevels.COUNTRY.toString(), AllowedLevels.PROVINCE.toString(),
+				AllowedLevels.DISTRICT.toString() };
+
+		Location node = value.getNode();
+		String name = node.getName();
+		Set<String> tags = node.getTags();
+		{
+			if (tags != null && !tags.isEmpty()) {
+				for (String level : tags) {
+					if (ArrayUtils.contains(allowedLevels, level)) {
+						map.put(level, name);
+					}
+				}
+			}
+
+		}
+		Map<String, TreeNode<String, Location>> children = value.getChildren();
+		if (children != null && !children.isEmpty()) {
+			for (TreeNode<String, Location> childValue : children.values()) {
+				extractLocations(map, childValue);
+			}
+		}
+	}
+	public enum AllowedLevels {
+		COUNTRY("Country"), PROVINCE("Province"), DISTRICT("District");
+
+		private final String display;
+
+		private AllowedLevels(final String display) {
+			this.display = display;
+		}
+
+		@Override
+		public String toString() {
+			return display;
+		}
+
+	};
 }

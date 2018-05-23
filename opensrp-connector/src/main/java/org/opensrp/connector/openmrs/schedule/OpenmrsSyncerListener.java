@@ -1,11 +1,16 @@
 package org.opensrp.connector.openmrs.schedule;
 
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
+import org.opensrp.common.util.DateUtil;
 import org.opensrp.connector.dhis2.Dhis2TrackCaptureConnector;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants.SchedulerConfig;
@@ -46,26 +51,24 @@ public class OpenmrsSyncerListener {
 
 	private ActionService actionService;
 
-	private ConfigService config;
+	private final ConfigService config;
 
-	private ErrorTraceService errorTraceService;
+	private final ErrorTraceService errorTraceService;
 
-	private PatientService patientService;
+	private final PatientService patientService;
 
-	private EncounterService encounterService;
+	private final EncounterService encounterService;
 
-	private EventService eventService;
+	private final EventService eventService;
 
-	private ClientService clientService;
+	private final ClientService clientService;
+
 	private OpenmrsRelationshipService openmrsRelationshipService;
 
 	@Autowired
-	private Dhis2TrackCaptureConnector dhis2TrackCaptureConnector;
-
-	@Autowired
-	public OpenmrsSyncerListener(OpenmrsSchedulerService openmrsSchedulerService, ScheduleService opensrpScheduleService, ActionService actionService,
-			ConfigService config, ErrorTraceService errorTraceService, PatientService patientService, EncounterService encounterService,
-			ClientService clientService, EventService eventService, OpenmrsRelationshipService openmrsRelationshipService) {
+	public OpenmrsSyncerListener(OpenmrsSchedulerService openmrsSchedulerService, ScheduleService opensrpScheduleService, ActionService actionService, ConfigService config,
+	    ErrorTraceService errorTraceService, PatientService patientService, EncounterService encounterService,
+	    ClientService clientService, EventService eventService,  OpenmrsRelationshipService openmrsRelationshipService) {
 		this.openmrsSchedulerService = openmrsSchedulerService;
 		this.opensrpScheduleService = opensrpScheduleService;
 		this.actionService = actionService;
@@ -93,25 +96,26 @@ public class OpenmrsSyncerListener {
 				"OpenMRS data pusher token to keep track of voided events synced with OpenMRS", true);
 	}
 
-	@MotechListener(subjects = OpenmrsConstants.SCHEDULER_OPENMRS_DATA_PUSH_SUBJECT)
-	public void pushToOpenMRS(MotechEvent event) {
+	/*public void pushToOpenMRS() {
 
 		if (!lock.tryLock()) {
 			logger.warn("Not fetching forms from Message Queue. It is already in progress.");
 			return;
 		}
 		try {
-			logger.info("RUNNING " + event.getSubject() + " at " + DateTime.now());
+
+			logger("RUNNING OPENMRS DATA PUSH Service at " + DateTime.now(), "");
+
+			logger.info("RUNNING FOR EVENTS");
 
 			AppStateToken lastsync = config
-					.getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated);
+			        .getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated);
 			Long start = lastsync == null || lastsync.getValue() == null ? 0 : lastsync.longValue();
 
 			List<Client> cl = clientService.findByServerVersion(start);
 			logger.info("Clients list size " + cl.size());
 
 			List<Client> clientsWithRelationships = new ArrayList<>();
-
 			for (Client c : cl) {
 //				try {
 //					//sentTrackCaptureDataToDHIS2(c);
@@ -131,16 +135,16 @@ public class OpenmrsSyncerListener {
 
 					if (uuid == null) {
 						logger.info("uuid == null");
-						JSONObject p = patientService.getPatientByIdentifier(c.getBaseEntityId());
+						String p = patientService.getPatientByIdentifierUUID(c.getBaseEntityId());
 						for (Entry<String, String> id : c.getIdentifiers().entrySet()) {
-							p = patientService.getPatientByIdentifier(id.getValue());
+							p = patientService.getPatientByIdentifierUUID(id.getValue());
 							if (p != null) {
-								logger.info("p != null: " + p.toString());
+								logger.info("p != null: " );
 								break;
 							}
 						}
 						if (p != null) {
-							uuid = p.getString("uuid");
+							uuid = p;
 						}
 					}
 					if (uuid != null) {
@@ -209,49 +213,127 @@ public class OpenmrsSyncerListener {
 					}
 				}
 			}
+			pushClient(start);
 
 			logger.info("RUNNING FOR EVENTS");
 
 			lastsync = config.getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated);
 			start = lastsync == null || lastsync.getValue() == null ? 0 : lastsync.longValue();
 
-			List<Event> el = eventService.findByServerVersion(start);
-			logger.info("Event list size " + el.size() + " [start]" + start);
+			pushEvent(start);
 
+			logger("PUSH TO OPENMRS FINISHED AT ", "");
+
+		}
+		catch (Exception ex) {
+			logger.error("", ex);
+		}
+		finally {
+			lock.unlock();
+		}
+	}*/
+
+
+	public void pushToOpenMRS() {
+
+		if (!lock.tryLock()) {
+			logger.warn("Not fetching forms from Message Queue. It is already in progress.");
+			return;
+		}
+		try {
+
+			logger("RUNNING OPENMRS DATA PUSH Service at " + DateTime.now(), "");
+
+			logger.info("RUNNING FOR EVENTS");
+
+			AppStateToken lastsync = config
+					.getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated);
+			Long start = lastsync == null || lastsync.getValue() == null ? 0 : lastsync.longValue();
+
+			pushClient(start);
+
+			logger.info("RUNNING FOR EVENTS");
+
+			lastsync = config.getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated);
+			start = lastsync == null || lastsync.getValue() == null ? 0 : lastsync.longValue();
+
+			pushEvent(start);
+
+			logger("PUSH TO OPENMRS FINISHED AT ", "");
+
+		}
+		catch (Exception ex) {
+			logger.error("", ex);
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+
+
+
+
+	public DateTime logger(String message, String subject) {
+		logger.info(message + subject + " at " + DateTime.now());
+		return DateTime.now();
+
+	}
+
+	public JSONObject pushClient(long start) {
+		try {
+			List<Client> cl = clientService.findByServerVersion(start);
+			logger.info("Clients list size " + cl.size());
+			JSONArray patientsJsonArray = new JSONArray();// only for test code purpose
+			JSONArray relationshipsArray = new JSONArray();// only for test code purpose
+			JSONObject returnJsonObject = new JSONObject();// only for test code purpose
+			if (cl != null && !cl.isEmpty()) {
+				patientService.processClients(cl, patientsJsonArray,
+				    SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, "OPENMRS FAILED CLIENT PUSH");
+				logger.info("RUNNING FOR RELATIONSHIPS");
+				patientService.createRelationShip(cl, "OPENMRS FAILED CLIENT RELATIONSHIP PUSH");
+			}
+			returnJsonObject.put("patient", patientsJsonArray); // only for test code purpose
+			returnJsonObject.put("relation", relationshipsArray);// only for test code purpose
+			return returnJsonObject;
+		}
+		catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+
+	}
+
+	public JSONObject pushEvent(long start) {
+		List<Event> el = eventService.findByServerVersion(start);
+		logger.info("Event list size " + el.size() + " [start]" + start);
+		JSONObject encounter = null;
+		if (el != null && !el.isEmpty())
 			for (Event e : el) {
 				try {
 					String uuid = e.getIdentifier(EncounterService.OPENMRS_UUID_IDENTIFIER_TYPE);
 					if (uuid != null) {
-						encounterService.updateEncounter(e);
+						encounter = encounterService.updateEncounter(e);
 						config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated,
-								e.getServerVersion());
+						    e.getServerVersion());
 					} else {
 						JSONObject eventJson = encounterService.createEncounter(e);
-						encounterService.processUpdateEvents(e);
+						encounter = eventJson;// only for test code purpose
 						if (eventJson != null && eventJson.has("uuid")) {
 							e.addIdentifier(EncounterService.OPENMRS_UUID_IDENTIFIER_TYPE, eventJson.getString("uuid"));
 							eventService.updateEvent(e);
 							config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated,
-									e.getServerVersion());
-						} else {
-							config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated,
-									e.getServerVersion());
+							    e.getServerVersion());
 						}
 					}
 				}
 				catch (Exception ex2) {
 					logger.error("", ex2);
 					errorTraceService.log("OPENMRS FAILED EVENT PUSH", Event.class.getName(), e.getId(),
-							ExceptionUtils.getStackTrace(ex2), "");
+					    ExceptionUtils.getStackTrace(ex2), "");
 				}
 			}
+		return encounter;
 
-			logger.info("PUSH TO OPENMRS FINISHED AT " + DateTime.now());
-		} catch (Exception ex) {
-			logger.error("",ex);
-		} finally {
-		    lock.unlock();
-		}
 	}
 
 }

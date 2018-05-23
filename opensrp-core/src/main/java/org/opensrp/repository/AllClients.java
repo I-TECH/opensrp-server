@@ -1,8 +1,6 @@
 package org.opensrp.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.mysql.jdbc.StringUtils;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
@@ -18,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import com.mysql.jdbc.StringUtils;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 @Repository
 public class AllClients extends MotechBaseRepository<Client> {
@@ -168,19 +168,33 @@ public class AllClients extends MotechBaseRepository<Client> {
 	public List<Client> findByEmptyServerVersion() {
 		return db.queryView(createQuery("clients_by_empty_server_version").limit(200).includeDocs(true), Client.class);
 	}
-	@View(name = "clients_by__server_version", map = "function(doc) { if (doc.type === 'Client') { emit([doc.serverVersion], null); } }")
+
+	@View(name = "events_by_version", map = "function(doc) { if (doc.type === 'Client') { emit([doc.serverVersion], null); } }")
 	public List<Client> findByServerVersion(long serverVersion) {
 		ComplexKey startKey = ComplexKey.of(serverVersion + 1);
 		ComplexKey endKey = ComplexKey.of(System.currentTimeMillis());
-		return db.queryView(createQuery("clients_by__server_version").startKey(startKey).endKey(endKey).includeDocs(true),
+		return db.queryView(createQuery("events_by_version").startKey(startKey).endKey(endKey).includeDocs(true),
 		    Client.class);
 	}
-	
+
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return lcr.getByFieldValue(field, ids);
 	}
 
 	public List<Client> findByFieldValuex(String field, List<String> ids) {
 		return lcr.getByFieldValuex(field, ids);
+	}
+
+	@View(name = "clients_not_in_OpenMRS", map = "function(doc) { if (doc.type === 'Client' && doc.serverVersion) { var noId = true; for(var key in doc.identifiers) {if(key == 'OPENMRS_UUID' && doc.identifiers.OPENMRS_UUID !== null) {noId = false;}}if(noId){emit([doc.serverVersion],  null); }} }")
+	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
+		long serverStartKey = serverVersion + 1;
+		long serverEndKey = calendar.getTimeInMillis();
+		if (serverStartKey < serverEndKey) {
+			ComplexKey startKey = ComplexKey.of(serverStartKey);
+			ComplexKey endKey = ComplexKey.of(serverEndKey);
+			return db.queryView(createQuery("clients_not_in_OpenMRS").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true),
+					Client.class);
+		}
+		return new ArrayList<>();
 	}
 }

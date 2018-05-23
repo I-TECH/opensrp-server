@@ -1,6 +1,7 @@
 package org.opensrp.web.rest;
 
 import static java.text.MessageFormat.format;
+import static org.opensrp.common.AllConstants.CLIENTS_FETCH_BATCH_SIZE;
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
 import static org.opensrp.common.AllConstants.Event.ENTITY_TYPE;
@@ -109,9 +110,11 @@ public class EventResource extends RestResource<Event> {
 			List<Event> events = new ArrayList<Event>();
 			List<String> clientIds = new ArrayList<String>();
 			List<Client> clients = new ArrayList<Client>();
+			long startTime = System.currentTimeMillis();
 			if (team != null || providerId != null || locationId != null || baseEntityId != null) {
 				events = eventService.findEvents(team, providerId, locationId, baseEntityId, lastSyncedServerVersion,
 				    BaseEntity.SERVER_VERSIOIN, "asc", limit);
+				logger.info("fetching events took: " + (System.currentTimeMillis() - startTime)/1000);
 				if (!events.isEmpty()) {
 					for (Event event : events) {
 						if (event.getBaseEntityId() != null && !event.getBaseEntityId().isEmpty()
@@ -119,9 +122,30 @@ public class EventResource extends RestResource<Event> {
 							clientIds.add(event.getBaseEntityId());
 						}
 					}
-					clients = clientService.findByFieldValue(BaseEntity.BASE_ENTITY_ID, clientIds);
+					for (int i = 0; i < clientIds.size(); i = i + CLIENTS_FETCH_BATCH_SIZE) {
+						int end = i + CLIENTS_FETCH_BATCH_SIZE < clientIds.size() ? i + CLIENTS_FETCH_BATCH_SIZE
+						        : clientIds.size();
+						clients.addAll(clientService.findByFieldValue(BASE_ENTITY_ID, clientIds.subList(i, end)));
+					}
+					logger.info("fetching clients took: " + (System.currentTimeMillis() - startTime)/1000);
 				}
 			}
+			
+			List<String> foundClientIds = new ArrayList<>();
+			for (Client client : clients) {
+				foundClientIds.add(client.getBaseEntityId());
+			}
+			
+			boolean removed = clientIds.removeAll(foundClientIds);
+			if (removed) {
+				for (String clientId : clientIds) {
+					Client client = clientService.getByBaseEntityId(clientId);
+					if (client != null) {
+						clients.add(client);
+					}
+				}
+			}
+			logger.info("fetching missing clients took: " + (System.currentTimeMillis() - startTime)/1000);
 			
 			JsonArray eventsArray = (JsonArray) gson.toJsonTree(events, new TypeToken<List<Event>>() {}.getType());
 			
@@ -156,10 +180,12 @@ public class EventResource extends RestResource<Event> {
 				    new TypeToken<ArrayList<Client>>() {}.getType());
 				for (Client client : clients) {
 					try {
-					    clientService.addorUpdate(client);
+						clientService.addorUpdate(client);
 					}
 					catch (Exception e) {
-						logger.error("Client" + client.getBaseEntityId()==null?"":client.getBaseEntityId()+" failed to sync", e);
+						logger.error(
+						    "Client" + client.getBaseEntityId() == null ? "" : client.getBaseEntityId() + " failed to sync",
+						    e);
 					}
 				}
 				
@@ -173,7 +199,10 @@ public class EventResource extends RestResource<Event> {
 						eventService.addorUpdateEvent(event);
 					}
 					catch (Exception e) {
-						logger.error("Event of type "+event.getEventType()+" for client " + event.getBaseEntityId()==null?"":event.getBaseEntityId()+" failed to sync", e);
+						logger.error(
+						    "Event of type " + event.getEventType() + " for client " + event.getBaseEntityId() == null ? ""
+						            : event.getBaseEntityId() + " failed to sync",
+						    e);
 					}
 				}
 			}

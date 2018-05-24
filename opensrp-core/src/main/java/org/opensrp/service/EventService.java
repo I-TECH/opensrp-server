@@ -319,10 +319,17 @@ public class EventService {
         return allEvents.findByServerVersion(serverVersion);
     }
 
+    public List<Event> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
+        return allEvents.notInOpenMRSByServerVersion(serverVersion, calendar);
+    }
+
+    public List<Event> notInOpenMRSByServerVersionAndType(String type, long serverVersion, Calendar calendar) {
+        return allEvents.notInOpenMRSByServerVersionAndType(type,serverVersion, calendar);
+    }
+
     public List<Event> getAll() {
         return allEvents.getAll();
     }
-
     public List<Event> findEvents(String team, String providerId, String locationId, Long serverVersion, String sortBy,
                                   String sortOrder, int limit) {
         return allEvents.findEvents(team, providerId, locationId, null, serverVersion, sortBy, sortOrder, limit);

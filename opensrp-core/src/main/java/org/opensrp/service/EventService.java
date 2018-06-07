@@ -327,6 +327,7 @@ public class EventService {
         return allEvents.notInOpenMRSByServerVersionAndType(type,serverVersion, calendar);
     }
 
+
     public List<Event> getAll() {
         return allEvents.getAll();
     }

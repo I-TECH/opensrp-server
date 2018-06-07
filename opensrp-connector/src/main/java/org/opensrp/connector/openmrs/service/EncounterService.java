@@ -125,7 +125,7 @@ public class EncounterService extends OpenmrsService {
         String openmrsUuid = null;
         Client c = null;
         String baseEntityId = e.getBaseEntityId();
-        String ptuuid = patientService.getPatientByIdentifierUUID(baseEntityId);
+       // String ptuuid = patientService.getPatientByIdentifierUUID(baseEntityId);
 
         if (e != null && e.getBaseEntityId() != null) {
             c = clientService.getByBaseEntityId(baseEntityId);
@@ -135,33 +135,32 @@ public class EncounterService extends OpenmrsService {
             openmrsUuid = c.getIdentifier(PatientService.OPENMRS_UUID_IDENTIFIER_TYPE);
         }
 
-        if (org.apache.commons.lang3.StringUtils.isBlank(openmrsUuid)) {
-            if (ptuuid != null) {
-                openmrsUuid = ptuuid;
-            }
-        }
+		if(org.apache.commons.lang3.StringUtils.isBlank(openmrsUuid)){
+			JSONObject pt = patientService.getPatientByIdentifier(baseEntityId);
+			if(pt != null){
+				openmrsUuid = pt.getString("uuid");
+			}
+		}
         if (org.apache.commons.lang3.StringUtils.isBlank(openmrsUuid)) {
             logger.info("Client with baseEntityId: " + baseEntityId + " does not exist in OpenMRS.");
             return new JSONObject();
         }
-        if (ptuuid == null) {
-            return null;
-        } else {
+         else {
             if (e.getEventType().equals("Update Birth Registration")) {
-                patientService.updatePersonAddress(e);
+                patientService.updatePersonAddressAndName(e);
             } else if (e.getEventType().equals("Death")) {
                 patientService.updatePersonAsDeceased(e);
             } else if (e.getEventType().equals("Move To Catchment")) {
                 patientService.moveToCatchment(e);
             }
 
-            JSONObject enc = new JSONObject();
+		JSONObject enc = new JSONObject();
 
             String pruuid = userService.getPersonUUIDByUser(e.getProviderId());
 
             enc.put("encounterDatetime", OPENMRS_DATE.format(e.getEventDate().toDate()));
             // patient must be existing in OpenMRS before it submits an encounter. if it doesnot it would throw NPE
-            enc.put("patient", ptuuid);
+            enc.put("patient", openmrsUuid);
             //TODO enc.put("patientUuid", pt.getString("uuid"));
             enc.put("encounterType", e.getEventType());
             //TODO enc.put("encounterTypeUuid", e.getEventType());
@@ -224,14 +223,14 @@ public class EncounterService extends OpenmrsService {
 
 		System.out.print("[OBS-UUIDS]" + obsUuids);
 
-		String ptuuid = patientService.getPatientByIdentifierUUID(e.getBaseEntityId());//TODO find by any identifier
+		JSONObject pt = patientService.getPatientByIdentifier(e.getBaseEntityId());//TODO find by any identifier
 		JSONObject enc = new JSONObject();
 
 		String pruuid = userService.getPersonUUIDByUser(e.getProviderId());
 
 		enc.put("encounterDatetime", OPENMRS_DATE.format(e.getEventDate().toDate()));
 		// patient must be existing in OpenMRS before it submits an encounter. if it doesnot it would throw NPE
-		enc.put("patient", ptuuid);
+		enc.put("patient", pt.getString("uuid"));
 		//TODO	enc.put("patientUuid", pt.getString("uuid"));
 		enc.put("encounterType", e.getEventType());
 		enc.put("location", e.getLocationId());

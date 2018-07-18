@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.opensrp.common.AllConstants;
 import org.opensrp.connector.openmrs.constants.OpenmrsHouseHold;
 import org.opensrp.connector.openmrs.service.EncounterService;
@@ -28,6 +29,7 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.form.domain.FormSubmission;
 import org.opensrp.form.service.FormSubmissionConverter;
 import org.opensrp.form.service.FormSubmissionService;
+import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.scheduler.SystemEvent;
 import org.opensrp.scheduler.TaskSchedulerService;
 import org.opensrp.service.ErrorTraceService;
@@ -180,8 +182,8 @@ public class FormSubmissionController {
 			
 			householdService.saveHH(hh, true);
 		} else {
-			String puuid = patientService.getPatientByIdentifierUUID(c.getBaseEntityId());
-			if (puuid == null) {
+			JSONObject p = patientService.getPatientByIdentifier(c.getBaseEntityId());
+			if(p == null){
 				System.out.println(patientService.createPatient(c));
 			}
 			
@@ -190,8 +192,8 @@ public class FormSubmissionController {
 			for (Map<String, Object> cm : dep.values()) {
 				Client cin = (Client) cm.get("client");
 				Event evin = (Event) cm.get("event");
-				String pin = patientService.getPatientByIdentifierUUID(cin.getBaseEntityId());
-				if (pin == null) {
+				JSONObject pin = patientService.getPatientByIdentifier(cin.getBaseEntityId());
+				if(pin == null){
 					System.out.println(patientService.createPatient(cin));
 				}
 				

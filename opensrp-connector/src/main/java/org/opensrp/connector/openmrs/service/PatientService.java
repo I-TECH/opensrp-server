@@ -349,8 +349,7 @@ public class PatientService extends OpenmrsService {
 						for (Obs obs2 : event.getObs()) {
 							if (obs2 != null && obs2.getFieldType().equals("formsubmissionField") && obs2
 									.getFormSubmissionField().equals("Home_Facility") && obs2.getValue() != null) {
-
-								jao.put("address5", obs2.getValue());
+								jao.put("address5", fetchLocationByUUID(obs2.getValue().toString()));
 								break;
 							}
 						}
@@ -380,7 +379,6 @@ public class PatientService extends OpenmrsService {
 
 	public JSONObject createPatient(Client c) throws JSONException {
 		JSONObject p = new JSONObject();
-		logger.info("client c from syncher" + c);
 		p.put("person", createPerson(c).getString("uuid"));
 		JSONArray ids = new JSONArray();
 		if (c.getIdentifiers() != null) {

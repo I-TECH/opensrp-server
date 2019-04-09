@@ -28,9 +28,9 @@ public abstract class OpenmrsService {
 	public OpenmrsService() {	}
 
 	public OpenmrsService(String openmrsUrl, String user, String password) {
-    	OPENMRS_BASE_URL = openmrsUrl;
-    	OPENMRS_USER = user;
-    	OPENMRS_PWD = password;
+		OPENMRS_BASE_URL = openmrsUrl;
+		OPENMRS_USER = user;
+		OPENMRS_PWD = password;
 	}
 
 	/**
@@ -45,8 +45,8 @@ public abstract class OpenmrsService {
 		OPENMRS_BASE_URL = url;
 	}
 
-public static void main(String[] args) {
-	System.out.println(OPENMRS_DATE.format(new Date()));
-}
+	public static void main(String[] args) {
+		System.out.println(OPENMRS_DATE.format(new Date()));
+	}
 
 }

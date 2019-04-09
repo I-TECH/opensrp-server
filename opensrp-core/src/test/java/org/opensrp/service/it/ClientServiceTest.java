@@ -1,6 +1,27 @@
 package org.opensrp.service.it;
 
-import org.ektorp.CouchDbConnector;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.opensrp.util.SampleFullDomainObject.BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_TYPE;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_VALUE;
+import static org.opensrp.util.SampleFullDomainObject.LAST_NAME;
+import static org.opensrp.util.SampleFullDomainObject.getClient;
+import static org.opensrp.util.SampleFullDomainObject.identifier;
+import static org.utils.AssertionUtil.assertNewObjectCreation;
+import static org.utils.AssertionUtil.assertObjectUpdate;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.json.JSONException;
@@ -10,23 +31,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
-import org.opensrp.repository.AllClients;
+import org.opensrp.repository.couch.AllClients;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.utils.CouchDbAccessUtils;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.opensrp.util.SampleFullDomainObject.*;
-import static org.utils.AssertionUtil.*;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
 
 //TODO: Write couch-lucene related method test cases e.g: findByCriteria
 public class ClientServiceTest extends BaseIntegrationTest {
@@ -234,9 +241,8 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	@Test
 	public void shouldAddWithCouchDbConnector() throws IOException {
 		Client expectedClient = getClient();
-		CouchDbConnector couchDbConnector = CouchDbAccessUtils.getCouchDbConnector("opensrp");
 
-		Client actualClient = clientService.addClient(couchDbConnector, expectedClient);
+		Client actualClient = clientService.addClient(expectedClient);
 
 		List<Client> dbClients = allClients.getAll();
 		assertEquals(1, dbClients.size());
@@ -249,9 +255,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	public void shouldThrowRuntimeExceptionWhileAddIfNoBaseEntityIdFoundWithCouchDbConnector() throws IOException {
 		Client expectedClient = getClient();
 		expectedClient.setBaseEntityId(null);
-		CouchDbConnector couchDbConnector = CouchDbAccessUtils.getCouchDbConnector("opensrp");
-
-		clientService.addClient(couchDbConnector, expectedClient);
+		clientService.addClient(expectedClient);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -260,9 +264,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		Client expectedClient = getClient();
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 		expectedClient.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
-		CouchDbConnector couchDbConnector = CouchDbAccessUtils.getCouchDbConnector("opensrp");
-
-		clientService.addClient(couchDbConnector, expectedClient);
+		clientService.addClient(expectedClient);
 	}
 
 	@Test
@@ -312,7 +314,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		Client expectedClient = getClient();
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 
-		Client actualClient = clientService.findClient(getCouchDbConnector("opensrp"), expectedClient);
+		Client actualClient = clientService.findClient(expectedClient);
 
 		assertEquals(expectedClient, actualClient);
 	}
@@ -323,7 +325,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		expectedClient.setBaseEntityId(null);
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 
-		Client actualClient = clientService.findClient(getCouchDbConnector("opensrp"), expectedClient);
+		Client actualClient = clientService.findClient(expectedClient);
 
 		assertEquals(expectedClient, actualClient);
 	}
@@ -335,7 +337,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(asList(expectedClient, sameClient), allClients);
 		expectedClient.setBaseEntityId(null);
 
-		Client client = clientService.findClient(getCouchDbConnector("opensrp"), expectedClient);
+		Client client = clientService.findClient(expectedClient);
 
 		assertNull(client);
 
@@ -345,7 +347,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	public void shouldReturnNullIfNoClientFoundWithCouchDbConnector() throws IOException {
 		Client expectedClient = getClient();
 
-		Client actualClient = clientService.findClient(getCouchDbConnector("opensrp"), expectedClient);
+		Client actualClient = clientService.findClient(expectedClient);
 
 		assertNull(actualClient);
 	}

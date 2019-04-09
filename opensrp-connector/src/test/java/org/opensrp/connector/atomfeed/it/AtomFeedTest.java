@@ -30,8 +30,8 @@ import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
-import org.opensrp.repository.AllClients;
-import org.opensrp.repository.AllEvents;
+import org.opensrp.repository.couch.AllClients;
+import org.opensrp.repository.couch.AllEvents;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,7 +129,7 @@ public class AtomFeedTest extends OpenmrsApiService {
 		
 		openmrsUserService.createProvider(userName, IdentifierType);
 		
-		JSONObject provider = openmrsUserService.getProvider(IdentifierType);
+		JSONObject provider = openmrsUserService.getProvider(IdentifierType, null);
 		JSONObject person = provider.getJSONObject(personKey);
 		
 		JSONObject returnEncounterType = encounterService.createEncounterType(encounterType, "Test desc");
@@ -142,7 +142,11 @@ public class AtomFeedTest extends OpenmrsApiService {
 		
 		/**** start atomfeed for patient ****/
 		PatientAtomfeed paf = new PatientAtomfeed(new AllMarkersInMemoryImpl(), new AllFailedEventsInMemoryImpl(),
+<<<<<<< HEAD
 		        openmrsOpenmrsUrl, patientService, cs, eventService);
+=======
+		        openmrsOpenmrsUrl, patientService, cs,es);
+>>>>>>> 9ad058aa6c5a38d9bf24deb9cf894e7e5495ac47
 		
 		paf.processEvents();
 		

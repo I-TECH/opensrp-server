@@ -67,8 +67,8 @@ public class OpenmrsSyncerListener {
 
 	@Autowired
 	public OpenmrsSyncerListener(OpenmrsSchedulerService openmrsSchedulerService, ScheduleService opensrpScheduleService, ActionService actionService, ConfigService config,
-	    ErrorTraceService errorTraceService, PatientService patientService, EncounterService encounterService,
-	    ClientService clientService, EventService eventService,  OpenmrsRelationshipService openmrsRelationshipService) {
+								 ErrorTraceService errorTraceService, PatientService patientService, EncounterService encounterService,
+								 ClientService clientService, EventService eventService,  OpenmrsRelationshipService openmrsRelationshipService) {
 		this.openmrsSchedulerService = openmrsSchedulerService;
 		this.opensrpScheduleService = opensrpScheduleService;
 		this.actionService = actionService;
@@ -109,7 +109,7 @@ public class OpenmrsSyncerListener {
 			logger.info("RUNNING FOR EVENTS");
 
 			AppStateToken lastsync = config
-			        .getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated);
+					.getAppStateTokenByName(SchedulerConfig.openmrs_syncer_sync_client_by_date_updated);
 			Long start = lastsync == null || lastsync.getValue() == null ? 0 : lastsync.longValue();
 
 			List<Client> cl = clientService.findByServerVersion(start);
@@ -276,7 +276,7 @@ public class OpenmrsSyncerListener {
 					if (uuid != null) {
 						encounter = encounterService.updateEncounter(e);
 						config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated,
-						    e.getServerVersion());
+								e.getServerVersion());
 					} else {
 						JSONObject eventJson = encounterService.createEncounter(e);
 						encounter = eventJson;// only for test code purpose
@@ -284,14 +284,14 @@ public class OpenmrsSyncerListener {
 							e.addIdentifier(EncounterService.OPENMRS_UUID_IDENTIFIER_TYPE, eventJson.getString("uuid"));
 							eventService.updateEvent(e);
 							config.updateAppStateToken(SchedulerConfig.openmrs_syncer_sync_event_by_date_updated,
-							    e.getServerVersion());
+									e.getServerVersion());
 						}
 					}
 				}
 				catch (Exception ex2) {
 					logger.error("", ex2);
 					errorTraceService.log("OPENMRS FAILED EVENT PUSH", Event.class.getName(), e.getId(),
-					    ExceptionUtils.getStackTrace(ex2), "");
+							ExceptionUtils.getStackTrace(ex2), "");
 				}
 			}
 		return encounter;

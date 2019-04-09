@@ -4,7 +4,6 @@ import static java.text.MessageFormat.format;
 import static java.util.Collections.sort;
 import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
 
-import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,8 +15,8 @@ import org.opensrp.domain.Client;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.domain.Event;
 import org.opensrp.form.domain.FormSubmission;
-import org.opensrp.repository.AllClients;
-import org.opensrp.repository.AllEvents;
+import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
 import org.opensrp.service.EventService;
@@ -36,10 +35,10 @@ public class EventsListener {
 	
 	private ConfigService configService;
 	
-	private AllEvents allEvents;
+	private EventsRepository allEvents;
 	
 	@Autowired
-	private AllClients allClients;
+	private ClientsRepository allClients;
 	
 	@Autowired
 	EventService eventService;
@@ -49,7 +48,7 @@ public class EventsListener {
 	private ErrorTraceService errorTraceService;
 	
 	@Autowired
-	public EventsListener(EventsRouter eventsRouter, ConfigService configService, AllEvents allEvents,
+	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventsRepository allEvents,
 	    ErrorTraceService errorTraceService) {
 		this.configService = configService;
 		this.errorTraceService = errorTraceService;
@@ -58,9 +57,9 @@ public class EventsListener {
 		this.configService.registerAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT, 0,
 		    "Token to keep track of events processed for client n event parsing and schedule handling", true);
 	}
-	
-	public EventsListener(EventsRouter eventsRouter, ConfigService configService, AllEvents allEvents,
-	    EventService eventService, ErrorTraceService errorTraceService, AllClients allClients) {
+
+	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventsRepository allEvents,
+	    EventService eventService, ErrorTraceService errorTraceService, ClientsRepository allClients) {
 		this.configService = configService;
 		this.errorTraceService = errorTraceService;
 		this.eventsRouter = eventsRouter;
@@ -109,7 +108,7 @@ public class EventsListener {
 			}
 		}
 		catch (Exception e) {
-			logger.error(MessageFormat.format("{0} occurred while trying to fetch events. Message: {1} with stack trace {2}",
+			logger.error(format("{0} occurred while trying to fetch events. Message: {1} with stack trace {2}",
 			    e.toString(), e.getMessage(), getFullStackTrace(e)));
 		}
 		finally {

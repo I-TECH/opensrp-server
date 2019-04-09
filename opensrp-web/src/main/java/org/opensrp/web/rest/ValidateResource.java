@@ -40,8 +40,8 @@ public class ValidateResource {
 	private ClientService clientService;
 	
 	private EventService eventService;
-	
-	Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+
+	private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 	        .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 	
 	@Autowired
@@ -93,8 +93,8 @@ public class ValidateResource {
 				    new TypeToken<ArrayList<String>>() {}.getType());
 				for (String eventId : eventIds) {
 					try {
-						List<Event> events = eventService.findByFormSubmissionId(eventId);
-						if (events == null || events.isEmpty()) {
+						Event event = eventService.findByFormSubmissionId(eventId);
+						if (event == null) {
 							missingEventIds.add(eventId);
 						}
 						

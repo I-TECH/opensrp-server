@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
-import org.opensrp.repository.AllEvents;
+import org.opensrp.repository.EventsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +20,46 @@ import org.springframework.stereotype.Service;
 public class DHIS2AggregateConnector extends DHIS2Service {
 	
 	@Autowired
-	private AllEvents allEvents;
-	
-	public DHIS2AggregateConnector() {
+	private EventsRepository allEvents;
+	public DHIS2AggregateConnector(){
 		
 	}
 	
 	public DHIS2AggregateConnector(String dhis2Url, String user, String password) {
 		super(dhis2Url, user, password);
 	}
+
+	public JSONObject getAggregateDataCount() throws JSONException{
+		JSONObject vaccineCountObj =	new JSONObject();
+		JSONArray vaccineCountArray =	new JSONArray();		
+		
+		Date date = new Date();
+		String modifiedDate= new SimpleDateFormat("yyyy-MM-dd").format(date);
+		
+		JSONObject vaccineAttrObj1 = new JSONObject();
+		vaccineAttrObj1.put("dataElement", "bDl4fsu1QIj");//Bcg given (0-11m)
+		//vaccineAttrObj1.put("period", "201701");
+		//vaccineAttrObj1.put("orgUnit", "IDc0HEyjhvL");
+		vaccineAttrObj1.put("value", 53);
+		
+		JSONObject vaccineAttrObj2 = new JSONObject();
+		vaccineAttrObj2.put("dataElement", "Ar5v2MYP3EU");//Penta 1given (0-11m)
+		//vaccineAttrObj2.put("period", "201701");
+		//vaccineAttrObj2.put("orgUnit", "IDc0HEyjhvL");
+		vaccineAttrObj2.put("value", 45);
+		
+		vaccineCountArray.put(vaccineAttrObj1);
+	    vaccineCountArray.put(vaccineAttrObj2);
+	    
+	    vaccineCountObj.put("dataSet", "wn53Io9MM6B");
+		vaccineCountObj.put("completeData", modifiedDate);
+		vaccineCountObj.put("period", 201610);
+		vaccineCountObj.put("orgUnit", "IDc0HEyjhvL");
+		vaccineCountObj.put("dataValues", vaccineCountArray);
+	 return vaccineCountObj;
 	
+	}
+
 	public JSONObject getAggregatedDataCount() throws JSONException {
 		Date date = new Date();
 		String modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);

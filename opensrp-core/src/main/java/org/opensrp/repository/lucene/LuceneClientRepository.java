@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
+import org.opensrp.search.AddressSearchBean;
+import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,95 +31,89 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
+
 import com.mysql.jdbc.StringUtils;
 
 @FullText({
-        @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}", index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    }  if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"),
-        @Index(name = "by_all_criteria_v2", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}",
-                //        index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }      for (var key in doc.identifiers) { ret.add(doc.identifiers[key], {'field': key}); }      for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    }    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"
-                index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    } if (doc.relationships) {for (var key in doc.relationships) {ret.add(doc.relationships[key][0], {'field': key });}}    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"
-		
+		@Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}", index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses &&  doc.addresses.length >0 ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    } if (doc.relationships) { for (var key in doc.relationships) { ret.add(doc.relationships[key], { 'field': key }); }}    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"),
+		@Index(name = "by_all_criteria_v2", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}",
+				//        index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }      for (var key in doc.identifiers) { ret.add(doc.identifiers[key], {'field': key}); }      for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    }    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"
+				index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses &&  doc.addresses.length >0 ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    } if (doc.relationships) {for (var key in doc.relationships) {ret.add(doc.relationships[key][0], {'field': key });}}    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"
 		) })
 @Component
 public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<Client> {
-	
+
 	private LuceneDbConnector ldb;
-	
+
 	@Autowired
 	protected LuceneClientRepository(LuceneDbConnector db) {
 		super(Client.class, db);
 		this.ldb = db;
 		initStandardDesignDocument();
 	}
-	
-	public List<Client> getByCriteria(String nameLike, String gender, DateTime birthdateFrom, DateTime birthdateTo,
-	                                  DateTime deathdateFrom, DateTime deathdateTo, String attributeType,
-	                                  String attributeValue, DateTime lastEditFrom, DateTime lastEditTo,
-	                                  String motherIdentifier) {
-		return getByCriteria(nameLike, gender, birthdateFrom, birthdateTo, deathdateFrom, deathdateTo, attributeType,
-		    attributeValue, null, null, null, null, null, null, null, null, lastEditFrom, lastEditTo, motherIdentifier);
+
+	public List<Client> getByCriteria(ClientSearchBean searchBean, String motherIdentifier) {
+		return getByCriteria(searchBean, new AddressSearchBean(), motherIdentifier);
 	}
-	
-	public List<Client> getByCriteria(String addressType, String country, String stateProvince, String cityVillage,
-	                                  String countyDistrict, String subDistrict, String town, String subTown,
-	                                  DateTime lastEditFrom, DateTime lastEditTo, String motherIdentifier) {
-		return getByCriteria(null, null, null, null, null, null, null, null, addressType, country, stateProvince,
-		    cityVillage, countyDistrict, subDistrict, town, subTown, lastEditFrom, lastEditTo, motherIdentifier);
+
+	public List<Client> getByCriteria(AddressSearchBean addressSearchBean, DateTime lastEditFrom, DateTime lastEditTo,
+									  String motherIdentifier) {
+		ClientSearchBean clientSearchBean = new ClientSearchBean();
+		clientSearchBean.setLastEditFrom(lastEditFrom);
+		clientSearchBean.setLastEditTo(lastEditTo);
+		return getByCriteria(clientSearchBean, addressSearchBean, motherIdentifier);
 	}
-	
-	public List<Client> getByCriteria(String nameLike, String gender, DateTime birthdateFrom, DateTime birthdateTo,
-	                                  DateTime deathdateFrom, DateTime deathdateTo, String attributeType,
-	                                  String attributeValue, String addressType, String country, String stateProvince,
-	                                  String cityVillage, String countyDistrict, String subDistrict, String town,
-	                                  String subTown, DateTime lastEditFrom, DateTime lastEditTo, String motherIdentifier) {
+
+	public List<Client> getByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean,
+									  String motherIdentifier) {
 		// create a simple query against the view/search function that we've created
 		LuceneQuery query = new LuceneQuery("Client", "by_all_criteria");
-		
+
 		Query q = new Query(FilterType.OR);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(nameLike)) {
-			q.like(FIRST_NAME, nameLike);
-			q.like(MIDDLE_NAME, nameLike);
-			q.like(LAST_NAME, nameLike);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getNameLike())) {
+			q.like(FIRST_NAME, searchBean.getNameLike());
+			q.like(MIDDLE_NAME, searchBean.getNameLike());
+			q.like(LAST_NAME, searchBean.getNameLike());
 		}
 		Query qf = new Query(FilterType.AND, q);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(gender)) {
-			qf.eq(GENDER, gender);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getGender())) {
+			qf.eq(GENDER, searchBean.getGender());
 		}
-		if (birthdateFrom != null && birthdateTo != null) {
-			qf.between(BIRTH_DATE, birthdateFrom, birthdateTo);
+		if (searchBean.getBirthdateFrom() != null && searchBean.getBirthdateTo() != null) {
+			qf.between(BIRTH_DATE, searchBean.getBirthdateFrom(), searchBean.getBirthdateTo());
 		}
-		if (deathdateFrom != null && deathdateTo != null) {
-			qf.between(DEATH_DATE, deathdateFrom, deathdateTo);
+		if (searchBean.getDeathdateFrom() != null && searchBean.getDeathdateTo() != null) {
+			qf.between(DEATH_DATE, searchBean.getDeathdateFrom(), searchBean.getDeathdateTo());
 		}
-		if (lastEditFrom != null & lastEditTo != null) {
-			qf.between(LAST_UPDATE, lastEditFrom, lastEditTo);
+		if (searchBean.getLastEditFrom() != null & searchBean.getLastEditTo() != null) {
+			qf.between(LAST_UPDATE, searchBean.getLastEditFrom(), searchBean.getLastEditTo());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(attributeType)) {
-			qf.eq(attributeType, attributeValue);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getAttributeValue())) {
+			qf.eq(searchBean.getAttributeType(), searchBean.getAttributeValue());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressType)) {
-			qf.eq(ADDRESS_TYPE, addressType);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getAddressType())) {
+			qf.eq(ADDRESS_TYPE, addressSearchBean.getAddressType());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(country)) {
-			qf.eq(COUNTRY, country);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCountry())) {
+			qf.eq(COUNTRY, addressSearchBean.getCountry());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(stateProvince)) {
-			qf.eq(STATE_PROVINCE, stateProvince);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getStateProvince())) {
+			qf.eq(STATE_PROVINCE, addressSearchBean.getStateProvince());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(cityVillage)) {
-			qf.eq(CITY_VILLAGE, cityVillage);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCityVillage())) {
+			qf.eq(CITY_VILLAGE, addressSearchBean.getCityVillage());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(countyDistrict)) {
-			qf.eq(COUNTY_DISTRICT, countyDistrict);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCountyDistrict())) {
+			qf.eq(COUNTY_DISTRICT, addressSearchBean.getCountyDistrict());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(subDistrict)) {
-			qf.eq(SUB_DISTRICT, subDistrict);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubDistrict())) {
+			qf.eq(SUB_DISTRICT, addressSearchBean.getSubDistrict());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(town)) {
-			qf.eq(TOWN, town);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubTown())) {
+			qf.eq(TOWN, addressSearchBean.getTown());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(subTown)) {
-			qf.eq(SUB_TOWN, subTown);
+		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubTown())) {
+			qf.eq(SUB_TOWN, addressSearchBean.getSubTown());
 		}
 		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
@@ -126,7 +122,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		// stale must not be ok, as we've only just loaded the docs
 		query.setStaleOk(false);
 		query.setIncludeDocs(true);
-		
+
 		try {
 			LuceneResult result = db.queryLucene(query);
 			return ldb.asList(result, Client.class);
@@ -135,16 +131,16 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public List<Client> getByCriteria(String query) {
 		// create a simple query against the view/search function that we've created
 		LuceneQuery lq = new LuceneQuery("Client", "by_all_criteria");
-		
+
 		lq.setQuery(query);
 		// stale must not be ok, as we've only just loaded the docs
 		lq.setStaleOk(false);
 		lq.setIncludeDocs(true);
-		
+
 		try {
 			LuceneResult result = db.queryLucene(lq);
 			return ldb.asList(result, Client.class);
@@ -153,7 +149,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public List<Client> getByClientByMother(String field, String value) {
 		// create a simple query against the view/search function that we've created
 		if (value == null) {
@@ -167,7 +163,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		lq.setQuery(query.query());
 		lq.setStaleOk(false);
 		lq.setIncludeDocs(true);
-		
+
 		try {
 			LuceneResult result = db.queryLucene(lq);
 			return ldb.asList(result, Client.class);
@@ -176,7 +172,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public List<Client> getByFieldValue(String field, String value) {
 		// create a simple query against the view/search function that we've created
 		if (value == null) {
@@ -190,7 +186,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		lq.setQuery(query.query());
 		lq.setStaleOk(false);
 		lq.setIncludeDocs(true);
-		
+
 		try {
 			LuceneResult result = db.queryLucene(lq);
 			return ldb.asList(result, Client.class);
@@ -199,7 +195,7 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public List<Client> getByFieldValue(String field, List<String> ids) {
 		// create a simple query against the view/search function that we've created
 		if (ids == null || ids.isEmpty()) {
@@ -210,29 +206,6 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		if (field.equals(BASE_ENTITY_ID)) {
 			query.inList(field, ids);
 		}
-		lq.setQuery(query.query());
-		lq.setLimit(ids.size());
-		// stale must not be ok, as we've only just loaded the docs
-		lq.setStaleOk(false);
-		lq.setIncludeDocs(true);
-		
-		try {
-			LuceneResult result = db.queryLucene(lq);
-			return ldb.asList(result, Client.class);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public List<Client> getByFieldValuex(String field, List<String> ids) {
-		// create a simple query against the view/search function that we've created
-		if (ids == null || ids.isEmpty()) {
-			return new ArrayList<Client>();
-		}
-		LuceneQuery lq = new LuceneQuery("Client", "by_all_criteria_v2");
-		Query query = new Query(FilterType.AND);
-		query.inList(field, ids);
 		lq.setQuery(query.query());
 		lq.setLimit(ids.size());
 		// stale must not be ok, as we've only just loaded the docs

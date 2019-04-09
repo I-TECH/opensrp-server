@@ -1,15 +1,24 @@
 package org.opensrp.web.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ibm.icu.text.SimpleDateFormat;
+import static org.opensrp.web.rest.RestUtils.getStringFilter;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.api.domain.User;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.service.OpenmrsIDService;
-import org.opensrp.util.DateTimeTypeConverter;
 import org.opensrp.web.utils.PdfUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,18 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.opensrp.web.rest.RestUtils.getStringFilter;
+import com.google.gson.Gson;
+import com.ibm.icu.text.SimpleDateFormat;
 
 @Controller
 @RequestMapping("/uniqueids")
@@ -46,17 +45,14 @@ public class UniqueIdController {
 	@Value("#{opensrp['qrcodes.directory.name']}")
 	private String qrCodesDir;
 
-	Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-
 	@Autowired
-	OpenmrsIDService openmrsIdService;
+	private OpenmrsIDService openmrsIdService;
 
 	@Autowired
 	private UserController userController;
 
 	@Autowired
-	OpenmrsUserService openmrsUserService;
+	private OpenmrsUserService openmrsUserService;
 
 	/**
 	 * Download extra ids from openmrs if less than the specified batch size, convert the ids to qr
@@ -69,11 +65,10 @@ public class UniqueIdController {
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/print")
 	@ResponseBody
-	public ResponseEntity<String> thisMonthDataSendTODHIS2(HttpServletRequest request, HttpServletResponse response)
-			throws JSONException {
+	public ResponseEntity<String> thisMonthDataSendTODHIS2(HttpServletRequest request, HttpServletResponse response){
 
-		String message = "";
-		User user = null;
+		String message;
+		User user;
 		try {
 			Integer numberToGenerate = Integer.valueOf(getStringFilter("batchSize", request));
 
@@ -126,7 +121,6 @@ public class UniqueIdController {
 				return true;
 		return false;
 	}
-
 	/**
 	 * Fetch unique Ids from OMRS
 	 *

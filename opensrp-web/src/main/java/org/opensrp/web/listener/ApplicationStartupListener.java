@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ApplicationStartupListener implements ApplicationListener<ContextRefreshedEvent> {
-	public static final String APPLICATION_ID = "/opensrp";
+    public static final String APPLICATION_ID = "/opensrp";
     public static final String APPLICATION_ID_FULL = "org.springframework.web.context.WebApplicationContext:"+APPLICATION_ID;
 
     private TaskSchedulerService scheduler;
-    
+
     private RepeatingCronSchedule eventsSchedule;
     private RepeatingCronSchedule atomfeedSchedule;
     private RepeatingCronSchedule encounterSchedule;
@@ -29,9 +29,9 @@ public class ApplicationStartupListener implements ApplicationListener<ContextRe
 
     @Autowired
     public ApplicationStartupListener(TaskSchedulerService scheduler,
-    		@Value("#{opensrp['form.poll.time.interval']}") int formPollInterval,
-    		@Value("#{opensrp['mcts.poll.time.interval.in.minutes']}") int mctsPollIntervalInHours,
-    		@Value("#{opensrp['openmrs.scheduletracker.syncer.interval-min']}") int openmrsSchSyncerMin) {
+                                      @Value("#{opensrp['form.poll.time.interval']}") int formPollInterval,
+                                      @Value("#{opensrp['mcts.poll.time.interval.in.minutes']}") int mctsPollIntervalInHours,
+                                      @Value("#{opensrp['openmrs.scheduletracker.syncer.interval-min']}") int openmrsSchSyncerMin) {
         this.scheduler = scheduler;
         eventsSchedule = new RepeatingCronSchedule(AllConstants.EVENTS_SCHEDULE_SUBJECT, 2, TimeUnit.MINUTES, "0 0/2 * * * ?");
 
@@ -43,7 +43,7 @@ public class ApplicationStartupListener implements ApplicationListener<ContextRe
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    	System.out.println(contextRefreshedEvent.getApplicationContext().getId());
+        System.out.println(contextRefreshedEvent.getApplicationContext().getId());
         if (contextRefreshedEvent.getApplicationContext().getId().endsWith(APPLICATION_ID)) {
             scheduler.startJob(eventsSchedule);
             scheduler.startJob(atomfeedSchedule);
@@ -51,7 +51,7 @@ public class ApplicationStartupListener implements ApplicationListener<ContextRe
             scheduler.startJob(dhis2Schedule);
             scheduler.startJob(validateSyncedToOMRS);
 
-        	System.out.println("STARTED ALL SCHEDULES");
+            System.out.println("STARTED ALL SCHEDULES");
         }
     }
 }

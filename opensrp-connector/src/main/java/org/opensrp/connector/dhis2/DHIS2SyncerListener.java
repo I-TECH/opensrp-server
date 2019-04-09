@@ -5,14 +5,14 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.server.event.annotations.MotechListener;
 import org.opensrp.common.AllConstants.DHIS2Constants;
 import org.opensrp.common.util.DateUtil;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.DHIS2Marker;
+import org.opensrp.domain.Event;
 import org.opensrp.repository.AllDHIS2Marker;
 import org.opensrp.service.ClientService;
+import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,39 +26,59 @@ public class DHIS2SyncerListener {
 	
 	@Autowired
 	private Dhis2TrackCaptureConnector dhis2TrackCaptureConnector;
+	
 	@Autowired
 	private DHIS2TrackerService dhis2TrackerService;
 	
 	private DHIS2Tracker dhis2Tracker;
+	
+	@Autowired
+	private EventService eventService;
+	
+	@Autowired
+	public VaccinationTracker vaccinationTracker;
+	
 	@Autowired
 	public DHIS2SyncerListener(ClientService clientService) {
 		this.clientService = clientService;
 	}
 	
-	@MotechListener(subjects = DHIS2Constants.DHIS2_TRACK_DATA_SYNCER_SUBJECT)
-	public JSONObject pushToDHIS2(MotechEvent event) {
+	public JSONObject pushToDHIS2() {
 		JSONObject response = null;
 		try {
 			Long start = 0l;
-			List<DHIS2Marker> lastsync = allDHIS2Marker.findByName(DHIS2Constants.DHIS2_TRACK_DATA_SYNCER_VERSION_MARKER);
-			
-			if (lastsync.size() == 0) {
+			Long eventStart = 0l;
+			List<DHIS2Marker> clientSync = allDHIS2Marker.findByName(DHIS2Constants.DHIS2_TRACK_DATA_SYNCER_VERSION_MARKER);
+			List<DHIS2Marker> eventSync = allDHIS2Marker
+			        .findByName(DHIS2Constants.DHIS2_TRACK_DATA_SYNCER_VERSION_MARKER_EVENT);
+			if (clientSync.size() == 0) {
 				allDHIS2Marker.add();
 				start = 0l;
 			} else {
-				start = lastsync == null || lastsync.get(0).getValue() == null ? 0 : lastsync.get(0).getValue();
+				start = clientSync == null || clientSync.get(0).getValue() == null ? 0 : clientSync.get(0).getValue();
 			}
+			System.err.println("start:" + start);
 			List<Client> cl = clientService.findByServerVersion(start);
+			if (eventSync.size() == 0) {
+				allDHIS2Marker.addEventMarker();
+				eventStart = 0l;
+			} else {
+				eventStart = eventSync == null || eventSync.get(0).getValue() == null ? 0 : eventSync.get(0).getValue();
+			}
+			List<Event> events = eventService.findByServerVersion(eventStart);
 			for (Client c : cl) {
+				System.err.println("Name:" + c.fullName());
 				try {
 					response = processTrackerAndSendToDHIS2(c);
-					//response = sentTrackCaptureDataToDHIS2(c);
+					allDHIS2Marker.update(c.getServerVersion());
 				}
 				catch (Exception e) {
-					System.out.println("DHIS2 Message:" + e.getMessage());
+					e.printStackTrace();
 				}
 			}
-			allDHIS2Marker.update();
+			
+			processAndSendVaccineTrackerToDHIS2(events);
+			
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -66,14 +86,20 @@ public class DHIS2SyncerListener {
 		return response;
 	}
 	
-public JSONObject processTrackerAndSendToDHIS2(Client client) throws JSONException {
+	private JSONObject processAndSendVaccineTrackerToDHIS2(List<Event> events) throws JSONException {
+		vaccinationTracker.getTrackCaptureDataAndSend(events);
+		return null;
+		
+	}
+	
+	private JSONObject processTrackerAndSendToDHIS2(Client client) throws JSONException {
 		
 		dhis2Tracker = dhis2TrackerService.getTrackerType(client);
 		JSONArray clientData = dhis2Tracker.getTrackCaptureData(client);
 		return dhis2Tracker.sendTrackCaptureData(clientData);
 		
 	}
-
+	
 	public JSONObject sentTrackCaptureDataToDHIS2(Client client) throws JSONException {
 		
 		JSONObject clientData = new JSONObject();

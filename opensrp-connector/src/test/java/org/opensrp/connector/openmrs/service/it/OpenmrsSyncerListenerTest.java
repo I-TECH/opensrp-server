@@ -18,8 +18,8 @@ import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.connector.openmrs.service.PatientService;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
-import org.opensrp.repository.AllClients;
-import org.opensrp.repository.AllEvents;
+import org.opensrp.repository.couch.AllClients;
+import org.opensrp.repository.couch.AllEvents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -146,7 +146,7 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		
 		openmrsUserService.createProvider(userName, IdentifierType);
 		
-		JSONObject provider = openmrsUserService.getProvider(IdentifierType);
+		JSONObject provider = openmrsUserService.getProvider(IdentifierType,null);
 		JSONObject personObject = provider.getJSONObject(personKey);
 		String actualEncounterType = "TestEncounterType";
 		JSONObject returnEncounterType = encounterService.createEncounterType(actualEncounterType, "Test desc");

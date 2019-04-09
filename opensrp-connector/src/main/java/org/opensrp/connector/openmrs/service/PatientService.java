@@ -93,7 +93,7 @@ public class PatientService extends OpenmrsService {
 
 	@Autowired
 	public PatientService(ClientService clientService, OpenmrsLocationService openmrsLocationService,
-	                      EventService eventService, ConfigService config) {
+						  EventService eventService, ConfigService config) {
 		this.clientService = clientService;
 		this.openmrsLocationService = openmrsLocationService;
 		this.eventService = eventService;
@@ -720,7 +720,7 @@ public class PatientService extends OpenmrsService {
 
 	}
 
-	private String fetchLocationByUUID(String locationUUID) {
+	public String fetchLocationByUUID(String locationUUID) {
 		try {
 			if (locationUUID == null || StringUtils.isEmptyOrWhitespaceOnly(locationUUID) || locationUUID
 					.equalsIgnoreCase("Other")) {

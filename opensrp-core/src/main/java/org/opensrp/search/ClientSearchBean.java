@@ -5,6 +5,8 @@ import java.util.Map;
 import org.joda.time.DateTime;
 
 public class ClientSearchBean {
+
+	private String zeirId;
 	
 	private String nameLike;
 	
@@ -35,7 +37,7 @@ public class ClientSearchBean {
 	private String middleName;
 	
 	private String lastName;
-	
+
 	public String getNameLike() {
 		return nameLike;
 	}

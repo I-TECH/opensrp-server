@@ -1,7 +1,5 @@
 package org.opensrp.repository.lucene.it;
 
-<<<<<<< HEAD
-=======
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.opensrp.util.SampleFullDomainObject.BASE_ENTITY_ID;
@@ -16,8 +14,6 @@ import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 import java.util.Collections;
 import java.util.List;
-
->>>>>>> 9ad058aa6c5a38d9bf24deb9cf894e7e5495ac47
 import org.ektorp.DbAccessException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

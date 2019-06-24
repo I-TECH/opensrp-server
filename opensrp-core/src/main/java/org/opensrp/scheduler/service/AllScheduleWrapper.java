@@ -19,11 +19,11 @@ public class AllScheduleWrapper extends AllSchedules{
 		super(db, trackedSchedulesJsonReader, scheduleFactory);
 	}
 
-    @View(name = "by_schedule_name", map = "function(doc) { if(doc.type === 'ScheduleRecord') emit(doc.name); }")
+	@View(name = "by_schedule_name", map = "function(doc) { if(doc.type === 'ScheduleRecord') emit(doc.name); }")
 	public ScheduleRecord getRecordByName(String name) {
 		List<ScheduleRecord> records = queryView("by_schedule_name", name);
-        if (records.isEmpty())
-            return null;
-        return records.get(0);
+		if (records.isEmpty())
+			return null;
+		return records.get(0);
 	}
 }

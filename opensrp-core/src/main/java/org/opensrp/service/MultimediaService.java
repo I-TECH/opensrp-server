@@ -83,24 +83,22 @@ public class MultimediaService {
 						multimediaDirPath += VIDEOS_DIR;
 						fileExt = ".mp4";
 						break;
-
 					case "image/jpeg":
 						multimediaDirPath += IMAGES_DIR;
 						fileExt = ".jpg";
 						break;
-
 					case "image/gif":
 						multimediaDirPath += IMAGES_DIR;
 						fileExt = ".gif";
 						break;
-
 					case "image/png":
 						multimediaDirPath += IMAGES_DIR;
 						fileExt = ".png";
 						break;
-
+					default:
+						throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
 				}
-				new File(multimediaDirPath).mkdir();
+				new File(multimediaDirPath).mkdirs();
 				String fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
 				multimediaDTO.withFilePath(fileName);
 				File multimediaDir = new File(fileName);
@@ -127,6 +125,7 @@ public class MultimediaService {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void makeMultimediaDir(String dirPath) {
 		File file = new File(dirPath);
 		if (!file.exists())

@@ -28,7 +28,7 @@ public class FormInstance {
         this.form = form;
         this.form_data_definition_version = form_data_definition_version;
     }
-    
+
     public FormData form() {
         return form;
     }
@@ -38,17 +38,17 @@ public class FormInstance {
     }
 
     public String bindType() {
-		return form.bindType();
-	}
-    
+        return form.bindType();
+    }
+
     public String defaultBindPath() {
-		return form.defaultBindPath();
-	}
-    
+        return form.defaultBindPath();
+    }
+
     public SubFormData getSubFormByName(String name) {
         return form.getSubFormByName(name);
     }
-    
+
     public List<SubFormData> subForms() {
         return form.subForms();
     }

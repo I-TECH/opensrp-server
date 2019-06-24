@@ -90,7 +90,7 @@ public class Event extends BaseDataObject {
 	}
 
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-	    String locationId, String formSubmissionId) {
+				 String locationId, String formSubmissionId) {
 		this.baseEntityId = baseEntityId;
 		this.eventType = eventType;
 		this.eventDate = eventDate;
@@ -101,18 +101,18 @@ public class Event extends BaseDataObject {
 		this.version = System.currentTimeMillis();
 	}
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-	    String locationId, String formSubmissionId, String teamId, String team) {
+				 String locationId, String formSubmissionId, String teamId, String team) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId);
 		setTeamId(teamId);
 		setTeam(team);
 	}
 
-    public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-                 String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion, Integer clientDatabaseVersion) {
-        this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId,teamId,team);
-        setClientApplicationVersion(clientApplicationVersion);
-        setClientDatabaseVersion(clientDatabaseVersion);
-    }
+	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
+				 String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion, Integer clientDatabaseVersion) {
+		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId,teamId,team);
+		setClientApplicationVersion(clientApplicationVersion);
+		setClientDatabaseVersion(clientDatabaseVersion);
+	}
 
 	public List<Obs> getObs() {
 		if (obs == null) {
@@ -128,8 +128,8 @@ public class Event extends BaseDataObject {
 		for (Obs o : obs) {
 			// parent is blank OR matches with obs parent
 			if ((StringUtils.isBlank(parent)
-			        || (StringUtils.isNotBlank(o.getParentCode()) && parent.equalsIgnoreCase(o.getParentCode())))
-			        && o.getFieldCode().equalsIgnoreCase(concept)) {
+					|| (StringUtils.isNotBlank(o.getParentCode()) && parent.equalsIgnoreCase(o.getParentCode())))
+					&& o.getFieldCode().equalsIgnoreCase(concept)) {
 				return o; //TODO handle duplicates
 			}
 		}

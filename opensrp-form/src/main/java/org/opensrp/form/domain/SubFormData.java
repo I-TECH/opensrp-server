@@ -34,15 +34,15 @@ public class SubFormData {
     public String name() {
         return name;
     }
-    
+
     public String defaultBindPath() {
         return default_bind_path;
     }
-    
+
     public String bindType() {
         return bind_type;
     }
-    
+
     public List<FormField> fields() {
         return fields;
     }

@@ -1,11 +1,11 @@
 package org.opensrp.util;
 
-<<<<<<< HEAD
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.opensrp.domain.*;
-import org.opensrp.domain.Event;
-=======
+//<<<<<<< HEAD
+//import org.joda.time.DateTime;
+//import org.joda.time.DateTimeZone;
+//import org.opensrp.domain.*;
+//import org.opensrp.domain.Event;
+//=======
 import static java.util.Arrays.asList;
 
 import java.util.Collections;
@@ -30,7 +30,6 @@ import org.opensrp.domain.Obs;
 import org.opensrp.domain.Provider;
 import org.opensrp.domain.Report;
 import org.opensrp.domain.User;
->>>>>>> 9ad058aa6c5a38d9bf24deb9cf894e7e5495ac47
 import org.opensrp.dto.form.MultimediaDTO;
 
 public class SampleFullDomainObject {

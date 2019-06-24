@@ -198,6 +198,11 @@ public class ClientService {
 		return allClients.findByFieldValue(field, ids);
 	}
 
+
+	public List<Client> findByFieldValuex(String field, List<String> ids) {
+		return allClients.findByFieldValue(field, ids);
+	}
+
 	public List<Client> findByFieldValue(String id) {
 		return allClients.findByRelationShip(id);
 	}

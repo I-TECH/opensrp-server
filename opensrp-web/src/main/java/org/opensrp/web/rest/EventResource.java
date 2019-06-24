@@ -57,40 +57,40 @@ import com.mysql.jdbc.StringUtils;
 @Controller
 @RequestMapping(value = "/rest/event")
 public class EventResource extends RestResource<Event> {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(EventResource.class.toString());
-	
+
 	private EventService eventService;
-	
+
 	private ClientService clientService;
-	
+
 	Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	        .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-	
+			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+
 	@Value("#{opensrp['opensrp.sync.search.missing.client']}")
 	private boolean searchMissingClients;
-	
+
 	@Autowired
 	public EventResource(ClientService clientService, EventService eventService) {
 		this.clientService = clientService;
 		this.eventService = eventService;
 	}
-	
+
 	@Override
 	public Event getByUniqueId(String uniqueId) {
 		return eventService.find(uniqueId);
 	}
-	
+
 	@RequestMapping(value = "/getall", method = RequestMethod.GET)
 	@ResponseBody
 	protected List<Event> getAll() {
 		return eventService.getAll();
 	}
-	
+
 	/**
 	 * Fetch events ordered by serverVersion ascending order and return the clients associated with
 	 * the events
-	 * 
+	 *
 	 * @param request
 	 * @return a map response with events, clients and optionally msg when an error occurs
 	 */
@@ -98,7 +98,7 @@ public class EventResource extends RestResource<Event> {
 	@ResponseBody
 	protected ResponseEntity<String> sync(HttpServletRequest request) {
 		Map<String, Object> response = new HashMap<String, Object>();
-		
+
 		try {
 			String providerId = getStringFilter(PROVIDER_ID, request);
 			String locationId = getStringFilter(LOCATION_ID, request);
@@ -114,7 +114,7 @@ public class EventResource extends RestResource<Event> {
 			if (limit == null || limit.intValue() == 0) {
 				limit = 25;
 			}
-			
+
 			List<Event> events = new ArrayList<Event>();
 			List<String> clientIds = new ArrayList<String>();
 			List<Client> clients = new ArrayList<Client>();
@@ -132,27 +132,27 @@ public class EventResource extends RestResource<Event> {
 				if (!events.isEmpty()) {
 					for (Event event : events) {
 						if (event.getBaseEntityId() != null && !event.getBaseEntityId().isEmpty()
-						        && !clientIds.contains(event.getBaseEntityId())) {
+								&& !clientIds.contains(event.getBaseEntityId())) {
 							clientIds.add(event.getBaseEntityId());
 						}
 					}
 					for (int i = 0; i < clientIds.size(); i = i + CLIENTS_FETCH_BATCH_SIZE) {
 						int end = i + CLIENTS_FETCH_BATCH_SIZE < clientIds.size() ? i + CLIENTS_FETCH_BATCH_SIZE
-						        : clientIds.size();
+								: clientIds.size();
 						clients.addAll(clientService.findByFieldValue(BASE_ENTITY_ID, clientIds.subList(i, end)));
 					}
 					logger.info("fetching clients took: " + (System.currentTimeMillis() - startTime));
 				}
 				logger.info("fetching missing clients took: " + (System.currentTimeMillis() - startTime));
 			}
-			
+
 			if (searchMissingClients) {
-				
+
 				List<String> foundClientIds = new ArrayList<>();
 				for (Client client : clients) {
 					foundClientIds.add(client.getBaseEntityId());
 				}
-				
+
 				boolean removed = clientIds.removeAll(foundClientIds);
 				if (removed) {
 					for (String clientId : clientIds) {
@@ -164,27 +164,27 @@ public class EventResource extends RestResource<Event> {
 				}
 				logger.info("fetching missing clients took: " + (System.currentTimeMillis() - startTime));
 			}
-			
+
 			JsonArray eventsArray = (JsonArray) gson.toJsonTree(events, new TypeToken<List<Event>>() {}.getType());
-			
+
 			JsonArray clientsArray = (JsonArray) gson.toJsonTree(clients, new TypeToken<List<Client>>() {}.getType());
-			
+
 			response.put("events", eventsArray);
 			response.put("clients", clientsArray);
 			response.put("no_of_events", events.size());
-			
+
 			return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
-			
+
 		}
 		catch (
-		
-		Exception e) {
+
+				Exception e) {
 			response.put("msg", "Error occurred");
 			logger.error("", e);
 			return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(headers = { "Accept=application/json" }, method = POST, value = "/add")
 	public ResponseEntity<HttpStatus> save(@RequestBody String data) {
@@ -193,26 +193,26 @@ public class EventResource extends RestResource<Event> {
 			if (!syncData.has("clients") && !syncData.has("events")) {
 				return new ResponseEntity<>(BAD_REQUEST);
 			}
-			
+
 			if (syncData.has("clients")) {
-				
+
 				ArrayList<Client> clients = (ArrayList<Client>) gson.fromJson(syncData.getString("clients"),
-				    new TypeToken<ArrayList<Client>>() {}.getType());
+						new TypeToken<ArrayList<Client>>() {}.getType());
 				for (Client client : clients) {
 					try {
 						clientService.addorUpdate(client);
 					}
 					catch (Exception e) {
 						logger.error(
-						    "Client" + client.getBaseEntityId() == null ? "" : client.getBaseEntityId() + " failed to sync",
-						    e);
+								"Client" + client.getBaseEntityId() == null ? "" : client.getBaseEntityId() + " failed to sync",
+								e);
 					}
 				}
-				
+
 			}
 			if (syncData.has("events")) {
 				ArrayList<Event> events = (ArrayList<Event>) gson.fromJson(syncData.getString("events"),
-				    new TypeToken<ArrayList<Event>>() {}.getType());
+						new TypeToken<ArrayList<Event>>() {}.getType());
 				for (Event event : events) {
 					try {
 						event = eventService.processOutOfArea(event);
@@ -220,17 +220,17 @@ public class EventResource extends RestResource<Event> {
 					}
 					catch (Exception e) {
 						logger.error(
-						    "Event of type " + event.getEventType() + " for client " + event.getBaseEntityId() == null ? ""
-						            : event.getBaseEntityId() + " failed to sync",
-						    e);
+								"Event of type " + event.getEventType() + " for client " + event.getBaseEntityId() == null ? ""
+										: event.getBaseEntityId() + " failed to sync",
+								e);
 					}
 				}
 			}
-			
+
 		}
 		catch (
-		
-		Exception e) {
+
+				Exception e) {
 			logger.error(format("Sync data processing failed with exception {0}.- ", e));
 			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
 		}
@@ -242,12 +242,12 @@ public class EventResource extends RestResource<Event> {
 		public Event getByBaseEntityAndFormSubmissionId(@RequestParam String baseEntityId, @RequestParam String formSubmissionId) {
 			return eventService.getByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
 		}*/
-	
+
 	@Override
 	public Event create(Event o) {
 		return eventService.addEvent(o);
 	}
-	
+
 	@Override
 	public List<String> requiredProperties() {
 		List<String> p = new ArrayList<>();
@@ -260,16 +260,16 @@ public class EventResource extends RestResource<Event> {
 		//p.add(ENTITY_TYPE);
 		return p;
 	}
-	
+
 	@Override
 	public Event update(Event entity) {
 		return eventService.mergeEvent(entity);
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 	}
-	
+
 	@Override
 	public List<Event> search(HttpServletRequest request) throws ParseException {
 		String clientId = getStringFilter("identifier", request);
@@ -281,13 +281,13 @@ public class EventResource extends RestResource<Event> {
 		DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);
 		String team = getStringFilter(TEAM, request);
 		String teamId = getStringFilter(TEAM_ID, request);
-		
+
 		if (!StringUtils.isEmptyOrWhitespaceOnly(clientId)) {
 			Client c = clientService.find(clientId);
 			if (c == null) {
 				return new ArrayList<>();
 			}
-			
+
 			clientId = c.getBaseEntityId();
 		}
 		EventSearchBean eventSearchBean = new EventSearchBean();
@@ -302,13 +302,13 @@ public class EventResource extends RestResource<Event> {
 		eventSearchBean.setLastEditTo(lastEdit == null ? null : lastEdit[1]);
 		eventSearchBean.setTeam(team);
 		eventSearchBean.setTeamId(teamId);
-		
+
 		return eventService.findEventsBy(eventSearchBean);
 	}
-	
+
 	@Override
 	public List<Event> filter(String query) {
 		return eventService.findEventsByDynamicQuery(query);
 	}
-	
+
 }

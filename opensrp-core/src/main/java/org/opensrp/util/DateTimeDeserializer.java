@@ -10,20 +10,20 @@ import org.codehaus.jackson.map.deser.std.StdScalarDeserializer;
 import org.joda.time.DateTime;
 
 public class DateTimeDeserializer extends StdScalarDeserializer<DateTime> {
-	
+
 	public DateTimeDeserializer() {
 		super(DateTime.class);
 	}
-	
+
 	@Override
 	public DateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-	    throws JsonParseException, IOException {
+			throws JsonParseException, IOException {
 		JsonToken currentToken = jsonParser.getCurrentToken();
 		if (currentToken == JsonToken.VALUE_STRING) {
 			String dateTimeAsString = jsonParser.getText().trim();
 			return new DateTime(dateTimeAsString);
 		}
 		return null;
-		
+
 	}
 }

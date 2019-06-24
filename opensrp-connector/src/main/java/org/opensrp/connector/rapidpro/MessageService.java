@@ -50,7 +50,7 @@ public class MessageService {
 					Client child = clientService.find(event.getBaseEntityId());
 					if (child != null) {
 						logger.info("sending message to child childBaseEntityId:" + child.getBaseEntityId());
-						Map<String, Map<String, String>> relationships = child.getRelationships();
+						Map<String, Map<String,String>> relationships = child.getRelationships();
 						String motherId = relationships.get("mother").get(0);
 						Client mother = clientService.find(motherId);
 						logger.info("sending message to mother moterBaseEntityId:" + mother.getBaseEntityId());

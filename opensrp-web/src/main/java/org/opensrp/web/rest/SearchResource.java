@@ -1,3 +1,4 @@
+
 package org.opensrp.web.rest;
 
 import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
@@ -55,28 +56,68 @@ public class SearchResource extends RestResource<Client> {
         this.eventService = eventService;
     }
 
+//    @Override
+//    public List<Client> search(HttpServletRequest request) throws ParseException {//TODO search should not call different url but only add params
+//        String firstName = getStringFilter(FIRST_NAME, request);
+//        String middleName = getStringFilter(MIDDLE_NAME, request);
+//        String lastName = getStringFilter(LAST_NAME, request);
+//
+//        ClientSearchBean searchBean = new ClientSearchBean();
+//        searchBean.setNameLike(getStringFilter("name", request));
+//
+//        searchBean.setGender(getStringFilter(GENDER, request));
+//        DateTime[] birthdate = getDateRangeFilter(BIRTH_DATE, request);//TODO add ranges like fhir do http://hl7.org/fhir/search.html
+//        DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);//TODO client by provider id
+//        //TODO lookinto Swagger https://slack-files.com/files-pri-safe/T0EPSEJE9-F0TBD0N77/integratingswagger.pdf?c=1458211183-179d2bfd2e974585c5038fba15a86bf83097810a
+//
+//        if (birthdate != null) {
+//            searchBean.setBirthdateFrom(birthdate[0]);
+//            searchBean.setBirthdateTo(birthdate[1]);
+//        }
+//        if (lastEdit != null) {
+//            searchBean.setLastEditFrom(lastEdit[0]);
+//            searchBean.setLastEditTo(lastEdit[1]);
+//        }
+//        Map<String, String> attributeMap = null;
+//        String attributes = getStringFilter("attribute", request);
+//        if (!StringUtils.isEmptyOrWhitespaceOnly(attributes)) {
+//            String attributeType = StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[0];
+//            String attributeValue = StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[1];
+//
+//            attributeMap = new HashMap<String, String>();
+//            attributeMap.put(attributeType, attributeValue);
+//        }
+//        searchBean.setAttributes(attributeMap);
+//
+//        Map<String, String> identifierMap = null;
+//        String identifiers = getStringFilter("identifier", request);
+//        if (!StringUtils.isEmptyOrWhitespaceOnly(identifiers)) {
+//            String identifierType = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[0];
+//            String identifierValue = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[1];
+//
+//            identifierMap = new HashMap<String, String>();
+//            identifierMap.put(identifierType, identifierValue);
+//        }
+//
+//        searchBean.setIdentifiers(identifierMap);
+//        return searchService.searchClient(searchBean, firstName, middleName, lastName, null);
+//    }
+
     @Override
     public List<Client> search(HttpServletRequest request) throws ParseException {//TODO search should not call different url but only add params
+
+        ClientSearchBean searchBean = new ClientSearchBean();
         String firstName = getStringFilter(FIRST_NAME, request);
         String middleName = getStringFilter(MIDDLE_NAME, request);
         String lastName = getStringFilter(LAST_NAME, request);
 
-        ClientSearchBean searchBean = new ClientSearchBean();
-        searchBean.setNameLike(getStringFilter("name", request));
+        String nameLike = getStringFilter("name", request);
 
-        searchBean.setGender(getStringFilter(GENDER, request));
+        String gender = getStringFilter(GENDER, request);
         DateTime[] birthdate = getDateRangeFilter(BIRTH_DATE, request);//TODO add ranges like fhir do http://hl7.org/fhir/search.html
         DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);//TODO client by provider id
         //TODO lookinto Swagger https://slack-files.com/files-pri-safe/T0EPSEJE9-F0TBD0N77/integratingswagger.pdf?c=1458211183-179d2bfd2e974585c5038fba15a86bf83097810a
 
-        if (birthdate != null) {
-            searchBean.setBirthdateFrom(birthdate[0]);
-            searchBean.setBirthdateTo(birthdate[1]);
-        }
-        if (lastEdit != null) {
-            searchBean.setLastEditFrom(lastEdit[0]);
-            searchBean.setLastEditTo(lastEdit[1]);
-        }
         Map<String, String> attributeMap = null;
         String attributes = getStringFilter("attribute", request);
         if (!StringUtils.isEmptyOrWhitespaceOnly(attributes)) {
@@ -86,27 +127,19 @@ public class SearchResource extends RestResource<Client> {
             attributeMap = new HashMap<String, String>();
             attributeMap.put(attributeType, attributeValue);
         }
-        searchBean.setAttributes(attributeMap);
 
-        Map<String, String> identifierMap = null;
-        String identifiers = getStringFilter("identifier", request);
-        if (!StringUtils.isEmptyOrWhitespaceOnly(identifiers)) {
-            String identifierType = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[0];
-            String identifierValue = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[1];
-
-            identifierMap = new HashMap<String, String>();
-            identifierMap.put(identifierType, identifierValue);
-        }
-
-        searchBean.setIdentifiers(identifierMap);
-        return searchService.searchClient(searchBean, firstName, middleName, lastName, null);
+        return searchService.searchClient(searchBean,nameLike, firstName, middleName, lastName, gender, null, attributeMap,
+                birthdate == null ? null : birthdate[0], birthdate == null ? null : birthdate[1], lastEdit == null ? null
+                        : lastEdit[0], lastEdit == null ? null : lastEdit[1], null);
     }
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/path")
     @ResponseBody
-    private List<ChildMother> searchPathBy(HttpServletRequest request) throws ParseException {
-        List<ChildMother> childMotherList = new ArrayList<ChildMother>();
+    private List<ChildRelationsGroup> searchPathBy(HttpServletRequest request) throws ParseException {
+        List<ChildRelationsGroup> childMotherList = new ArrayList<ChildRelationsGroup>();
         ClientSearchBean searchBean = new ClientSearchBean();
+
         try {
             String ZEIR_ID = "zeir_id";
 
@@ -127,7 +160,7 @@ public class SearchResource extends RestResource<Client> {
             String firstName = getStringFilter(FIRST_NAME, request);
             String middleName = getStringFilter(MIDDLE_NAME, request);
             String lastName = getStringFilter(LAST_NAME, request);
-            searchBean.setGender(getStringFilter(GENDER, request));
+            String gender = getStringFilter(GENDER, request);
             String inActive = getStringFilter(INACTIVE, request);
             String lostToFollowUp = getStringFilter(LOST_TO_FOLLOW_UP, request);
 
@@ -135,20 +168,11 @@ public class SearchResource extends RestResource<Client> {
             DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);//TODO client by provider id
             //TODO lookinto Swagger https://slack-files.com/files-pri-safe/T0EPSEJE9-F0TBD0N77/integratingswagger.pdf?c=1458211183-179d2bfd2e974585c5038fba15a86bf83097810a
 
-            if (birthdate != null) {
-                searchBean.setBirthdateFrom(birthdate[0]);
-                searchBean.setBirthdateTo(birthdate[1]);
-            }
-            if (lastEdit != null) {
-                searchBean.setLastEditFrom(lastEdit[0]);
-                searchBean.setLastEditTo(lastEdit[1]);
-            }
-
-            String ZEIR_ID_KEY = "ZEIR_ID";
+            String OPENMRS_ID_KEY = "OPENMRS_ID";
             Map<String, String> identifiers = new HashMap<String, String>();
             if (!StringUtils.isEmptyOrWhitespaceOnly(zeirId)) {
                 zeirId = formatChildUniqueId(zeirId);
-                identifiers.put(ZEIR_ID_KEY, zeirId);
+                identifiers.put(OPENMRS_ID_KEY, zeirId);
             }
 
             Map<String, String> attributes = new HashMap<String, String>();
@@ -166,13 +190,12 @@ public class SearchResource extends RestResource<Client> {
             List<Client> children = new ArrayList<Client>();
 
             if (!StringUtils.isEmptyOrWhitespaceOnly(firstName) || !StringUtils.isEmptyOrWhitespaceOnly(middleName)
-                    || !StringUtils.isEmptyOrWhitespaceOnly(lastName)
-                    || !StringUtils.isEmptyOrWhitespaceOnly(searchBean.getGender()) || !identifiers.isEmpty()
-                    || !attributes.isEmpty() || birthdate != null || lastEdit != null) {
+                    || !StringUtils.isEmptyOrWhitespaceOnly(lastName) || !StringUtils.isEmptyOrWhitespaceOnly(gender)
+                    || !identifiers.isEmpty() || !attributes.isEmpty() || birthdate != null || lastEdit != null) {
 
-                searchBean.setIdentifiers(identifiers);
-                searchBean.setAttributes(attributes);
-                children = searchService.searchClient(searchBean, firstName, middleName, lastName, limit);
+                children = searchService.searchClient(searchBean,null, firstName, middleName, lastName, gender, identifiers,
+                        attributes, birthdate == null ? null : birthdate[0], birthdate == null ? null : birthdate[1],
+                        lastEdit == null ? null : lastEdit[0], lastEdit == null ? null : lastEdit[1], limit);
 
             }
 
@@ -194,12 +217,12 @@ public class SearchResource extends RestResource<Client> {
             }
 
             List<Client> mothers = new ArrayList<Client>();
-            if (!StringUtils.isEmptyOrWhitespaceOnly(motherFirstName) || !StringUtils.isEmptyOrWhitespaceOnly(motherLastName)
-                    || !motherAttributes.isEmpty()) {
+            if (!StringUtils.isEmptyOrWhitespaceOnly(motherFirstName)
+                    || !StringUtils.isEmptyOrWhitespaceOnly(motherLastName) || !motherAttributes.isEmpty()) {
 
                 String nameLike = null;
-                if ((!StringUtils.isEmptyOrWhitespaceOnly(motherFirstName)
-                        && !StringUtils.isEmptyOrWhitespaceOnly(motherLastName)) && motherFirstName.equals(motherLastName)) {
+                if ((!StringUtils.isEmptyOrWhitespaceOnly(motherFirstName) && !StringUtils
+                        .isEmptyOrWhitespaceOnly(motherLastName)) && motherFirstName.equals(motherLastName)) {
                     if (org.apache.commons.lang3.StringUtils.containsWhitespace(motherFirstName.trim())) {
                         String[] arr = motherFirstName.split("\\s+");
                         motherFirstName = arr[0];
@@ -210,12 +233,9 @@ public class SearchResource extends RestResource<Client> {
                         motherLastName = null;
                     }
                 }
-                ClientSearchBean motherSearchBean = new ClientSearchBean();
-                motherSearchBean.setNameLike(nameLike);
-                motherSearchBean.setAttributes(motherAttributes);
-                motherSearchBean.setLastEditFrom(searchBean.getLastEditFrom());
-                motherSearchBean.setLastEditTo(searchBean.getLastEditTo());
-                mothers = searchService.searchClient(motherSearchBean, motherFirstName, null, motherLastName, limit);
+                mothers = searchService.searchClient(searchBean, nameLike, motherFirstName, null, motherLastName, null, null,
+                        motherAttributes, null, null, lastEdit == null ? null : lastEdit[0], lastEdit == null ? null
+                                : lastEdit[1], limit);
 
             }
 
@@ -236,41 +256,17 @@ public class SearchResource extends RestResource<Client> {
 
                 }
             }
-
             // Search conjunction is "AND" find intersection
             children = intersection(children, eventChildren);
 
-            List<Client> linkedMothers = new ArrayList<Client>();
+            String MOTHER_RELATIONSHIP_KEY = "mother";
+            String GUARDIAN_RELATIONSHIP_KEY = "guardian";
 
-            String RELATIONSHIP_KEY = "mother";
-            if (!children.isEmpty()) {
-                List<String> clientIds = new ArrayList<String>();
-                for (Client c : children) {
-                    String relationshipId = getRelationalId(c, RELATIONSHIP_KEY);
-                    if (relationshipId != null && !clientIds.contains(relationshipId)) {
-                        clientIds.add(relationshipId);
-                    }
-                }
+            List<Client> linkedMothers = getLinkedMothers(children, MOTHER_RELATIONSHIP_KEY);
+            linkedMothers.addAll(getLinkedMothers(children, GUARDIAN_RELATIONSHIP_KEY));
 
-                linkedMothers = clientService.findByFieldValue(BaseEntity.BASE_ENTITY_ID, clientIds);
-
-            }
-
-            List<Client> linkedChildren = new ArrayList<Client>();
-
-            String M_ZEIR_ID = "M_ZEIR_ID";
-            if (!mothers.isEmpty()) {
-                List<String> cIndentifers = new ArrayList<String>();
-                for (Client m : mothers) {
-                    String childIdentifier = getChildIndentifier(m, M_ZEIR_ID, RELATIONSHIP_KEY);
-                    if (childIdentifier != null && !cIndentifers.contains(childIdentifier)) {
-                        cIndentifers.add(childIdentifier);
-                    }
-                }
-
-                linkedChildren = clientService.findByFieldValue(ZEIR_ID_KEY, cIndentifers);
-
-            }
+            List<Client> linkedChildren = getLinkedChildren(mothers, OPENMRS_ID_KEY, MOTHER_RELATIONSHIP_KEY);
+            linkedChildren.addAll(getLinkedChildren(mothers, OPENMRS_ID_KEY, GUARDIAN_RELATIONSHIP_KEY));
 
             // Search conjunction is "AND" find intersection
             children = intersection(children, linkedChildren);
@@ -282,21 +278,73 @@ public class SearchResource extends RestResource<Client> {
             }
 
             for (Client child : children) {
-                for (Client mother : mothers) {
-                    String relationalId = getRelationalId(child, RELATIONSHIP_KEY);
-                    String motherEntityId = mother.getBaseEntityId();
+                ChildRelationsGroup crg = null;
+                for (Client c : mothers) {
+                    String relationalId = getRelationalId(child, MOTHER_RELATIONSHIP_KEY);
+                    String motherEntityId = c.getBaseEntityId();
                     if (relationalId != null && motherEntityId != null && relationalId.equalsIgnoreCase(motherEntityId)) {
-                        childMotherList.add(new ChildMother(child, mother));
+                        if(crg == null){
+                            crg = new ChildRelationsGroup(child, c, true);
+                        } else {
+                            crg.setMother(c);
+                        }
                     }
+                    relationalId = getRelationalId(child, GUARDIAN_RELATIONSHIP_KEY);
+                    if (relationalId != null && motherEntityId != null && relationalId.equalsIgnoreCase(motherEntityId)) {
+                        if(crg == null){
+                            crg = new ChildRelationsGroup(child, c, false);
+                        } else {
+                            crg.setGuardian(c);
+                        }
+                    }
+                }
+                if(crg != null) {
+                    childMotherList.add(crg);
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("", e);
         }
 
         return childMotherList;
+    }
+
+    private List<Client> getLinkedMothers(List<Client> children, String relationshipKey) {
+        List<Client> linkedMothers = new ArrayList<Client>();
+
+        if (!children.isEmpty()) {
+            List<String> clientIds = new ArrayList<String>();
+            for (Client c : children) {
+                String relationshipId = getRelationalId(c, relationshipKey);
+                if (relationshipId != null && !clientIds.contains(relationshipId)) {
+                    clientIds.add(relationshipId);
+                }
+            }
+
+            linkedMothers = clientService.findByFieldValue(BaseEntity.BASE_ENTITY_ID, clientIds);
+        }
+
+        return linkedMothers;
+    }
+
+    private List<Client> getLinkedChildren(List<Client> mothers, String openmrsIdKey, String relationshipKey) {
+        List<Client> linkedChildren = new ArrayList<>();
+
+        String M_KIP_ID = "M_KIP_ID";
+        if (!mothers.isEmpty()) {
+            List<String> cIndentifers = new ArrayList<>();
+            for (Client m : mothers) {
+                String childIdentifier = getChildIndentifier(m, M_KIP_ID, relationshipKey);
+                if (childIdentifier != null && !cIndentifers.contains(childIdentifier)) {
+                    cIndentifers.add(childIdentifier);
+                }
+            }
+
+            linkedChildren = clientService.findByFieldValuex(openmrsIdKey, cIndentifers);
+        }
+
+        return linkedChildren;
     }
 
     @Override
@@ -335,9 +383,9 @@ public class SearchResource extends RestResource<Client> {
             for (Map.Entry<String, Map<String, String>> entry : relationships.entrySet()) {
                 String key = entry.getKey();
                 if (key.equalsIgnoreCase(relationshipKey)) {
-                    List<String> rList = (List<String>) entry.getValue();
-                    if (!rList.isEmpty()) {
-                        return rList.get(0);
+                    Map<String, String> rMap = entry.getValue();
+                    if (!rMap.isEmpty()) {
+                        return rMap.get("relativeEntityId");
                     }
                 }
             }
@@ -357,15 +405,27 @@ public class SearchResource extends RestResource<Client> {
         return null;
     }
 
-    private class ChildMother {
+    private class ChildRelationsGroup {
 
         private Client child;
 
         private Client mother;
 
-        public ChildMother(Client child, Client mother) {
+        private Client guardian;
+
+        public ChildRelationsGroup(Client child, Client mother, Client guardian) {
             this.child = child;
             this.mother = mother;
+            this.guardian = guardian;
+        }
+
+        public ChildRelationsGroup(Client child, Client c, boolean isMother) {
+            this.child = child;
+            if (isMother) {
+                this.mother = c;
+            } else {
+                this.guardian = c;
+            }
         }
 
         @SuppressWarnings("unused")
@@ -376,6 +436,23 @@ public class SearchResource extends RestResource<Client> {
         @SuppressWarnings("unused")
         public Client getChild() {
             return child;
+        }
+
+        @SuppressWarnings("unused")
+        public Client getGuardian() {
+            return guardian;
+        }
+
+        public void setChild(Client child) {
+            this.child = child;
+        }
+
+        public void setMother(Client mother) {
+            this.mother = mother;
+        }
+
+        public void setGuardian(Client guardian) {
+            this.guardian = guardian;
         }
     }
 
@@ -437,3 +514,4 @@ public class SearchResource extends RestResource<Client> {
         return list;
     }
 }
+

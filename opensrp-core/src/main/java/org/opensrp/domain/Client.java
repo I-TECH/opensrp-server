@@ -1,3 +1,4 @@
+
 package org.opensrp.domain;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +10,9 @@ import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.opensrp.common.Gender;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @TypeDiscriminator("doc.type == 'Client'")
 public class Client extends BaseEntity {

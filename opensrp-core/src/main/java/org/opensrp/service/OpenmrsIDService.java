@@ -68,12 +68,12 @@ public class OpenmrsIDService {
 		// Add query parameters
 		openmrsQueryUrl += "?source=" + this.openmrsSourceId + "&numberToGenerate=" + size;
 		openmrsQueryUrl += "&username=" + this.openmrsUserName + "&password=" + this.openmrsPassword;
-		
+
 		HttpGet get = new HttpGet(openmrsQueryUrl);
 		try {
 			HttpResponse response = client.execute(get);
 			String jsonResponse = EntityUtils.toString(response.getEntity());
-			
+
 			JSONObject responseJson = new JSONObject(jsonResponse);
 			JSONArray jsonArray = responseJson.getJSONArray("identifiers");
 
@@ -88,7 +88,6 @@ public class OpenmrsIDService {
 			return null;
 		}
 		// import IDs and client data to database together with assignments
-
 		return ids;
 	}
 

@@ -27,24 +27,24 @@ import com.mysql.jdbc.StringUtils;
 @Controller
 @RequestMapping(value = "/rest/client")
 public class ClientResource extends RestResource<Client> {
-	
+
 	private ClientService clientService;
-	
+
 	@Autowired
 	public ClientResource(ClientService clientService) {
 		this.clientService = clientService;
 	}
-	
+
 	@Override
 	public Client getByUniqueId(String uniqueId) {
 		return clientService.find(uniqueId);
 	}
-	
+
 	@Override
 	public Client create(Client o) {
 		return clientService.addClient(o);
 	}
-	
+
 	@Override
 	public List<String> requiredProperties() {
 		List<String> p = new ArrayList<>();
@@ -54,12 +54,12 @@ public class ClientResource extends RestResource<Client> {
 		p.add(BASE_ENTITY_ID);
 		return p;
 	}
-	
+
 	@Override
 	public Client update(Client entity) {//TODO check if send property and id matches
 		return clientService.mergeClient(entity);//TODO update should only be based on baseEntityId
 	}
-	
+
 	@Override
 	public List<Client> search(HttpServletRequest request) throws ParseException {//TODO search should not call different url but only add params
 		ClientSearchBean searchBean = new ClientSearchBean();
@@ -75,7 +75,7 @@ public class ClientResource extends RestResource<Client> {
 			searchBean.setDeathdateFrom(deathdate[0]);
 			searchBean.setDeathdateTo(deathdate[1]);
 		}
-		
+
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
 		addressSearchBean.setAddressType(getStringFilter(ADDRESS_TYPE, request));
 		addressSearchBean.setCountry(getStringFilter(COUNTRY, request));
@@ -90,14 +90,14 @@ public class ClientResource extends RestResource<Client> {
 		String attributes = getStringFilter("attribute", request);
 		searchBean.setAttributeType(StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[0]);
 		searchBean.setAttributeValue(StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[1]);
-		
+
 		return clientService.findByCriteria(searchBean, addressSearchBean,  lastEdit == null ? null : lastEdit[0],
-		    lastEdit == null ? null : lastEdit[1]);
+				lastEdit == null ? null : lastEdit[1]);
 	}
-	
+
 	@Override
 	public List<Client> filter(String query) {
 		return clientService.findByDynamicQuery(query);
 	}
-	
+
 }

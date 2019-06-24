@@ -37,7 +37,7 @@ public class DHIS2TrackerService {
 
 	public static TrackerType getClientType(Client client) {
 
-		Map<String, Map<String, String>> relationships = client.getRelationships();
+		Map<String, Map<String,String>> relationships = client.getRelationships();
 		TrackerType type = null;
 		if (relationships == null) {
 			type = TrackerType.HOUSEHOLD;

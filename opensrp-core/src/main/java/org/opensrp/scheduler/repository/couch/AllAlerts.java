@@ -44,7 +44,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         ComplexKey endKey = ComplexKey.of(provider, Long.MAX_VALUE);
         return db.queryView(createQuery("alert_by_provider_and_time_active").startKey(startKey).endKey(endKey).includeDocs(true), Alert.class);
     }
-    
+
     @View(name = "alert_by_provider_entityId_trigger",
             map = "function(doc) { " +
                     "if(doc.type === 'Alert') {" +
@@ -54,7 +54,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         ComplexKey key = ComplexKey.of(provider, entityId, triggerName);
         return db.queryView(createQuery("alert_by_provider_entityId_trigger").key(key).includeDocs(true), Alert.class);
     }
-    
+
     @View(name = "alert_by_provider_entityId_trigger_active",
             map = "function(doc) { " +
                     "if(doc.type === 'Alert' && doc.isActive) {" +
@@ -64,7 +64,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         ComplexKey key = ComplexKey.of(provider, entityId, triggerName);
         return db.queryView(createQuery("alert_by_provider_entityId_trigger_active").key(key).includeDocs(true), Alert.class);
     }
-    
+
     @View(name = "alert_by_entityId_trigger_active",
             map = "function(doc) { " +
                     "if(doc.type === 'Alert' && doc.isActive) {" +
@@ -74,7 +74,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         ComplexKey key = ComplexKey.of(entityId, triggerName);
         return db.queryView(createQuery("alert_by_entityId_trigger_active").key(key).includeDocs(true), Alert.class);
     }
-    
+
     @View(name = "alert_by_entityId_active",
             map = "function(doc) { " +
                     "if(doc.type === 'Alert' && doc.isActive) {" +
@@ -90,7 +90,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         ComplexKey endKey = ComplexKey.of(entityId, trigger, end.getMillis());
         return db.queryView(createQuery("alert_by_entityId_and_trigger_and_time").startKey(startKey).endKey(endKey).includeDocs(true), Alert.class);
     }
-    
+
     public void markAllAsClosedFor(String entityId, String reasonForClose) {
         List<Alert> actions = findActiveAlertByEntityId(entityId);
         for (Alert action : actions) {
@@ -103,12 +103,12 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
     private List<Alert> findByBeneficiaryType(String beneficiaryType) {
         return queryView("by_beneficiaryType", beneficiaryType);
     }
-    
+
     @GenerateView
     private List<Alert> findByAlertType(String alertType) {
         return queryView("by_alertType", alertType);
     }
-    
+
     @GenerateView
     private List<Alert> findByTriggerType(String triggerType) {
         return queryView("by_triggerType", triggerType);
@@ -130,7 +130,7 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         }
         db.executeBulk(existingAlerts);
     }
-    
+
     public void markAlertAsCompleteFor(String providerId, String entityId, String triggerName, String completionDate) {
         List<Alert> existingAlerts = findActiveAlertByProviderEntityIdTriggerName(providerId, entityId, triggerName);
         if (existingAlerts.size() > 1) {
@@ -142,37 +142,37 @@ public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepo
         }
         db.executeBulk(existingAlerts);
     }
-    
-    public void addOrUpdateScheduleNotificationAlert(String beneficiaryType, String entityId, String providerId, 
-    		String triggerName, String triggerCode, AlertStatus alertStatus, DateTime startDate, DateTime expiryDate) {
+
+    public void addOrUpdateScheduleNotificationAlert(String beneficiaryType, String entityId, String providerId,
+                                                     String triggerName, String triggerCode, AlertStatus alertStatus, DateTime startDate, DateTime expiryDate) {
         List<Alert> existingAlerts =  findActiveAlertByProviderEntityIdTriggerName(providerId, entityId, triggerName);
         if (existingAlerts.size() > 1) {
             logger.warn(MessageFormat.format("Found more than one active alerts for the combination of "
-            		+ "providerId: {0}, entityId: {1} and triggerName: {2}", providerId, entityId, triggerName));
+                    + "providerId: {0}, entityId: {1} and triggerName: {2}", providerId, entityId, triggerName));
         }
-        
+
         if(existingAlerts.size() == 0){
-        	add(new Alert(providerId, entityId, beneficiaryType, AlertType.notification, TriggerType.schedule, triggerName, triggerCode, startDate, expiryDate, alertStatus, null));        	
+            add(new Alert(providerId, entityId, beneficiaryType, AlertType.notification, TriggerType.schedule, triggerName, triggerCode, startDate, expiryDate, alertStatus, null));
         }
         else {
-        	Alert al = existingAlerts.get(0);
-        	// if visit code is same then update otherwise add another record
-        	if(StringUtils.isNotBlank(al.triggerCode()) && StringUtils.isNotBlank(triggerCode) 
-        			&& al.triggerCode().equalsIgnoreCase(triggerCode)){
-        		al.setAlertStatus(alertStatus.name());
-        		al.setStartDate(startDate.toString());
-        		al.setExpiryDate(expiryDate.toString());
-        		al.details().put(alertStatus.name()+":start", startDate.toString());
-        		al.details().put(alertStatus.name()+":end", expiryDate.toString());
-        		
-        		update(al);
-        	}
-        	else {
-            	add(new Alert(providerId, entityId, beneficiaryType, AlertType.notification, TriggerType.schedule, triggerName, triggerCode, startDate, expiryDate, alertStatus, null));        	
-        	}
+            Alert al = existingAlerts.get(0);
+            // if visit code is same then update otherwise add another record
+            if(StringUtils.isNotBlank(al.triggerCode()) && StringUtils.isNotBlank(triggerCode)
+                    && al.triggerCode().equalsIgnoreCase(triggerCode)){
+                al.setAlertStatus(alertStatus.name());
+                al.setStartDate(startDate.toString());
+                al.setExpiryDate(expiryDate.toString());
+                al.details().put(alertStatus.name()+":start", startDate.toString());
+                al.details().put(alertStatus.name()+":end", expiryDate.toString());
+
+                update(al);
+            }
+            else {
+                add(new Alert(providerId, entityId, beneficiaryType, AlertType.notification, TriggerType.schedule, triggerName, triggerCode, startDate, expiryDate, alertStatus, null));
+            }
         }
     }
-    
+
     public void markAlertAsCompleteFor(String entityId, String triggerName, String completionDate) {
         List<Alert> existingAlerts = findActiveAlertByEntityIdTriggerName(entityId, triggerName);
         if (existingAlerts.size() > 1) {

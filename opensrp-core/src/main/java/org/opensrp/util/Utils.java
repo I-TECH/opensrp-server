@@ -45,7 +45,7 @@ public class Utils {
 
 	private Utils() {
 
-    }
+	}
 
 	public static Map<String, String> getStringMapFromJSON(String fields) {
 		return new Gson().fromJson(fields, new TypeToken<Map<String, String>>() {
@@ -62,20 +62,20 @@ public class Utils {
 		}
 		return fieldList;
 	}
-	
+
 	public static Object getMergedJSON(Object original, Object updated, List<Field> fn, Class<?> clazz)
-	    throws JSONException {
-		
+			throws JSONException {
+
 		Gson gs = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 		JSONObject originalJo = new JSONObject(gs.toJson(original, clazz));
-		
+
 		JSONObject updatedJo = new JSONObject(gs.toJson(updated, clazz));
-		
+
 		JSONObject mergedJson = new JSONObject();
 		if (originalJo.length() > 0) {
 			mergedJson = new JSONObject(originalJo, JSONObject.getNames(originalJo));
 		}
-		
+
 		if (updatedJo.length() > 0) {
 			for (Field key : fn) {
 				String jokey = key.getName();
@@ -164,7 +164,7 @@ public class Utils {
 
 	/**
 	 * Connect to the database specified by DatabaseConnectionParams
-	 * 
+	 *
 	 * @param dbParams
 	 * @return
 	 * @throws MalformedURLException
@@ -172,7 +172,7 @@ public class Utils {
 	public static CouchDbConnector connectToDB(DatabaseConnectionParams dbParams) throws MalformedURLException {
 		HttpClient authenticatedHttpClient = null;
 
-        if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null && !dbParams.password.isEmpty()) {
+		if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null && !dbParams.password.isEmpty()) {
 
 			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber)).username(dbParams.userName)
 					.password(dbParams.password).build();

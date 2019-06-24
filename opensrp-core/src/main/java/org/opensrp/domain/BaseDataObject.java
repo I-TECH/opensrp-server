@@ -32,10 +32,10 @@ public abstract class BaseDataObject extends MotechBaseDataObject {
 
 	@JsonProperty
 	private Integer clientDatabaseVersion;
-	
+
 
 	public BaseDataObject() {}
-	
+
 	public User getCreator() {
 		return creator;
 	}
@@ -99,7 +99,7 @@ public abstract class BaseDataObject extends MotechBaseDataObject {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
-	
+
 	public Long getServerVersion() {
 		return serverVersion;
 	}
@@ -107,7 +107,7 @@ public abstract class BaseDataObject extends MotechBaseDataObject {
 	public void setServerVersion(Long version) {
 		this.serverVersion = version;
 	}
-	
+
 	public BaseDataObject withCreator(User creator) {
 		this.creator = creator;
 		return this;
@@ -172,10 +172,10 @@ public abstract class BaseDataObject extends MotechBaseDataObject {
 	public void setClientDatabaseVersion(Integer clientDatabaseVersion) {
 		this.clientDatabaseVersion = clientDatabaseVersion;
 	}
-	
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
-    
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
 }

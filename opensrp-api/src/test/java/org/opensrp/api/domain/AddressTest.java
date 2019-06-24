@@ -76,7 +76,7 @@ public class AddressTest {
         assertEquals(1, address.durationInYears());
         assertEquals(12, address.durationInMonths());
         assertEquals(52, address.durationInWeeks());
-        assertEquals(365, address.durationInDays());
+        assertEquals(366, address.durationInDays());
     }
 	
 	@Test

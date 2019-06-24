@@ -16,13 +16,13 @@
 
 -- // create client metadata table
 -- Migration SQL that makes the change goes here.
-
 CREATE TABLE core.client_metadata
 (
     id bigserial NOT NULL,
     client_id bigint REFERENCES core.client (id),
     document_id character varying UNIQUE NOT NULL,
     base_entity_id character varying UNIQUE NOT NULL,
+    date_created date,
     relational_id character varying,
     server_version bigint,
     openmrs_uuid character varying,
@@ -30,7 +30,9 @@ CREATE TABLE core.client_metadata
     first_name character varying,
     middle_name character varying,
     last_name character varying,
+    gender character varying,
     birth_date date,
+    death_date date,
     date_deleted timestamp,
     PRIMARY KEY (id)
 )

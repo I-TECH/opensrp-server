@@ -33,20 +33,20 @@ import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
  */
 @Service
 public class XlsFormDownloaderService {
-	private NetClientGet netClientGet;
-	private FileCreator fileCreator;
-	private JsonParser jsonParser;
-	
-	private byte[] formJson=null; 
-	public XlsFormDownloaderService() {
-	netClientGet=new NetClientGet();
-	fileCreator=new FileCreator();
-	
-	jsonParser=new JsonParser();
-	}
+    private NetClientGet netClientGet;
+    private FileCreator fileCreator;
+    private JsonParser jsonParser;
 
-	public static void main(String[] args) {
-		try {
+    private byte[] formJson=null;
+    public XlsFormDownloaderService() {
+        netClientGet=new NetClientGet();
+        fileCreator=new FileCreator();
+
+        jsonParser=new JsonParser();
+    }
+
+    public static void main(String[] args) {
+        try {
 
 			/*System.out.println(DateTime.now().getWeekOfWeekyear());
 			new XlsFormDownloaderService().downloadFormFiles("D:\\opensrpVaccinatorWkspc\\forms", 
@@ -94,12 +94,12 @@ public class XlsFormDownloaderService {
 			
 			new XlsFormDownloaderService().downloadFormFiles("D:\\opensrpVaccinatorWkspc\\forms", 
 					"maimoonak", "opensrp", JustForFun.Form, "offsite_woman_followup_form", "115135");*/
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public String formatXML(String input)
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String formatXML(String input)
     {
         try
         {
@@ -124,8 +124,8 @@ public class XlsFormDownloaderService {
             return input;
         }
     }
-	
-	public String format(String unformattedXml) {
+
+    public String format(String unformattedXml) {
         try {
             final org.w3c.dom.Document document = parseXmlFile(unformattedXml);
 
@@ -157,34 +157,34 @@ public class XlsFormDownloaderService {
             throw new RuntimeException(e);
         }
     }
-    
-	
-	public boolean downloadFormFiles(String directory,String username ,String formPath, String password,String formId, String formPk) throws IOException{
-		
-		String xmlData=netClientGet.convertToString("", formPath, formId);
-		String modelData=netClientGet.getModel(xmlData);
-		String formData=fileCreator.prettyFormat(netClientGet.getForm(xmlData));
-		
-		modelData=format(modelData);
-		
-		formData = formData.replaceAll("selected\\(", "contains(");
-		formData = formData.replaceAll("<span.*lang=\"openmrs_code\".*</span>", "");
-		formData = formData.replaceAll("<option value=\"openmrs_code\">openmrs_code</option>", "");
-		
-		formJson=netClientGet.downloadJson(username,password,  formPk);
-		
-		//formData=fileCreator.prettyFormat(formData);
-		System.out.println(getFormDefinition());
-		fileCreator.createFile("form_definition.json", fileCreator.osDirectorySet(directory)+formId, getFormDefinition().getBytes());
-		return fileCreator.createFormFiles(fileCreator.osDirectorySet(directory)+formId, formId, formData.getBytes(), modelData.getBytes(), formJson);
-	}
-	
-	public String getFormDefinition() throws JsonProcessingException, IOException{
-		if(formJson==null){
-			return "Data not found on server . Please retry again !";
-			
-		}
-		return jsonParser.getFormDefinition(formJson);
-		
-	}	
+
+
+    public boolean downloadFormFiles(String directory,String username ,String formPath, String password,String formId, String formPk) throws IOException{
+
+        String xmlData=netClientGet.convertToString("", formPath, formId);
+        String modelData=netClientGet.getModel(xmlData);
+        String formData=fileCreator.prettyFormat(netClientGet.getForm(xmlData));
+
+        modelData=format(modelData);
+
+        formData = formData.replaceAll("selected\\(", "contains(");
+        formData = formData.replaceAll("<span.*lang=\"openmrs_code\".*</span>", "");
+        formData = formData.replaceAll("<option value=\"openmrs_code\">openmrs_code</option>", "");
+
+        formJson=netClientGet.downloadJson(username,password,  formPk);
+
+        //formData=fileCreator.prettyFormat(formData);
+        System.out.println(getFormDefinition());
+        fileCreator.createFile("form_definition.json", fileCreator.osDirectorySet(directory)+formId, getFormDefinition().getBytes());
+        return fileCreator.createFormFiles(fileCreator.osDirectorySet(directory)+formId, formId, formData.getBytes(), modelData.getBytes(), formJson);
+    }
+
+    public String getFormDefinition() throws JsonProcessingException, IOException{
+        if(formJson==null){
+            return "Data not found on server . Please retry again !";
+
+        }
+        return jsonParser.getFormDefinition(formJson);
+
+    }
 }

@@ -1,7 +1,9 @@
 package org.opensrp.repository.postgres;
 
 import java.util.List;
+import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
@@ -20,8 +22,10 @@ public class SearchRepositoryImpl implements SearchRepository {
 	private ClientsRepositoryImpl clientsRepository;
 	
 	@Override
-	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, String firstName, String middleName,
-	                                   String lastName, Integer limit) {
+	public List<Client> findByCriteria (ClientSearchBean clientSearchBean, String nameLike, String firstName,
+										String middleName, String lastName, String gender, Map<String, String> identifiers,
+										Map<String, String> attributes, DateTime birthdateFrom, DateTime birthdateTo,
+										DateTime lastEditFrom, DateTime lastEditTo, Integer limit) {
 		clientSearchBean.setFirstName(firstName);
 		clientSearchBean.setMiddleName(middleName);
 		clientSearchBean.setLastName(lastName);
@@ -29,5 +33,5 @@ public class SearchRepositoryImpl implements SearchRepository {
 		    new AddressSearchBean(), 0, limit == null ? BaseRepositoryImpl.DEFAULT_FETCH_SIZE : limit);
 		return clientsRepository.convert(clients);
 	}
-	
+
 }

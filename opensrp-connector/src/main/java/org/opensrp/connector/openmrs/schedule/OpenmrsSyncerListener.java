@@ -136,9 +136,9 @@ public class OpenmrsSyncerListener {
 
 					if (uuid == null) {
 						logger.info("uuid == null");
-						JSONObject p = patientService.getPatientByIdentifier(c.getBaseEntityId());
+						JSONObject p = patientService.getPatientByIdentifierPerson(c.getBaseEntityId());
 						for (Entry<String, String> id : c.getIdentifiers().entrySet()) {
-							p  = patientService.getPatientByIdentifier(id.getValue());
+							p  = patientService.getPatientByIdentifierPerson(id.getValue());
 							if (p != null) {
 								logger.info("p != null: " );
 								break;
@@ -248,12 +248,12 @@ public class OpenmrsSyncerListener {
 			JSONArray patientsJsonArray = new JSONArray();// only for test code purpose
 			JSONArray relationshipsArray = new JSONArray();// only for test code purpose
 			JSONObject returnJsonObject = new JSONObject();// only for test code purpose
-//			if (cl != null && !cl.isEmpty()) {
-//				patientService.processClients(cl, patientsJsonArray,
-//				    SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, "OPENMRS FAILED CLIENT PUSH");
-//				logger.info("RUNNING FOR RELATIONSHIPS");
-//				patientService.createRelationShip(cl, "OPENMRS FAILED CLIENT RELATIONSHIP PUSH");
-//			}
+			if (cl != null && !cl.isEmpty()) {
+				patientService.processClients(cl, patientsJsonArray,
+				    SchedulerConfig.openmrs_syncer_sync_client_by_date_updated, "OPENMRS FAILED CLIENT PUSH");
+				logger.info("RUNNING FOR RELATIONSHIPS");
+				patientService.createRelationShip(cl, "OPENMRS FAILED CLIENT RELATIONSHIP PUSH");
+			}
 			returnJsonObject.put("patient", patientsJsonArray); // only for test code purpose
 			returnJsonObject.put("relation", relationshipsArray);// only for test code purpose
 			return returnJsonObject;

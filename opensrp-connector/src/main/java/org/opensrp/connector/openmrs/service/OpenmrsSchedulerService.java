@@ -75,7 +75,7 @@ public class OpenmrsSchedulerService extends OpenmrsService {
 		if(getSchedule(e.getScheduleName()) == null){
 			createOrUpdateSchedule(allSchedules.getRecordByName(e.getScheduleName()));
 		}
-		JSONObject po = patientService.getPatientByIdentifier(e.getExternalId());
+		JSONObject po = patientService.getPatientByIdentifierPerson(e.getExternalId());
 		JSONObject t = new JSONObject();
 		t.put("beneficiary", po.getJSONObject("person").getString("uuid"));
 		t.put("beneficiaryRole", alertActions!=null&&alertActions.size()>0?alertActions.get(0).data().get("beneficiaryType"):null);

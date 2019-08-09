@@ -136,7 +136,7 @@ public class EncounterService extends OpenmrsService {
 		}
 
 		if(org.apache.commons.lang3.StringUtils.isBlank(openmrsUuid)){
-			JSONObject pt = patientService.getPatientByIdentifier(baseEntityId);
+			JSONObject pt = patientService.getPatientByIdentifierPerson(baseEntityId);
 			if(pt != null){
 				openmrsUuid = pt.getString("uuid");
 			}
@@ -223,7 +223,7 @@ public class EncounterService extends OpenmrsService {
 
 		System.out.print("[OBS-UUIDS]" + obsUuids);
 
-		JSONObject pt = patientService.getPatientByIdentifier(e.getBaseEntityId());//TODO find by any identifier
+		JSONObject pt = patientService.getPatientByIdentifierPerson(e.getBaseEntityId());//TODO find by any identifier
 		JSONObject enc = new JSONObject();
 
 		String pruuid = userService.getPersonUUIDByUser(e.getProviderId());

@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants.SchedulerConfig;
 import org.opensrp.connector.openmrs.service.EncounterService;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.PatientService;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.domain.Client;
@@ -35,6 +36,8 @@ public class OpenmrsValidateDataSync {
     private ConfigService config;
 
     private PatientService patientService;
+
+    private OpenmrsRelationshipService openmrsRelationshipService;
 
     private ClientService clientService;
 
@@ -120,7 +123,7 @@ public class OpenmrsValidateDataSync {
             List<Client> cl = clientService.notInOpenMRSByServerVersion(start, calendar);
             logger.info("Clients_list_size " + cl.size());
 
-            //pushValidateClient(cl);
+            pushValidateClient(cl);
         }
         catch (Exception e) {
             logger.error("", e);
@@ -129,7 +132,7 @@ public class OpenmrsValidateDataSync {
         }
     }
 
-	/*private void pushValidateClient(List<Client> cl) throws JSONException {
+	private void pushValidateClient(List<Client> cl) throws JSONException {
 		try {
 
 			JSONArray patientsJsonArray = new JSONArray();
@@ -147,7 +150,7 @@ public class OpenmrsValidateDataSync {
 			errorTraceService.log("OPENMRS FAILED CLIENT VALIDATION", Client.class.getName(), "",
 			    ExceptionUtils.getStackTrace(e), "");
 		}
-	}*/
+	}
 
     // Validate Event
 

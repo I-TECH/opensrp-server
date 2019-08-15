@@ -147,7 +147,7 @@ public class EncounterService extends OpenmrsService {
 		}
 		else {
 			if (e.getEventType().equals("Update Birth Registration")) {
-				patientService.updatePersonAddressAndName(e);
+				patientService.updatePersonAddress(e);
 			} else if (e.getEventType().equals("Death")) {
 				patientService.updatePersonAsDeceased(e);
 			} else if (e.getEventType().equals("Move To Catchment")) {

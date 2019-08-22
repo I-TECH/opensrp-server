@@ -182,7 +182,7 @@ public class FormSubmissionController {
 
 			householdService.saveHH(hh, true);
 		} else {
-			JSONObject p = patientService.getPatientByIdentifierPerson(c.getBaseEntityId());
+			JSONObject p = patientService.getPatientByIdentifier(c.getBaseEntityId());
 			if(p == null){
 				System.out.println(patientService.createPatient(c));
 			}
@@ -192,7 +192,7 @@ public class FormSubmissionController {
 			for (Map<String, Object> cm : dep.values()) {
 				Client cin = (Client) cm.get("client");
 				Event evin = (Event) cm.get("event");
-				JSONObject pin = patientService.getPatientByIdentifierPerson(cin.getBaseEntityId());
+				JSONObject pin = patientService.getPatientByIdentifier(cin.getBaseEntityId());
 				if(pin == null){
 					System.out.println(patientService.createPatient(cin));
 				}

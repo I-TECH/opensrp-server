@@ -46,11 +46,11 @@ public class OpenmrsValidateDataSync {
 
     private static int WAIT_TIME_IN_HOURS = 12;
 
-    private final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
+    final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
 
-    private final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
+    final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
 
-    private final String VACCINATION_EVENT = "Vaccination";
+    final String VACCINATION_EVENT = "Vaccination";
 
     @Autowired
     public OpenmrsValidateDataSync(ConfigService config, PatientService patientService, ClientService clientService,
@@ -120,7 +120,7 @@ public class OpenmrsValidateDataSync {
             List<Client> cl = clientService.notInOpenMRSByServerVersion(start, calendar);
             logger.info("Clients_list_size " + cl.size());
 
-            pushValidateClient(cl);
+            //pushValidateClient(cl);
         }
         catch (Exception e) {
             logger.error("", e);
@@ -129,25 +129,25 @@ public class OpenmrsValidateDataSync {
         }
     }
 
-    private void pushValidateClient(List<Client> cl) throws JSONException {
-        try {
+	/*private void pushValidateClient(List<Client> cl) throws JSONException {
+		try {
 
-            JSONArray patientsJsonArray = new JSONArray();
+			JSONArray patientsJsonArray = new JSONArray();
 
-            if (cl != null && !cl.isEmpty()) {
-                patientService.processClients(cl, patientsJsonArray, SchedulerConfig.openmrs_client_sync_validator_timestamp,
-                        "OPENMRS FAILED CLIENT VALIDATION");
+			if (cl != null && !cl.isEmpty()) {
+				patientService.processClients(cl, patientsJsonArray, SchedulerConfig.openmrs_client_sync_validator_timestamp,
+				    "OPENMRS FAILED CLIENT VALIDATION");
 
-                logger.info("RUNNING FOR RELATIONSHIPS");
-                patientService.createRelationShip(cl, "OPENMRS FAILED CLIENT RELATIONSHIP VALIDATION");
-            }
-        }
-        catch (Exception e) {
-            logger.error("", e);
-            errorTraceService.log("OPENMRS FAILED CLIENT VALIDATION", Client.class.getName(), "",
-                    ExceptionUtils.getStackTrace(e), "");
-        }
-    }
+				logger.info("RUNNING FOR RELATIONSHIPS");
+				patientService.createRelationShip(cl, "OPENMRS FAILED CLIENT RELATIONSHIP VALIDATION");
+			}
+		}
+		catch (Exception e) {
+			logger.error("", e);
+			errorTraceService.log("OPENMRS FAILED CLIENT VALIDATION", Client.class.getName(), "",
+			    ExceptionUtils.getStackTrace(e), "");
+		}
+	}*/
 
     // Validate Event
 

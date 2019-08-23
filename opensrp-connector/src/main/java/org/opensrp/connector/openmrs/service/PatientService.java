@@ -268,47 +268,49 @@ public class PatientService extends OpenmrsService {
             per.put("deathDate", OPENMRS_DATE.format(be.getDeathdate().toDate()));
         }
 
-        String fn = be.getFirstName() == null || StringUtils.isEmptyOrWhitespaceOnly(be.getFirstName()) ?
-                "-" :
-                be.getFirstName();
+        String fn = be.getFirstName() == null || StringUtils.isEmptyOrWhitespaceOnly(be.getFirstName()) ? "-" : be.getFirstName();
         if (!fn.equals("-")) {
             fn = fn.replaceAll("[^A-Za-z0-9\\s]+", "");
         }
+        fn = convertToOpenmrsString(fn);
 
         String mn = be.getMiddleName() == null ? "" : be.getMiddleName();
 
         if (!mn.equals("-")) {
             mn = mn.replaceAll("[^A-Za-z0-9\\s]+", "");
         }
+        mn = convertToOpenmrsString(mn);
 
         String ln = (be.getLastName() == null || be.getLastName().equals(".")) ? "-" : be.getLastName();
         if (!ln.equals("-")) {
             ln = ln.replaceAll("[^A-Za-z0-9\\s]+", "");
         }
+        ln = convertToOpenmrsString(ln);
+        String address4UUID = null;
 
         List<Event> registrationEvents = eventService.findByBaseEntityId(be.getBaseEntityId());
         for (Event event : registrationEvents) {
-            if (event.getEventType().equals("Birth Registration")) {
+            if (event.getEventType().equals("Birth Registration") || event.getEventType().equals("New Woman Registration")) {
                 List<Obs> obs = event.getObs();
                 for (Obs obs2 : obs) {
                     if (obs2 != null && obs2.getFieldType().equals("formsubmissionField") && obs2.getFormSubmissionField().equals("Home_Facility") && obs2.getValue() != null) {
-                        String clientAddress4 = openmrsLocationService.getLocation(obs2.getValue().toString()).getName();
+                        address4UUID = obs2.getValue().toString();
+                        String clientAddress4 = openmrsLocationService.getLocation(address4UUID).getName();
                         if (be.getAttribute("Home_Facility") != null) {
                             be.removeAttribute("Home_Facility");
                         }
                         be.addAttribute("Home_Facility", clientAddress4);
                     }
                 }
+                break;
             }
-            break;
         }
-        per.put("attributes", convertAttributesToOpenmrsJson(be.getAttributes()));
 
         if (!update) {
-            per.put("names", new JSONArray(
-                    "[{\"givenName\":\"" + fn + "\",\"middleName\":\"" + mn + "\", \"familyName\":\"" + ln + "\"}]"));
+            per.put("names", new JSONArray("[{\"givenName\":\"" + fn + "\",\"middleName\":\"" + mn + "\", \"familyName\":\"" + ln + "\"}]"));
             per.put("addresses", convertAddressesToOpenmrsJson(be));
         }
+
         return per;
     }
 

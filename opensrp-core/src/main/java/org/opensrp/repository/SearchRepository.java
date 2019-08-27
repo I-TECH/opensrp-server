@@ -1,11 +1,11 @@
 package org.opensrp.repository;
 
-		import java.util.List;
-		import java.util.Map;
+import java.util.List;
+import java.util.Map;
 
-		import org.joda.time.DateTime;
-		import org.opensrp.domain.Client;
-		import org.opensrp.search.ClientSearchBean;
+import org.joda.time.DateTime;
+import org.opensrp.domain.Client;
+import org.opensrp.search.ClientSearchBean;
 
 public interface SearchRepository {
 

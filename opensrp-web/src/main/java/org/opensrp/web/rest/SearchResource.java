@@ -56,53 +56,6 @@ public class SearchResource extends RestResource<Client> {
         this.eventService = eventService;
     }
 
-//    @Override
-//    public List<Client> search(HttpServletRequest request) throws ParseException {//TODO search should not call different url but only add params
-//        String firstName = getStringFilter(FIRST_NAME, request);
-//        String middleName = getStringFilter(MIDDLE_NAME, request);
-//        String lastName = getStringFilter(LAST_NAME, request);
-//
-//        ClientSearchBean searchBean = new ClientSearchBean();
-//        searchBean.setNameLike(getStringFilter("name", request));
-//
-//        searchBean.setGender(getStringFilter(GENDER, request));
-//        DateTime[] birthdate = getDateRangeFilter(BIRTH_DATE, request);//TODO add ranges like fhir do http://hl7.org/fhir/search.html
-//        DateTime[] lastEdit = getDateRangeFilter(LAST_UPDATE, request);//TODO client by provider id
-//        //TODO lookinto Swagger https://slack-files.com/files-pri-safe/T0EPSEJE9-F0TBD0N77/integratingswagger.pdf?c=1458211183-179d2bfd2e974585c5038fba15a86bf83097810a
-//
-//        if (birthdate != null) {
-//            searchBean.setBirthdateFrom(birthdate[0]);
-//            searchBean.setBirthdateTo(birthdate[1]);
-//        }
-//        if (lastEdit != null) {
-//            searchBean.setLastEditFrom(lastEdit[0]);
-//            searchBean.setLastEditTo(lastEdit[1]);
-//        }
-//        Map<String, String> attributeMap = null;
-//        String attributes = getStringFilter("attribute", request);
-//        if (!StringUtils.isEmptyOrWhitespaceOnly(attributes)) {
-//            String attributeType = StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[0];
-//            String attributeValue = StringUtils.isEmptyOrWhitespaceOnly(attributes) ? null : attributes.split(":", -1)[1];
-//
-//            attributeMap = new HashMap<String, String>();
-//            attributeMap.put(attributeType, attributeValue);
-//        }
-//        searchBean.setAttributes(attributeMap);
-//
-//        Map<String, String> identifierMap = null;
-//        String identifiers = getStringFilter("identifier", request);
-//        if (!StringUtils.isEmptyOrWhitespaceOnly(identifiers)) {
-//            String identifierType = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[0];
-//            String identifierValue = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[1];
-//
-//            identifierMap = new HashMap<String, String>();
-//            identifierMap.put(identifierType, identifierValue);
-//        }
-//
-//        searchBean.setIdentifiers(identifierMap);
-//        return searchService.searchClient(searchBean, firstName, middleName, lastName, null);
-//    }
-
     @Override
     public List<Client> search(HttpServletRequest request) throws ParseException {//TODO search should not call different url but only add params
 
@@ -127,7 +80,18 @@ public class SearchResource extends RestResource<Client> {
             attributeMap = new HashMap<String, String>();
             attributeMap.put(attributeType, attributeValue);
         }
+        searchBean.setAttributes(attributeMap);
 
+        Map<String, String> identifierMap = null;
+        String identifiers = getStringFilter("identifier", request);
+        if (!StringUtils.isEmptyOrWhitespaceOnly(identifiers)) {
+            String identifierType = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[0];
+            String identifierValue = StringUtils.isEmptyOrWhitespaceOnly(identifiers) ? null : identifiers.split(":", -1)[1];
+
+            identifierMap = new HashMap<String, String>();
+            identifierMap.put(identifierType, identifierValue);
+        }
+        searchBean.setIdentifiers(identifierMap);
         return searchService.searchClient(searchBean,nameLike, firstName, middleName, lastName, gender, null, attributeMap,
                 birthdate == null ? null : birthdate[0], birthdate == null ? null : birthdate[1], lastEdit == null ? null
                         : lastEdit[0], lastEdit == null ? null : lastEdit[1], null);
@@ -190,9 +154,12 @@ public class SearchResource extends RestResource<Client> {
             List<Client> children = new ArrayList<Client>();
 
             if (!StringUtils.isEmptyOrWhitespaceOnly(firstName) || !StringUtils.isEmptyOrWhitespaceOnly(middleName)
-                    || !StringUtils.isEmptyOrWhitespaceOnly(lastName) || !StringUtils.isEmptyOrWhitespaceOnly(gender)
-                    || !identifiers.isEmpty() || !attributes.isEmpty() || birthdate != null || lastEdit != null) {
+                    || !StringUtils.isEmptyOrWhitespaceOnly(lastName)
+                    || !StringUtils.isEmptyOrWhitespaceOnly(searchBean.getGender()) || !identifiers.isEmpty()
+                    || !attributes.isEmpty() || birthdate != null || lastEdit != null) {
 
+                searchBean.setIdentifiers(identifiers);
+                searchBean.setAttributes(attributes);
                 children = searchService.searchClient(searchBean,null, firstName, middleName, lastName, gender, identifiers,
                         attributes, birthdate == null ? null : birthdate[0], birthdate == null ? null : birthdate[1],
                         lastEdit == null ? null : lastEdit[0], lastEdit == null ? null : lastEdit[1], limit);
@@ -326,6 +293,10 @@ public class SearchResource extends RestResource<Client> {
         }
 
         return linkedMothers;
+    }
+
+    private void checkIdentifierOpenMrsId(){
+
     }
 
     private List<Client> getLinkedChildren(List<Client> mothers, String openmrsIdKey, String relationshipKey) {

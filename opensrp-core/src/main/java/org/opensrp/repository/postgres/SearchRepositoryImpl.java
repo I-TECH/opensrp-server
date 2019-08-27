@@ -14,13 +14,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository("searchRepositoryPostgres")
 public class SearchRepositoryImpl implements SearchRepository {
-	
+
 	@Autowired
 	private CustomClientMetadataMapper clientMetadataMapper;
-	
+
 	@Autowired
 	private ClientsRepositoryImpl clientsRepository;
-	
+
 	@Override
 	public List<Client> findByCriteria (ClientSearchBean clientSearchBean, String nameLike, String firstName,
 										String middleName, String lastName, String gender, Map<String, String> identifiers,

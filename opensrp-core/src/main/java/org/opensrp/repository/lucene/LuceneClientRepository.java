@@ -8,12 +8,7 @@ import static org.opensrp.common.AllConstants.BaseEntity.STATE_PROVINCE;
 import static org.opensrp.common.AllConstants.BaseEntity.SUB_DISTRICT;
 import static org.opensrp.common.AllConstants.BaseEntity.SUB_TOWN;
 import static org.opensrp.common.AllConstants.BaseEntity.TOWN;
-import static org.opensrp.common.AllConstants.Client.BIRTH_DATE;
-import static org.opensrp.common.AllConstants.Client.DEATH_DATE;
-import static org.opensrp.common.AllConstants.Client.FIRST_NAME;
-import static org.opensrp.common.AllConstants.Client.GENDER;
-import static org.opensrp.common.AllConstants.Client.LAST_NAME;
-import static org.opensrp.common.AllConstants.Client.MIDDLE_NAME;
+import static org.opensrp.common.AllConstants.Client.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,6 +73,9 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		Query qf = new Query(FilterType.AND, q);
 		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getGender())) {
 			qf.eq(GENDER, searchBean.getGender());
+		}
+		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getZeirId())) {
+			qf.eq(ZEIR_ID, searchBean.getZeirId());
 		}
 		if (searchBean.getBirthdateFrom() != null && searchBean.getBirthdateTo() != null) {
 			qf.between(BIRTH_DATE, searchBean.getBirthdateFrom(), searchBean.getBirthdateTo());

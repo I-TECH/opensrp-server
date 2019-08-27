@@ -38,6 +38,14 @@ public class ClientSearchBean {
 	
 	private String lastName;
 
+	public String getZeirId() {
+		return zeirId;
+	}
+
+	public void setZeirId(String zeirId) {
+		this.zeirId = zeirId;
+	}
+
 	public String getNameLike() {
 		return nameLike;
 	}

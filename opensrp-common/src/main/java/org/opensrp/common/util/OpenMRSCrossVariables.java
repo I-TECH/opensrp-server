@@ -1,8 +1,9 @@
 package org.opensrp.common.util;
 
 public enum OpenMRSCrossVariables {
-
+	
 	TEAM_MEMBER_URL {
+		
 		public String makeVariable(String openMRSVersion) {
 			if (openMRSVersion.startsWith("1")) {
 				return "ws/rest/v1/teammodule/member";
@@ -11,8 +12,9 @@ public enum OpenMRSCrossVariables {
 			}
 		}
 	},
-
+	
 	LOCATIONS_JSON_KEY {
+		
 		public String makeVariable(String openMRSVersion) {
 			if (openMRSVersion.startsWith("1")) {
 				return "location";
@@ -21,7 +23,7 @@ public enum OpenMRSCrossVariables {
 			}
 		}
 	};
-
+	
 	public abstract String makeVariable(String openMRSVersion);
-
+	
 }

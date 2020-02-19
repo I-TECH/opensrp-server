@@ -7,9 +7,9 @@ import java.text.SimpleDateFormat;
  * Mappings in OpenSRP for OpenMRS entities and properties
  */
 public class FormEntityConstants {
-
+	
 	public static final SimpleDateFormat FORM_DATE = new SimpleDateFormat("yyyy-MM-dd");
-
+	
 	public enum FieldType {
 		concept,
 		person,
@@ -23,12 +23,14 @@ public class FormEntityConstants {
 	}
 	
 	public interface FormEntity {
+		
 		public String entity();
+		
 		public String entityId();
 		
 	}
 	
-	public enum Person implements FormEntity{
+	public enum Person implements FormEntity {
 		first_name,
 		middle_name,
 		last_name,
@@ -39,23 +41,39 @@ public class FormEntityConstants {
 		deathdate,
 		deathdate_estimated;
 		
-		public String entity(){return "person";}
-		public String entityId(){return this.name();}
+		public String entity() {
+			return "person";
+		}
+		
+		public String entityId() {
+			return this.name();
+		}
 	}
 	
-	public enum PersonAddress implements FormEntity{
+	public enum PersonAddress implements FormEntity {
 		;
-		public String entity(){return "person_address";}
-		public String entityId(){return this.name();}
+		
+		public String entity() {
+			return "person_address";
+		}
+		
+		public String entityId() {
+			return this.name();
+		}
 	}
 	
-	public enum Encounter implements FormEntity{
+	public enum Encounter implements FormEntity {
 		encounter_date,
 		location_id,
 		encounter_start,
 		encounter_end;
 		
-		public String entity(){return "encounter";}
-		public String entityId(){return this.name();}
+		public String entity() {
+			return "encounter";
+		}
+		
+		public String entityId() {
+			return this.name();
+		}
 	}
 }

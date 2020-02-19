@@ -12,6 +12,6 @@ public interface CustomReportMetadataMapper extends ReportMetadataMapper {
 	Report selectByDocumentId(String documentId);
 	
 	List<Report> selectMany(@Param("example") ReportMetadataExample example, @Param("offset") int offset,
-	                        @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 }

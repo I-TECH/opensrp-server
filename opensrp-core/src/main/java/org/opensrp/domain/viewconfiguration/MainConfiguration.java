@@ -14,5 +14,5 @@ public class MainConfiguration extends BaseConfiguration {
 	public void setEnableJsonViews(boolean enableJsonViews) {
 		this.enableJsonViews = enableJsonViews;
 	}
-	 
+	
 }

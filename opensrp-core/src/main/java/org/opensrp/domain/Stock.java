@@ -126,17 +126,17 @@ public class Stock extends BaseDataObject {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-
+	
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
 	}
-
+	
 	@Override
 	public final int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this, "id", "revision");
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

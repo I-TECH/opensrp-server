@@ -17,44 +17,49 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ZiggyFileLoader {
-    private static Logger logger = LoggerFactory.getLogger(ZiggyFileLoader.class.toString());
-
-    private String jsDirectoryName;
-    private String formDirectoryName;
-
-    @Autowired
-    public ZiggyFileLoader(@Value("#{opensrp['js.directory.name']}") String jsDirectoryName, @Value("#{opensrp['form.directory.name']}") String formDirectoryName) throws IOException {
-        this.jsDirectoryName = jsDirectoryName;
-        this.formDirectoryName = formDirectoryName;
-    }
-
-    public String getJSFiles() throws IOException, URISyntaxException {
-        File jsFolder = new File(this.getClass().getResource(jsDirectoryName).toURI());
-        File[] files = jsFolder.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.getName().endsWith(".js");
-            }
-        });
-        StringBuilder builder = new StringBuilder();
-        for (File file : files) {
-            builder.append(load(file));
-        }
-        return builder.toString();
-    }
-
-    public String loadAppData(String fileName) {
-        try {
-            File file = new File(this.getClass().getResource(formDirectoryName).getPath() + "/" + fileName);
-            return load(file);
-        } catch (IOException e) {
-            logger.error(format("Error while loading app data file: {0}, with exception: {1}", fileName, e));
-        }
-        return null;
-    }
-
-    public String load(File file) throws IOException {
-        FileInputStream inputStream = new FileInputStream(file);
-        return IOUtils.toString(inputStream, "UTF-8");
-    }
+	
+	private static Logger logger = LoggerFactory.getLogger(ZiggyFileLoader.class.toString());
+	
+	private String jsDirectoryName;
+	
+	private String formDirectoryName;
+	
+	@Autowired
+	public ZiggyFileLoader(@Value("#{opensrp['js.directory.name']}") String jsDirectoryName,
+	    @Value("#{opensrp['form.directory.name']}") String formDirectoryName) throws IOException {
+		this.jsDirectoryName = jsDirectoryName;
+		this.formDirectoryName = formDirectoryName;
+	}
+	
+	public String getJSFiles() throws IOException, URISyntaxException {
+		File jsFolder = new File(this.getClass().getResource(jsDirectoryName).toURI());
+		File[] files = jsFolder.listFiles(new FileFilter() {
+			
+			@Override
+			public boolean accept(File file) {
+				return file.getName().endsWith(".js");
+			}
+		});
+		StringBuilder builder = new StringBuilder();
+		for (File file : files) {
+			builder.append(load(file));
+		}
+		return builder.toString();
+	}
+	
+	public String loadAppData(String fileName) {
+		try {
+			File file = new File(this.getClass().getResource(formDirectoryName).getPath() + "/" + fileName);
+			return load(file);
+		}
+		catch (IOException e) {
+			logger.error(format("Error while loading app data file: {0}, with exception: {1}", fileName, e));
+		}
+		return null;
+	}
+	
+	public String load(File file) throws IOException {
+		FileInputStream inputStream = new FileInputStream(file);
+		return IOUtils.toString(inputStream, "UTF-8");
+	}
 }

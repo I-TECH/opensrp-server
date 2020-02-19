@@ -180,7 +180,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 	
 	@Override
 	public List<Report> findReports(String team, String providerId, String locationId, String baseEntityId,
-	                                Long serverVersion, String sortBy, String sortOrder, int limit) {
+	        Long serverVersion, String sortBy, String sortOrder, int limit) {
 		ReportMetadataExample reportMetadataExample = new ReportMetadataExample();
 		Criteria criteria = reportMetadataExample.createCriteria();
 		if (team != null && !team.isEmpty()) {
@@ -208,7 +208,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 	
 	@Override
 	public List<Report> findReports(String baseEntityId, DateTime from, DateTime to, String reportType, String providerId,
-	                                String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
+	        String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
 		ReportMetadataExample reportMetadataExample = new ReportMetadataExample();
 		Criteria criteria = reportMetadataExample.createCriteria();
 		if (StringUtils.isNotBlank(baseEntityId))

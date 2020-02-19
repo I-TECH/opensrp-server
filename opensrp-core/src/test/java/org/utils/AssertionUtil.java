@@ -1,46 +1,47 @@
 package org.utils;
 
-import org.opensrp.domain.BaseDataObject;
-import org.opensrp.domain.BaseEntity;
-import org.opensrp.domain.Location;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.utils.CouchDbAccessUtils.purgeDateCreatedEditedAndVoidedField;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.utils.CouchDbAccessUtils.purgeDateCreatedEditedAndVoidedField;
+import org.opensrp.domain.BaseDataObject;
+import org.opensrp.domain.Location;
 
 public final class AssertionUtil {
-
+	
 	private AssertionUtil() {
-
+		
 	}
-
+	
 	public static <T> void assertTwoListAreSameIgnoringOrder(List<T> expectedList, List<T> actualList) {
 		assertEquals(expectedList.size(), actualList.size());
 		assertTrue("expected: " + expectedList.toString() + "\n" + "actual: " + actualList.toString(),
-				expectedList.containsAll(actualList) && actualList.containsAll(expectedList));
+		    expectedList.containsAll(actualList) && actualList.containsAll(expectedList));
 	}
-
+	
 	public static <T extends BaseDataObject> void assertNewObjectCreation(T expectedObject, T actualObject) {
 		assertNotNull(actualObject.getDateCreated());
-
+		
 		purgeDateCreatedEditedAndVoidedField(asList(expectedObject, actualObject));
-
+		
 		assertEquals(expectedObject, actualObject);
-
+		
 	}
-
+	
 	public static <T extends BaseDataObject> void assertObjectUpdate(T expectedObject, T actualObject) {
 		assertNotNull(actualObject.getDateEdited());
-
+		
 		purgeDateCreatedEditedAndVoidedField(asList(expectedObject, actualObject));
 		assertEquals(expectedObject, actualObject);
-
+		
 	}
-
+	
 	public static void assertTwoDifferentTypeLocationSame(Location expectedLocation,
-	                                                      org.opensrp.api.domain.Location actualLocation) {
+	        org.opensrp.api.domain.Location actualLocation) {
 		assertEquals(expectedLocation.getLocationId(), actualLocation.getLocationId());
 		assertEquals(expectedLocation.getTags(), actualLocation.getTags());
 		assertEquals(expectedLocation.getAttributes(), actualLocation.getAttributes());
@@ -52,5 +53,5 @@ public final class AssertionUtil {
 			assertTwoDifferentTypeLocationSame(expectedLocation.getParentLocation(), actualLocation.getParentLocation());
 		}
 	}
-
+	
 }

@@ -1,19 +1,17 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
+import org.opensrp.domain.Multimedia;
+import org.opensrp.repository.MultimediaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-import org.opensrp.domain.Multimedia;
-import org.opensrp.repository.MultimediaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import static org.junit.Assert.*;
 
 public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	
@@ -32,7 +30,7 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	public void testGet() {
 		Multimedia multimedia = multimediaRepository.get("05934ae338431f28bf6793b241f0c5ca");
 		assertEquals("040d4f18-8140-479c-aa21-725612073490", multimedia.getCaseId());
-		assertEquals("/opt/patient_images/040d4f18-8140-479c-aa21-725612073490.jpg", multimedia.getFilePath());
+		assertEquals("/opt/multimedia/patient_images/040d4f18-8140-479c-aa21-725612073490.jpg", multimedia.getFilePath());
 		assertEquals("profilepic", multimedia.getFileCategory());
 		
 		assertNull(multimediaRepository.get("05934ae338431f28bf6793b241fa"));
@@ -72,8 +70,8 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 		        "/tmp/b7jhkh23.jpg", "thumbnail");
 		multimediaRepository.add(multimedia);
 		
-		List<String> expectedClients = Arrays.asList("2332kkj-76385430sdfsd-23423423", "87dc3230-84f7-4088-b257-e8b3130ab86b",
-		    "24eec0d8-e0ee-4f22-9d6b-3cca84bdefcf");
+		List<String> expectedClients = Arrays.asList("2332kkj-76385430sdfsd-23423423",
+		    "87dc3230-84f7-4088-b257-e8b3130ab86b", "24eec0d8-e0ee-4f22-9d6b-3cca84bdefcf");
 		int found = 0;
 		List<Multimedia> multimediaList = multimediaRepository.getAll();
 		assertEquals(6, multimediaList.size());
@@ -103,7 +101,7 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	public void testFindByCaseId() {
 		Multimedia multimedia = multimediaRepository.findByCaseId("87dc3230-84f7-4088-b257-e8b3130ab86b");
 		assertEquals("091488163b6ecd589a915372a0ad3b0d", multimedia.getId());
-		assertEquals("/opt/patient_images/87dc3230-84f7-4088-b257-e8b3130ab86b.jpg", multimedia.getFilePath());
+		assertEquals("/opt/multimedia/patient_images/87dc3230-84f7-4088-b257-e8b3130ab86b.jpg", multimedia.getFilePath());
 		assertEquals("profilepic", multimedia.getFileCategory());
 		
 		assertNull(multimediaRepository.findByCaseId("05934ae338431f28bf6793b241fa"));
@@ -118,5 +116,20 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 		assertEquals("317f8db1bb6cc4b15ecc9993a2922f47", multimedia.get(0).getId());
 		assertEquals("24eec0d8-e0ee-4f22-9d6b-3cca84bdefcf", multimedia.get(0).getCaseId());
 	}
-	
+
+	@Test
+	public void testGetExtended() {
+		Multimedia multimedia = new Multimedia("caseId1", "providerId1", "contentType1", "filePath1", "fileCategory1");
+		multimediaRepository.add(multimedia);
+		multimedia = new Multimedia("caseId1", "providerId1", "contentType1", "filePath2", "fileCategory1");
+		multimediaRepository.add(multimedia);
+
+		List<Multimedia> multimediaFiles = multimediaRepository.get("caseId1", "contentType1", "fileCategory1");
+		assertEquals(multimediaFiles.size(), 2);
+
+		String filePath1 = multimediaFiles.get(0).getFilePath();
+		String filePath2 = multimediaFiles.get(1).getFilePath();
+		assertTrue("filePath1".equals(filePath1) || "filePath2".equals(filePath1));
+		assertTrue("filePath1".equals(filePath2) || "filePath2".equals(filePath2));
+	}
 }

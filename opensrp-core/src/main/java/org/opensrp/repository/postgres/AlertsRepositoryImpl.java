@@ -226,8 +226,7 @@ public class AlertsRepositoryImpl extends BaseRepositoryImpl<Alert> implements A
 	
 	@Override
 	public void addOrUpdateScheduleNotificationAlert(String beneficiaryType, String entityId, String providerId,
-	                                                 String triggerName, String triggerCode, AlertStatus alertStatus,
-	                                                 DateTime startDate, DateTime expiryDate) {
+	        String triggerName, String triggerCode, AlertStatus alertStatus, DateTime startDate, DateTime expiryDate) {
 		List<Alert> existingAlerts = findActiveAlertByProviderEntityIdTriggerName(providerId, entityId, triggerName);
 		if (existingAlerts.isEmpty()) {
 			add(new Alert(providerId, entityId, beneficiaryType, AlertType.notification, TriggerType.schedule, triggerName,

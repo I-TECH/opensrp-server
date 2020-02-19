@@ -1,12 +1,5 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.UniqueId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,15 +7,20 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 
+import org.opensrp.domain.UniqueId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
 //import org.opensrp.domain.UniqueId;
 
 @Repository
 public class UniqueIdRepository {
-
-
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-
 	
 	public int save(UniqueId uniqueId) throws Exception {
 		String insertQuery = "insert into " + UniqueId.tbName + " (" + UniqueId.COL_LOCATION + "," + UniqueId.COL_OPENMRSID

@@ -29,6 +29,7 @@ public class Obs {
 	
 	@JsonProperty
 	private List<Object> values;
+	
 	//hold unique values here
 	Set<String> set = new HashSet<String>();
 	
@@ -104,14 +105,14 @@ public class Obs {
 	
 	@JsonIgnore
 	public Object getValue() {
-
+		
 		if (values == null || values.size() == 0) {
 			return null;
 		}
-
+		
 		if (values.size() > 1) {
 			throw new RuntimeException(
-					"Multiset values can not be handled like single valued fields. Use function getValues");
+			        "Multiset values can not be handled like single valued fields. Use function getValues");
 		}
 		
 		return values.get(0);
@@ -193,7 +194,7 @@ public class Obs {
 	
 	@SuppressWarnings("unchecked")
 	public Obs addToValueList(Object value) {
-		if(value==null){
+		if (value == null) {
 			return this;
 		}
 		if (values == null) {
@@ -201,10 +202,10 @@ public class Obs {
 		}
 		//make the object a bit more linear. If value is a list, the values json object will be an array with arrays inside
 		
-		if(value instanceof List){
+		if (value instanceof List) {
 			set.addAll((Collection<String>) value);
 			
-		}else{
+		} else {
 			set.add(value.toString());
 		}
 		values.clear();
@@ -232,17 +233,17 @@ public class Obs {
 		this.humanReadableValues = humanReadableValues;
 		return this;
 	}
-
+	
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "set");
 	}
-
+	
 	@Override
 	public final int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this, "set");
 	}
-
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

@@ -7,7 +7,7 @@ import org.opensrp.dto.AlertStatus;
 import org.opensrp.repository.BaseRepository;
 import org.opensrp.scheduler.Alert;
 
-public interface AlertsRepository extends BaseRepository<Alert>{
+public interface AlertsRepository extends BaseRepository<Alert> {
 	
 	List<Alert> findByProviderAndTimestamp(String provider, long timeStamp);
 	
@@ -30,8 +30,7 @@ public interface AlertsRepository extends BaseRepository<Alert>{
 	void markAlertAsCompleteFor(String providerId, String entityId, String triggerName, String completionDate);
 	
 	void addOrUpdateScheduleNotificationAlert(String beneficiaryType, String entityId, String providerId, String triggerName,
-	                                          String triggerCode, AlertStatus alertStatus, DateTime startDate,
-	                                          DateTime expiryDate);
+	        String triggerCode, AlertStatus alertStatus, DateTime startDate, DateTime expiryDate);
 	
 	void markAlertAsCompleteFor(String entityId, String triggerName, String completionDate);
 	

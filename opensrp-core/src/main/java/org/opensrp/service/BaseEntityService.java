@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BaseEntityService {
-
+	
 	private final BaseEntitiesRepository allBaseEntities;
-
+	
 	@Autowired
-	public BaseEntityService(BaseEntitiesRepository allBaseEntities ) {
+	public BaseEntityService(BaseEntitiesRepository allBaseEntities) {
 		this.allBaseEntities = allBaseEntities;
 	}
 	
@@ -24,13 +24,12 @@ public class BaseEntityService {
 	public BaseEntity findByBaseEntityId(String baseEntityId) {
 		return allBaseEntities.findByBaseEntityId(baseEntityId);
 	}
-
+	
 	public List<BaseEntity> findByIdentifier(String identifier) {
 		return allBaseEntities.findAllByIdentifier(identifier);
 	}
-
-	public List<BaseEntity> findByIdentifier(String identifierType,
-			String identifier) {
+	
+	public List<BaseEntity> findByIdentifier(String identifierType, String identifier) {
 		return allBaseEntities.findAllByIdentifier(identifierType, identifier);
 	}
 }

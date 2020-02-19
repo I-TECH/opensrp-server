@@ -14,12 +14,13 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	List<Event> selectMany(EventMetadataExample eventMetadataExample);
 	
 	List<Event> selectManyWithRowBounds(@Param("example") EventMetadataExample example, @Param("offset") int offset,
-	                                    @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 	List<Event> selectNotInOpenMRSByServerVersion(@Param("from") long serverVersion, @Param("to") long calendar,
-	                                              @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 	List<Event> selectNotInOpenMRSByServerVersionAndType(@Param("eventType") String type, @Param("from") long serverVersion,
-	                                                     @Param("to") long calendar, @Param("limit") int limit);
-	
+	        @Param("to") long calendar, @Param("limit") int limit);
+
+	List<String> selectManyIds(@Param("example") EventMetadataExample example);
 }

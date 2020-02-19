@@ -40,8 +40,8 @@ public class LuceneStockRepository extends CouchDbRepositorySupportWithLucene<St
 	}
 	
 	public List<Stock> getByCriteria(String identifier, String vaccine_type_id, String transaction_type, String providerid,
-	                                 String value, String date_created, String to_from, String date_updated,
-	                                 Long serverVersion, String sortBy, String sortOrder, int limit) {
+	        String value, String date_created, String to_from, String date_updated, Long serverVersion, String sortBy,
+	        String sortOrder, int limit) {
 		// create a simple query against the view/search function that we've created
 		LuceneQuery query = new LuceneQuery("Stock", "by_all_criteria");
 		
@@ -95,8 +95,7 @@ public class LuceneStockRepository extends CouchDbRepositorySupportWithLucene<St
 	}
 	
 	public List<Stock> getByCriteria(String identifier, String vaccine_type_id, String transaction_type, String providerid,
-	                                 String value, String date_created, String to_from, String date_updated,
-	                                 String serverVersion) {
+	        String value, String date_created, String to_from, String date_updated, String serverVersion) {
 		LuceneQuery query = new LuceneQuery("Stock", "by_all_criteria");
 		
 		Query qf = new Query(FilterType.AND);

@@ -10,7 +10,7 @@ import org.opensrp.repository.postgres.mapper.ViewConfigurationMetadataMapper;
 public interface CustomViewConfigurationMetadataMapper extends ViewConfigurationMetadataMapper {
 	
 	List<ViewConfiguration> selectMany(@Param("example") ViewConfigurationMetadataExample viewConfigurationExample,
-	                                   @Param("offset") int offset, @Param("limit") int limit);
+	        @Param("offset") int offset, @Param("limit") int limit);
 	
 	ViewConfiguration selectByDocumentId(String documentId);
 	

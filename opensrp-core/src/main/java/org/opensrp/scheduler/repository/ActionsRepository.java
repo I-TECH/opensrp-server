@@ -6,7 +6,7 @@ import org.joda.time.DateTime;
 import org.opensrp.repository.BaseRepository;
 import org.opensrp.scheduler.Action;
 
-public interface ActionsRepository extends BaseRepository<Action>{
+public interface ActionsRepository extends BaseRepository<Action> {
 	
 	List<Action> findByProviderIdAndTimeStamp(String providerId, long timeStamp);
 	
@@ -25,6 +25,6 @@ public interface ActionsRepository extends BaseRepository<Action>{
 	void markAlertAsInactiveFor(String providerId, String baseEntityId, String scheduleName);
 	
 	List<Action> findByCriteria(String team, String providerId, long timeStamp, String sortBy, String sortOrder, int limit);
-
+	
 	List<Action> findAllActionNotExpired();
 }

@@ -1,7 +1,15 @@
 package org.opensrp.scheduler;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,8 +22,9 @@ import org.junit.Test;
 import org.opensrp.scheduler.Schedule.ActionType;
 
 public class ScheduleConfigTest {
+	
 	private ScheduleConfig schconfig;
-
+	
 	public ScheduleConfigTest() throws IOException, JSONException {
 		schconfig = new ScheduleConfig("/schedules/schedule-config.xls");
 	}
@@ -23,15 +32,15 @@ public class ScheduleConfigTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldReadAllPropertiesForSingleTriggerSingleForm() throws JSONException {
-		Schedule sch = new Schedule("{\"milestone\":\"pentavalent_1\",\"passLogic\":\"${fs.pentavalent_1} == empty && ${fs.pentavalent_1_retro} == empty\",\"schedule\":\"PENTAVALENT 1\",\"form\":\"child_enrollment\",\"triggerDateField\":\"child_birth_date\",\"action\":\"enroll\",\"entityType\":\"pkchild\"}");
-		assertThat(sch, Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 1")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("pentavalent_1")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItem("child_birth_date")),
-				Matchers.<Schedule>hasProperty("forms",hasItem("child_enrollment"))
-				));
+		Schedule sch = new Schedule(
+		        "{\"milestone\":\"pentavalent_1\",\"passLogic\":\"${fs.pentavalent_1} == empty && ${fs.pentavalent_1_retro} == empty\",\"schedule\":\"PENTAVALENT 1\",\"form\":\"child_enrollment\",\"triggerDateField\":\"child_birth_date\",\"action\":\"enroll\",\"entityType\":\"pkchild\"}");
+		assertThat(sch,
+		    Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 1")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("pentavalent_1")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItem("child_birth_date")),
+		        Matchers.<Schedule> hasProperty("forms", hasItem("child_enrollment"))));
 		
 		assertEquals("PENTAVALENT 1", sch.schedule());
 		assertEquals("pentavalent_1", sch.milestone());
@@ -45,69 +54,64 @@ public class ScheduleConfigTest {
 	@Test
 	public void shouldReadAllPropertiesForMultipleTriggerMultipleForm() throws JSONException {
 		Schedule sch = new Schedule("{\"milestone\":\"pentavalent_2\","
-				+ "\"passLogic\":\"${fs.pentavalent_2} == empty && ${fs.pentavalent_2_retro} == empty\","
-				+ "\"schedule\":\"PENTAVALENT 2\",\"form\":\"child_enrollment,child_followup\","
-				+ "\"triggerDateField\":\"pentavalent_1, pentavalent_1_retro\","
-				+ "\"action\":\"enroll\",\"entityType\":\"pkchild\"}");
-		assertThat(sch, Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 2")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("pentavalent_2")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("passLogic", anything()),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItems("pentavalent_1","pentavalent_1_retro")),
-				Matchers.<Schedule>hasProperty("forms",hasItems("child_enrollment","child_followup"))
-				));
+		        + "\"passLogic\":\"${fs.pentavalent_2} == empty && ${fs.pentavalent_2_retro} == empty\","
+		        + "\"schedule\":\"PENTAVALENT 2\",\"form\":\"child_enrollment,child_followup\","
+		        + "\"triggerDateField\":\"pentavalent_1, pentavalent_1_retro\","
+		        + "\"action\":\"enroll\",\"entityType\":\"pkchild\"}");
+		assertThat(sch,
+		    Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 2")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("pentavalent_2")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("passLogic", anything()),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItems("pentavalent_1", "pentavalent_1_retro")),
+		        Matchers.<Schedule> hasProperty("forms", hasItems("child_enrollment", "child_followup"))));
 		
 		assertEquals("PENTAVALENT 2", sch.schedule());
 		assertEquals("pentavalent_2", sch.milestone());
 		assertEquals(ActionType.enroll, sch.action());
 		assertEquals("pkchild", sch.entityType());
-		assertThat(sch.triggerDateFields(), hasItems("pentavalent_1","pentavalent_1_retro"));
-		assertThat(sch.forms(), hasItems("child_enrollment","child_followup"));
+		assertThat(sch.triggerDateFields(), hasItems("pentavalent_1", "pentavalent_1_retro"));
+		assertThat(sch.forms(), hasItems("child_enrollment", "child_followup"));
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldLoadScheduleByFormName() {
 		List<Schedule> sch = schconfig.searchSchedules("child_enrollment");
-		assertThat(sch, hasItem(Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 1")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("penta1")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("passLogic", anything()),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItem("dob"))
-				)));
+		assertThat(sch,
+		    hasItem(Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 1")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("penta1")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("passLogic", anything()),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItem("dob")))));
 		
-		assertThat(sch, hasItem(Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 2")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("penta2")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("passLogic", anything()),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItems("pentavalent_1","pentavalent_1_retro")),
-				Matchers.<Schedule>hasProperty("forms",hasItems("child_enrollment"))
-				)));
+		assertThat(sch,
+		    hasItem(Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 2")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("penta2")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("passLogic", anything()),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItems("pentavalent_1", "pentavalent_1_retro")),
+		        Matchers.<Schedule> hasProperty("forms", hasItems("child_enrollment")))));
 		
 		List<Schedule> schf = schconfig.searchSchedules("child_followup");
-		assertThat(schf, hasItem(Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 2")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("penta2")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("passLogic", anything()),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItems("pentavalent_1","pentavalent_1_retro")),
-				Matchers.<Schedule>hasProperty("forms",hasItems("child_followup"))
-				)));
-		assertThat(schf, not(hasItem(Matchers.<Schedule>allOf(
-				Matchers.<Schedule>hasProperty("schedule",equalTo("PENTAVALENT 1")),
-				Matchers.<Schedule>hasProperty("milestone",equalTo("penta1")),
-				Matchers.<Schedule>hasProperty("action",equalTo(ActionType.enroll)),
-				Matchers.<Schedule>hasProperty("entityType",equalTo("pkchild")),
-				Matchers.<Schedule>hasProperty("passLogic", anything()),
-				Matchers.<Schedule>hasProperty("triggerDateFields",hasItem("dob"))
-				))));
+		assertThat(schf,
+		    hasItem(Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 2")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("penta2")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("passLogic", anything()),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItems("pentavalent_1", "pentavalent_1_retro")),
+		        Matchers.<Schedule> hasProperty("forms", hasItems("child_followup")))));
+		assertThat(schf,
+		    not(hasItem(Matchers.<Schedule> allOf(Matchers.<Schedule> hasProperty("schedule", equalTo("PENTAVALENT 1")),
+		        Matchers.<Schedule> hasProperty("milestone", equalTo("penta1")),
+		        Matchers.<Schedule> hasProperty("action", equalTo(ActionType.enroll)),
+		        Matchers.<Schedule> hasProperty("entityType", equalTo("pkchild")),
+		        Matchers.<Schedule> hasProperty("passLogic", anything()),
+		        Matchers.<Schedule> hasProperty("triggerDateFields", hasItem("dob"))))));
 	}
 	
 	@Test
@@ -140,9 +144,9 @@ public class ScheduleConfigTest {
 		s = sch.get(0);
 		
 		flvl = new HashMap<>();
-
+		
 		assertTrue(s.passesValidations(flvl));
-
+		
 		flvl.put("pentavalent_2", null);
 		flvl.put("pentavalent_2_retro", null);
 		assertTrue(s.passesValidations(flvl));
@@ -164,7 +168,7 @@ public class ScheduleConfigTest {
 	public void shouldReturnCorrectResultForApplicableEntity() {
 		List<Schedule> sch = schconfig.searchSchedules("child_enrollment", "PENTAVALENT 2", "penta2", ActionType.enroll);
 		assertEquals(1, sch.size());
-
+		
 		Schedule s = sch.get(0);
 		assertTrue(s.applicableForEntity("pkchild"));
 		assertTrue(s.applicableForEntity("  pkchild  "));
@@ -176,7 +180,7 @@ public class ScheduleConfigTest {
 	public void shouldReturnCorrectResultForApplicableForm() {
 		List<Schedule> sch = schconfig.searchSchedules("child_enrollment", "PENTAVALENT 2", "penta2", ActionType.enroll);
 		assertEquals(1, sch.size());
-
+		
 		Schedule s = sch.get(0);
 		assertTrue(s.hasForm("child_enrollment"));
 		assertFalse(s.hasForm("other form"));
@@ -196,24 +200,22 @@ public class ScheduleConfigTest {
 		s = sch.get(0);
 		assertFalse(s.haspassLogic());
 	}
-
-	@Test
-    public void shouldAddSchedule() {
-        List<Schedule> sch = schconfig.searchSchedules("child_enrollment", "PENTAVALENT 2", "penta2", ActionType.enroll);
-        Schedule s = sch.get(0);
-
-        List<Schedule> actual = schconfig.getSchedules();
-        Schedule lastSchedule = actual.get(actual.size()-1);
-        assertNotEquals(s, lastSchedule);
-
-        schconfig.addSchedule(s);
-
-        actual = schconfig.getSchedules();
-        lastSchedule = actual.get(actual.size()-1);
-
-        assertEquals(s, lastSchedule);
-    }
-
 	
+	@Test
+	public void shouldAddSchedule() {
+		List<Schedule> sch = schconfig.searchSchedules("child_enrollment", "PENTAVALENT 2", "penta2", ActionType.enroll);
+		Schedule s = sch.get(0);
+		
+		List<Schedule> actual = schconfig.getSchedules();
+		Schedule lastSchedule = actual.get(actual.size() - 1);
+		assertNotEquals(s, lastSchedule);
+		
+		schconfig.addSchedule(s);
+		
+		actual = schconfig.getSchedules();
+		lastSchedule = actual.get(actual.size() - 1);
+		
+		assertEquals(s, lastSchedule);
+	}
 	
 }

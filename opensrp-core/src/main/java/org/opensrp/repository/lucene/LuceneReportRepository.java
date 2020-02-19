@@ -2,10 +2,10 @@ package org.opensrp.repository.lucene;
 
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
-import static org.opensrp.common.AllConstants.Report.REPORT_DATE;
-import static org.opensrp.common.AllConstants.Report.REPORT_TYPE;
 import static org.opensrp.common.AllConstants.Report.LOCATION_ID;
 import static org.opensrp.common.AllConstants.Report.PROVIDER_ID;
+import static org.opensrp.common.AllConstants.Report.REPORT_DATE;
+import static org.opensrp.common.AllConstants.Report.REPORT_TYPE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class LuceneReportRepository extends CouchDbRepositorySupportWithLucene<R
 	}
 	
 	public List<Report> getByCriteria(String baseEntityId, DateTime reportDatefrom, DateTime reportDateto, String reportType,
-	                                  String providerId, String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
+	        String providerId, String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
 		// create a simple query against the view/search function that we've created
 		LuceneQuery query = new LuceneQuery("Report", "by_all_criteria");
 		
@@ -96,7 +96,7 @@ public class LuceneReportRepository extends CouchDbRepositorySupportWithLucene<R
 	 * @return
 	 */
 	public List<Report> getByCriteria(String team, String providerId, String locationId, String baseEntityId,
-	                                  Long serverVersion, String sortBy, String sortOrder, int limit) {
+	        Long serverVersion, String sortBy, String sortOrder, int limit) {
 		// create a simple query against the view/search function that we've created
 		LuceneQuery query = new LuceneQuery("Report", "by_all_criteria_v2");
 		

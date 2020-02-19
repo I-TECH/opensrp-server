@@ -32,23 +32,23 @@ import org.opensrp.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SearchServiceTest extends BaseIntegrationTest {
-
+	
 	@Autowired
 	public AllClients allClients;
-
+	
 	@Autowired
 	public SearchService searchService;
-
+	
 	@Before
 	public void setUp() {
 		allClients.removeAll();
 	}
-
+	
 	@After
 	public void cleanUp() {
 		allClients.removeAll();
 	}
-
+	
 	@Test
 	public void shouldSearchClient() {
 		Client expectedClient = createExpectedClient();
@@ -61,25 +61,24 @@ public class SearchServiceTest extends BaseIntegrationTest {
 		expectedClient4.addAttribute("inactive", false);
 		List<Client> expectedClients = asList(expectedClient, expectedClient2, expectedClient3, expectedClient4);
 		addObjectToRepository(expectedClients, allClients);
-
+		
 		Map<String, String> queryAttributes = new HashMap<>();
 		queryAttributes.put(ATTRIBUTES_TYPE, ATTRIBUTES_VALUE);
 		queryAttributes.put("inactive", "true");
 		queryAttributes.put("inactive", "false");
 		queryAttributes.put("lost_to_follow_up", "true");
-
 		
-		ClientSearchBean clientSearchBean=new ClientSearchBean();
+		ClientSearchBean clientSearchBean = new ClientSearchBean();
 		clientSearchBean.setNameLike("first");
 		clientSearchBean.setGender(expectedClient.getGender());
 		clientSearchBean.setBirthdateFrom(EPOCH_DATE_TIME);
 		clientSearchBean.setBirthdateTo(new DateTime(DateTimeZone.UTC));
 		clientSearchBean.setLastEditFrom(EPOCH_DATE_TIME);
 		clientSearchBean.setLastEditTo(new DateTime(DateTimeZone.UTC));
-		List<Client> actualClients=searchService.searchClient(clientSearchBean, "first", "middle", "last",10);
+		List<Client> actualClients = searchService.searchClient(clientSearchBean, "first", "middle", "last", 10);
 		assertTwoListAreSameIgnoringOrder(expectedClients, actualClients);
 	}
-
+	
 	private Client createExpectedClient() {
 		Client expectedClient = new Client(BASE_ENTITY_ID);
 		expectedClient.setFirstName(FIRST_NAME);
@@ -93,5 +92,5 @@ public class SearchServiceTest extends BaseIntegrationTest {
 		expectedClient.setIdentifiers(identifier);
 		return expectedClient;
 	}
-
+	
 }

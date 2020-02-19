@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 
@@ -52,4 +53,25 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	List<Client> findByFieldValue(String field, List<String> ids);
 	
 	List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar);
+	
+	List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids, String clientType);
+	
+	HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findMembersByRelationshipId(String relationshipId);
+	
+	List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
 }

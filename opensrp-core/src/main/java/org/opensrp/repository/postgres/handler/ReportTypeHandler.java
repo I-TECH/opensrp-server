@@ -17,7 +17,7 @@ public class ReportTypeHandler extends BaseTypeHandler implements TypeHandler<Re
 	public void setParameter(PreparedStatement ps, int i, Report parameter, JdbcType jdbcType) throws SQLException {
 		try {
 			if (parameter != null) {
-				String jsonString =mapper.writeValueAsString(parameter);
+				String jsonString = mapper.writeValueAsString(parameter);
 				PGobject jsonObject = new PGobject();
 				jsonObject.setType("jsonb");
 				jsonObject.setValue(jsonString);

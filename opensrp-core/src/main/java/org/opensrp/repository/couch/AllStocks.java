@@ -52,13 +52,13 @@ public class AllStocks extends MotechBaseRepository<Stock> implements StocksRepo
 		    searchBean.getProviderId(), searchBean.getValue(), searchBean.getDateCreated(), searchBean.getToFrom(),
 		    searchBean.getDateUpdated(), searchBean.getServerVersion(), sortBy, sortOrder, limit);
 	}
-
+	
 	public List<Stock> findStocks(StockSearchBean searchBean) {
 		return lsr.getByCriteria(searchBean.getIdentifier(), searchBean.getStockTypeId(), searchBean.getTransactionType(),
 		    searchBean.getProviderId(), searchBean.getValue(), searchBean.getDateCreated(), searchBean.getToFrom(),
 		    searchBean.getDateUpdated(), searchBean.getServerVersion().toString());
 	}
-
+	
 	@View(name = "all_stocks", map = "function(doc) { if (doc.type === 'Stock') { emit(doc.dateCreated); } }")
 	public List<Stock> findAllStocks() {
 		return db.queryView(createQuery("all_stocks").includeDocs(true), Stock.class);

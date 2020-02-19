@@ -65,7 +65,7 @@ public class FormSubmissionProcessor {
 		this.clientService = clientService;
 		this.eventService = eventService;
 		this.allClients = allClients;
-		this.allEvents=allEvents;
+		this.allEvents = allEvents;
 	}
 	
 	public void processFormSubmission(FormSubmission submission) throws Exception {
@@ -233,7 +233,7 @@ public class FormSubmissionProcessor {
 	}
 	
 	public Event getByBaseEntityAndFormSubmissionId(CouchDbConnector targetDb, String baseEntityId,
-	                                                String formSubmissionId) {
+	        String formSubmissionId) {
 		try {
 			List<Event> el = allEvents.findByBaseEntityAndFormSubmissionId(targetDb, baseEntityId, formSubmissionId);
 			if (el.size() > 1) {

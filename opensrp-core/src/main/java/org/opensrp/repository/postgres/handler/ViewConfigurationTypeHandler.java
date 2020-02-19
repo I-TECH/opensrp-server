@@ -15,7 +15,7 @@ public class ViewConfigurationTypeHandler extends BaseTypeHandler implements Typ
 	
 	@Override
 	public void setParameter(PreparedStatement ps, int i, ViewConfiguration parameter, JdbcType jdbcType)
-	    throws SQLException {
+	        throws SQLException {
 		try {
 			if (parameter != null) {
 				String jsonString = mapper.writeValueAsString(parameter);

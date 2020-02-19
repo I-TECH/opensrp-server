@@ -10,5 +10,5 @@ import org.opensrp.repository.postgres.mapper.MultiMediaMapper;
 public interface CustomMultiMediaMapper extends MultiMediaMapper {
 	
 	List<MultiMedia> selectMany(@Param("example") MultiMediaExample example, @Param("offset") int offset,
-	                            @Param("limit") int limit);
+	        @Param("limit") int limit);
 }

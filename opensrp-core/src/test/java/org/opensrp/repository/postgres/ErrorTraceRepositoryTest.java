@@ -1,8 +1,12 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.*;
-
-import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.SOLVED;
+import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.UNSOLVED;
 
 import java.util.Date;
 import java.util.HashSet;

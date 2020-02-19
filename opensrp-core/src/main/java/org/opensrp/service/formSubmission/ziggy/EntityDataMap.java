@@ -9,10 +9,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class EntityDataMap {
+	
 	public static final String ID = "id";
+	
 	public static final String DETAILS = "details";
+	
 	public static final String DOCUMENT_TYPE = "type";
-	public static final String[] ID_FIELD_ON_ENTITY = new String[]{"caseId", "baseEntityId", "entityId"};
+	
+	public static final String[] ID_FIELD_ON_ENTITY = new String[] { "caseId", "baseEntityId", "entityId" };
+	
 	private Map<String, Class<?>> classMap;
 	
 	public EntityDataMap() {
@@ -26,13 +31,15 @@ public class EntityDataMap {
 	public List<String> getFieldsList(String entityType) {
 		return Utils.getFieldsAsList(classMap.get(entityType));
 	}
+	
 	public String getIdField(String entityType) {
 		for (String idf : ID_FIELD_ON_ENTITY) {
 			try {
-				if(classMap.get(entityType).getDeclaredField(idf) != null){
+				if (classMap.get(entityType).getDeclaredField(idf) != null) {
 					return idf;
 				}
-			} catch (NoSuchFieldException | SecurityException e) {
+			}
+			catch (NoSuchFieldException | SecurityException e) {
 				// do nothing as method finds field name is null and returns null
 			}
 		}
@@ -40,7 +47,7 @@ public class EntityDataMap {
 	}
 	
 	public String getIdViewName(String entityType) {
-		return "by_"+getIdField(entityType);
+		return "by_" + getIdField(entityType);
 	}
 	
 	public String getDocEntityType(String entityType) {

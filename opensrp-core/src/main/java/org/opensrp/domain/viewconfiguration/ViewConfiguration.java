@@ -76,7 +76,7 @@ public class ViewConfiguration extends BaseDataObject {
 	public Object getJsonView() {
 		return jsonView;
 	}
-
+	
 	public void setJsonView(Object jsonView) {
 		this.jsonView = jsonView;
 	}

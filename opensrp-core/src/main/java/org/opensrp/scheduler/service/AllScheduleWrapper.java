@@ -13,12 +13,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllScheduleWrapper extends AllSchedules{
+public class AllScheduleWrapper extends AllSchedules {
+	
 	@Autowired
-	public AllScheduleWrapper(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db, TrackedSchedulesJsonReader trackedSchedulesJsonReader, ScheduleFactory scheduleFactory) {
+	public AllScheduleWrapper(@Qualifier("scheduleTrackingDbConnector") CouchDbConnector db,
+	    TrackedSchedulesJsonReader trackedSchedulesJsonReader, ScheduleFactory scheduleFactory) {
 		super(db, trackedSchedulesJsonReader, scheduleFactory);
 	}
-
+	
 	@View(name = "by_schedule_name", map = "function(doc) { if(doc.type === 'ScheduleRecord') emit(doc.name); }")
 	public ScheduleRecord getRecordByName(String name) {
 		List<ScheduleRecord> records = queryView("by_schedule_name", name);

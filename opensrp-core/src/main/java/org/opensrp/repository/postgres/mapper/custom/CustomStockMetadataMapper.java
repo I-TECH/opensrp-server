@@ -13,13 +13,12 @@ public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	Stock selectByDocumentId(String documentId);
 	
 	List<Stock> selectMany(@Param("example") StockMetadataExample stockMetadataExample, @Param("offset") int offset,
-	                       @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 	List<Stock> selectByIdentifier(@Param("stockTypeId") String stockTypeId, @Param("offset") int offset,
-	                               @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 	List<Stock> selectManyBySearchBean(@Param("searchBean") StockSearchBean searchBean,
-	                                   @Param("orderByClause") String orderByClause, @Param("offset") int offset,
-	                                   @Param("limit") int limit);
+	        @Param("orderByClause") String orderByClause, @Param("offset") int offset, @Param("limit") int limit);
 	
 }

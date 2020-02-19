@@ -11,6 +11,6 @@ public interface CustomReportMapper extends ReportMapper {
 	int insertSelectiveAndSetId(Report report);
 	
 	List<Report> selectByIdentifier(@Param("identifier") String identifier, @Param("offset") int offset,
-	                                @Param("limit") int limit);
+	        @Param("limit") int limit);
 	
 }

@@ -5,7 +5,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 import static org.opensrp.common.AllConstants.BaseEntity.MOTHERS_INDENTIFIER;
-import static org.opensrp.util.SampleFullDomainObject.*;
+import static org.opensrp.util.SampleFullDomainObject.ATTRIBUTES_TYPE;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.EPOCH_DATE_TIME;
+import static org.opensrp.util.SampleFullDomainObject.FEMALE;
+import static org.opensrp.util.SampleFullDomainObject.FIRST_NAME;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_VALUE;
+import static org.opensrp.util.SampleFullDomainObject.attributes;
+import static org.opensrp.util.SampleFullDomainObject.getAddress;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
 import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
@@ -323,7 +330,7 @@ public class LuceneClientRepositoryTest extends BaseIntegrationTest {
 		expectedClient.setBirthdate(EPOCH_DATE_TIME);
 		expectedClient.setAddresses(asList(getAddress()));
 		expectedClient.setDateCreated(EPOCH_DATE_TIME);
-		expectedClient.addRelationship(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE, IDENTIFIER_TYPE);
+		expectedClient.addRelationship(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE);
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 		
 		List<Client> actualClients = luceneClientRepository.getByClientByMother(MOTHERS_INDENTIFIER, IDENTIFIER_VALUE);
@@ -340,8 +347,7 @@ public class LuceneClientRepositoryTest extends BaseIntegrationTest {
 		
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 		
-		List<Client> actualClients = luceneClientRepository.getByFieldValue(BASE_ENTITY_ID,
-		    BASE_ENTITY_ID);
+		List<Client> actualClients = luceneClientRepository.getByFieldValue(BASE_ENTITY_ID, BASE_ENTITY_ID);
 		assertEquals(1, actualClients.size());
 		assertEquals(expectedClient, actualClients.get(0));
 	}
@@ -399,8 +405,7 @@ public class LuceneClientRepositoryTest extends BaseIntegrationTest {
 		
 		addObjectToRepository(asList(expectedClient, expectedClient2), allClients);
 		
-		List<Client> actualClients = luceneClientRepository.getByFieldValue(BASE_ENTITY_ID,
-		    Collections.EMPTY_LIST);
+		List<Client> actualClients = luceneClientRepository.getByFieldValue(BASE_ENTITY_ID, Collections.EMPTY_LIST);
 		assertEquals(0, actualClients.size());
 		
 		List<String> nullList = null;

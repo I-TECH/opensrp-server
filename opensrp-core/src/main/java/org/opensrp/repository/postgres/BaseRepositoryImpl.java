@@ -8,14 +8,18 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseRepositoryImpl<T> {
 	
 	public static int DEFAULT_FETCH_SIZE = 1000;
+
+	public static int FETCH_SIZE_LIMIT = 5000;
 	
 	public static String REVISION_PREFIX = "v";
 	
 	public static String SERVER_VERSION = "server_version";
 	
+	public static String ASCENDING = "asc";
+	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
 	
-	protected abstract Long retrievePrimaryKey(T t);
+	protected abstract Object retrievePrimaryKey(T t);
 	
 	protected abstract Object getUniqueField(T t);
 	

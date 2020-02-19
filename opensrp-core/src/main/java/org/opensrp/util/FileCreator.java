@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -20,36 +19,34 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 public class FileCreator {
-
+	
 	// private static String directory=null;//= System.getProperty("user.home");
-
+	
 	// public FileCreator() {
 	// directory = System.getProperty("user.home");
 	//
 	// }
-
-	public void createFile(String filename, String directory, byte[] content)
-			throws FileNotFoundException, IOException {
-
+	
+	public void createFile(String filename, String directory, byte[] content) throws FileNotFoundException, IOException {
+		
 		File f = new File(directory);
-		if(f.mkdirs()){
+		if (f.mkdirs()) {
 			
 		}
 		//System.out.println(s);
-		FileOutputStream fos2 = new FileOutputStream(f.getPath()+System.getProperty("file.separator")+filename);
+		FileOutputStream fos2 = new FileOutputStream(f.getPath() + System.getProperty("file.separator") + filename);
 		fos2.write(content);
 		fos2.close();
-
+		
 	}
-
+	
 	public String createDirectory(String directory) {
-
-		File file = new File(osDirectorySet(directory) );
+		
+		File file = new File(osDirectorySet(directory));
 		if (!file.exists()) {
 			if (file.mkdir()) {
 				System.out.println("Directory is created!");
@@ -57,81 +54,81 @@ public class FileCreator {
 				System.out.println("Failed to create directory!");
 			}
 		}
-
+		
 		return file.getAbsolutePath();
 	}
-
-	public boolean createFormFiles(String directory, String formId,
-			byte[] form, byte[] model, byte[] formjson) {
 	
+	public boolean createFormFiles(String directory, String formId, byte[] form, byte[] model, byte[] formjson) {
+		
 		try {
-		//	System.out.println("before creating files "+directory);
+			//	System.out.println("before creating files "+directory);
 			createFile("form.xml", directory, form);
 			createFile("model.xml", directory, model);
 			createFile("form.json", directory, formjson);
-		//	System.out.println("before creating files "+directory);
+			//	System.out.println("before creating files "+directory);
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-
-	public boolean createTextFile(String directory, byte[] context,
-			String formId) {
+	
+	public boolean createTextFile(String directory, byte[] context, String formId) {
 		try {
 			directory = createDirectory(directory);
 			createFile(formId + ".txt", directory, context);
-
+			
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-
-	public boolean createModelFile(String directory, String formId,
-			byte[] context) {
+	
+	public boolean createModelFile(String directory, String formId, byte[] context) {
 		try {
 			directory = createDirectory(directory);
 			createFile("model.xml", directory, context);
-
+			
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
-
+		
 	}
-
-	public boolean createFormFile(String directory, String formId,
-			byte[] context) {
+	
+	public boolean createFormFile(String directory, String formId, byte[] context) {
 		try {
 			directory = createDirectory(directory);
 			createFile("form.xml", directory, context);
-
+			
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-
-	public boolean createFormJsonFile(String directory, String formId,
-			byte[] context) {
+	
+	public boolean createFormJsonFile(String directory, String formId, byte[] context) {
 		try {
 			directory = createDirectory(directory);
 			createFile("form.json", directory, context);
-
+			
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
-
+	
 	public String osDirectorySet(String name) {
-
+		
 		if (name.startsWith("/")) {
 			name += "/";
 			// directory += "/"+name+"/";
@@ -142,16 +139,15 @@ public class FileCreator {
 		return name;
 	}
 	
-	private  String prettyFormat(String input, int indent) {
+	private String prettyFormat(String input, int indent) {
 		try {
-//			Source xmlInput = new StreamSource(new StringReader(input));
-//			StringWriter stringWriter = new StringWriter();
-//			StreamResult xmlOutput = new StreamResult(new OutputStreamWriter(System.out));
-//			
+			//			Source xmlInput = new StreamSource(new StringReader(input));
+			//			StringWriter stringWriter = new StringWriter();
+			//			StreamResult xmlOutput = new StreamResult(new OutputStreamWriter(System.out));
+			//			
 			final InputSource src = new InputSource(new StringReader(input));
-            final Node document = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(src).getDocumentElement();
-            
+			final Node document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src).getDocumentElement();
+			
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
@@ -163,7 +159,8 @@ public class FileCreator {
 			System.out.println(xmlString);
 			
 			return xmlString;
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			e.printStackTrace();
 			// You'll come here if you are using JDK 1.5
 			// you are getting an the following exeption
@@ -173,23 +170,21 @@ public class FileCreator {
 				Source xmlInput = new StreamSource(new StringReader(input));
 				StringWriter stringWriter = new StringWriter();
 				StreamResult xmlOutput = new StreamResult(stringWriter);
-				TransformerFactory transformerFactory = TransformerFactory
-						.newInstance();
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.setOutputProperty(
-						"{http://xml.apache.org/xslt}indent-amount",
-						String.valueOf(indent));
+				transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
 				transformer.transform(xmlInput, xmlOutput);
 				return xmlOutput.getWriter().toString();
-			} catch (Throwable t) {
+			}
+			catch (Throwable t) {
 				return input;
 			}
 		}
 	}
-
-	public  String prettyFormat(String input) {
+	
+	public String prettyFormat(String input) {
 		return prettyFormat(input, 2);
 	}
-
+	
 }

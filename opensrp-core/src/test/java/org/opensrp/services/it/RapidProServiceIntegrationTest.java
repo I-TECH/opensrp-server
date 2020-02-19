@@ -16,14 +16,17 @@ import org.opensrp.service.RapidProService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Ignore
-public class RapidProServiceIntegrationTest  extends SpringApplicationContextProvider{
-
+public class RapidProServiceIntegrationTest extends SpringApplicationContextProvider {
+	
 	@Autowired
 	RapidProService rapidproService;
+	
 	Map<String, Object> contact = new HashMap<String, Object>();
+	
 	List<String> urns = new ArrayList<String>();
+	
 	List<String> groups = new ArrayList<String>();
-
+	
 	@Before
 	public void setup() {
 		Map<String, Object> fields = new HashMap<String, Object>();
@@ -40,16 +43,16 @@ public class RapidProServiceIntegrationTest  extends SpringApplicationContextPro
 		contact.put("groups", groups);
 		contact.put("fields", fields);
 	}
-
+	
 	@Test
 	public void shouldCreateContactAndReceiveContactObjectResponse() throws Exception {
 		String response = rapidproService.createContact(contact);
 		JSONObject jsonResponse = new JSONObject(response);
 		verify(jsonResponse);
 		Assert.assertEquals(204, rapidproService.deleteContact(jsonResponse.getString("uuid")));
-
+		
 	}
-
+	
 	@Test
 	public void shouldUpdateContactAndReceiveContactObjectResponse() throws Exception {
 		String response = rapidproService.createContact(contact);
@@ -60,23 +63,23 @@ public class RapidProServiceIntegrationTest  extends SpringApplicationContextPro
 		jsonResponse = new JSONObject(response);
 		Assert.assertEquals("Test Woman Updated", jsonResponse.getString("name"));
 		Assert.assertEquals(204, rapidproService.deleteContact(jsonResponse.getString("uuid")));
-
+		
 	}
-
+	
 	@Test
 	public void shouldDeleteContactAndReceiveStatusResponse() throws Exception {
 		String response = rapidproService.createContact(contact);
 		JSONObject jsonResponse = new JSONObject(response);
 		Assert.assertEquals(204, rapidproService.deleteContact(jsonResponse.getString("uuid")));
-
+		
 	}
-
+	
 	@Test
 	@Ignore // FIXME We might need a generic mobile no to test this one out
 	public void shouldSendMessageAndReceiveMessageBroadcastResponse() throws Exception {
 		// rapidproService.sendMessage(urns, contacts, groups, text, channel);
 	}
-
+	
 	@Test
 	public void shouldCreateFieldAndReceiveFieldKeyResponse() throws Exception {
 		String response = rapidproService.addField("Test Field", "T");
@@ -84,9 +87,9 @@ public class RapidProServiceIntegrationTest  extends SpringApplicationContextPro
 		Assert.assertEquals("test_field", jsonResponse.getString("key"));
 		Assert.assertEquals("Test Field", jsonResponse.getString("label"));
 		Assert.assertEquals("T", jsonResponse.getString("value_type"));
-
+		
 	}
-
+	
 	private void verify(JSONObject jsonResponse) throws JSONException {
 		Assert.assertTrue(jsonResponse.has("uuid"));
 		Assert.assertTrue(jsonResponse.has("name"));

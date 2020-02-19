@@ -1,7 +1,8 @@
 package org.opensrp.util;
 
-public class Event{
-    public static EventBuilder create() {
-        return new EventBuilder();
-    }
+public class Event {
+	
+	public static EventBuilder create() {
+		return new EventBuilder();
+	}
 }

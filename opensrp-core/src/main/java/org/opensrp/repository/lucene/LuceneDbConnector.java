@@ -20,10 +20,11 @@ import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.LuceneResult.Row;
 
 @Component
-class LuceneDbConnector extends LuceneAwareCouchDbConnector{
-
+class LuceneDbConnector extends LuceneAwareCouchDbConnector {
+	
 	@Autowired
-	public LuceneDbConnector(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db, StdCouchDbInstance dbinst) throws IOException {
+	public LuceneDbConnector(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db,
+	    StdCouchDbInstance dbinst) throws IOException {
 		super(db.getDatabaseName(), dbinst);
 	}
 	
@@ -38,5 +39,4 @@ class LuceneDbConnector extends LuceneAwareCouchDbConnector{
 		return ol;
 	}
 	
-
 }

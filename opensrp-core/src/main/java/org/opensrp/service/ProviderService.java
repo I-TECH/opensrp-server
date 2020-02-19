@@ -9,26 +9,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProviderService {
-
+	
 	private final AllProviders allProviders;
-
+	
 	@Autowired
 	public ProviderService(AllProviders allProviders) {
 		this.allProviders = allProviders;
 	}
-
+	
 	public Provider getProviderByBaseEntityId(String baseEntityId) {
 		return allProviders.findByBaseEntityId(baseEntityId);
 	}
-
+	
 	public List<Provider> getAllProviders() {
 		return allProviders.findAllProviders();
 	}
-
+	
 	public void addProvider(Provider provider) {
 		allProviders.add(provider);
 	}
-
+	
 	public void updateProvider(Provider provider) {
 		allProviders.update(provider);
 	}

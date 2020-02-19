@@ -10,8 +10,8 @@ import org.motechproject.model.MotechBaseDataObject;
 public class Camp extends MotechBaseDataObject {
 	
 	/**
-     * 
-     */
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	
 	@JsonProperty

@@ -13,16 +13,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AlertHandler {
-    @Autowired
-    public AlertHandler(TaskSchedulerService scheduler,
-                          // @Qualifier("ForceFulfillAction") HookedEvent forceFulfill,
-                          /* @Qualifier("AutoClosePNCAction") HookedEvent autoClosePNCAction,*/
-                           @Qualifier("ECAlertCreationAction") HookedEvent alertCreation) {
-    	scheduler.addHookedEvent(any(), any(), anyOf(earliest.toString(), due.toString(), late.toString(), max.toString()),
-                alertCreation);
-    	
-//   TODO 	scheduler.addHookedEvent(eq(SCHEDULE_ANC), any(), eq(max.toString()), forceFulfill);
- //   	scheduler.addHookedEvent(eq(SCHEDULE_LAB), any(), eq(max.toString()), forceFulfill);
-   // 	scheduler.addHookedEvent(eq(SCHEDULE_AUTO_CLOSE_PNC), any(), any(), autoClosePNCAction);
-    }
+	
+	@Autowired
+	public AlertHandler(TaskSchedulerService scheduler,
+	    // @Qualifier("ForceFulfillAction") HookedEvent forceFulfill,
+	    /* @Qualifier("AutoClosePNCAction") HookedEvent autoClosePNCAction,*/
+	    @Qualifier("ECAlertCreationAction") HookedEvent alertCreation) {
+		scheduler.addHookedEvent(any(), any(), anyOf(earliest.toString(), due.toString(), late.toString(), max.toString()),
+		    alertCreation);
+		
+		//   TODO 	scheduler.addHookedEvent(eq(SCHEDULE_ANC), any(), eq(max.toString()), forceFulfill);
+		//   	scheduler.addHookedEvent(eq(SCHEDULE_LAB), any(), eq(max.toString()), forceFulfill);
+		// 	scheduler.addHookedEvent(eq(SCHEDULE_AUTO_CLOSE_PNC), any(), any(), autoClosePNCAction);
+	}
 }

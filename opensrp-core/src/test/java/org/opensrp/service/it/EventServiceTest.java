@@ -343,7 +343,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 	
 	@Test(expected = IllegalStateException.class)
 	public void shouldThrowExceptionIfAnEventAlreadyExistWithSameBaseEntityIdAndFormSumbissionIdWithCouchDbConector()
-	    throws IOException {
+	        throws IOException {
 		Event expectedEvent = getEvent();
 		Event invalidEvent = getEvent();
 		Map<String, String> identifiers = new HashMap<>(identifier);

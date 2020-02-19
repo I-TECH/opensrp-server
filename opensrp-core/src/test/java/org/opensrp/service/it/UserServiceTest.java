@@ -21,33 +21,33 @@ import org.opensrp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserServiceTest extends BaseIntegrationTest {
-
+	
 	@Autowired
 	public AllUsers allUsers;
-
+	
 	@Autowired
 	public UserService userService;
-
+	
 	@Before
 	public void setUp() {
 		allUsers.removeAll();
 	}
-
+	
 	@After
 	public void cleanUp() {
 		allUsers.removeAll();
 	}
-
+	
 	@Test
 	public void shouldFindByBaseEntityId() {
 		User expectedUser = getUser();
 		addObjectToRepository(Collections.singletonList(expectedUser), allUsers);
-
+		
 		User actualUser = userService.getUserByEntityId(BASE_ENTITY_ID);
-
+		
 		assertEquals(expectedUser, actualUser);
 	}
-
+	
 	@Test
 	public void shouldReturnAllUser() {
 		User user = getUser();
@@ -55,43 +55,43 @@ public class UserServiceTest extends BaseIntegrationTest {
 		user1.setUsername(DIFFERENT_BASE_ENTITY_ID);
 		List<User> expectedUsers = asList(user, user1);
 		addObjectToRepository(expectedUsers, allUsers);
-
+		
 		List<User> actualUsers = userService.getAllUsers();
-
+		
 		assertTwoListAreSameIgnoringOrder(expectedUsers, actualUsers);
-
+		
 	}
-
+	
 	@Test
 	public void shouldAddNewUser() {
 		User expectedUser = getUser();
-
+		
 		userService.addUser(expectedUser);
-
+		
 		List<User> actualUsers = allUsers.getAll();
 		assertEquals(1, actualUsers.size());
 		assertEquals(expectedUser, actualUsers.get(0));
 	}
-
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowExceptionIfExistingUser() {
 		addObjectToRepository(Collections.singletonList(getUser()), allUsers);
 		userService.addUser(allUsers.getAll().get(0));
 	}
-
+	
 	@Test
 	public void shouldUpdateExistingUser() {
 		addObjectToRepository(Collections.singletonList(getUser()), allUsers);
 		User updatedUser = allUsers.getAll().get(0);
 		updatedUser.setUsername(DIFFERENT_BASE_ENTITY_ID);
-
+		
 		userService.updateUser(updatedUser);
-
+		
 		List<User> actualUsers = allUsers.getAll();
 		assertEquals(1, actualUsers.size());
 		assertEquals(updatedUser, actualUsers.get(0));
 	}
-
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowExceptionIfNewWhileUpdate() {
 		userService.updateUser(getUser());

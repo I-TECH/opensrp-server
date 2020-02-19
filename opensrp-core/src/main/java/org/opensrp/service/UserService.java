@@ -13,27 +13,23 @@ public class UserService {
 	private final AllUsers allUsers;
 	
 	@Autowired
-	public UserService(AllUsers allUsers)
-	{
+	public UserService(AllUsers allUsers) {
 		this.allUsers = allUsers;
 	}
 	
-	public User getUserByEntityId(String baseEntityId)
-	{
+	public User getUserByEntityId(String baseEntityId) {
 		return allUsers.findByBaseEntityId(baseEntityId);
 	}
-	public List<User> getAllUsers()
-	{
+	
+	public List<User> getAllUsers() {
 		return allUsers.findAllUsers();
 	}
 	
-	public void addUser(User user)
-	{
+	public void addUser(User user) {
 		allUsers.add(user);
 	}
-
-	public void updateUser(User user)
-	{
+	
+	public void updateUser(User user) {
 		allUsers.update(user);
 	}
 }

@@ -7,20 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * OpenSrp Factory Bean 
- * The application context must define properties along the line of:
- * <code>
+ * OpenSrp Factory Bean The application context must define properties along the line of: <code>
  * <util:properties id="couchdbProperties" location="classpath:couchdb.properties"/>
  * </code>
+ * 
  * @author keyman
- *
  */
 public class OpenSRPHttpClientFactoryBean extends HttpClientFactoryBean {
-
+	
 	@Autowired
 	@Qualifier("couchdbProperties")
 	private Properties opensrpCouchdbProperties;
-
+	
 	/**
 	 * Create the couchDB connection when starting the bean factory
 	 */
@@ -31,5 +29,5 @@ public class OpenSRPHttpClientFactoryBean extends HttpClientFactoryBean {
 		}
 		super.afterPropertiesSet();
 	}
-
+	
 }

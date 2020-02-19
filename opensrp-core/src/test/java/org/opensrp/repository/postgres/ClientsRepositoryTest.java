@@ -5,9 +5,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -43,7 +45,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("eb4b258c-7558-436c-a1fe-e91d9e12f849", client.getIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE));
 		assertEquals("January", client.getFirstName().trim());
 		assertEquals("Babysix", client.getLastName());
-		assertEquals("05934ae338431f28bf6793b2416946b7",client.getId());
+		assertEquals("05934ae338431f28bf6793b2416946b7", client.getId());
 		//missing client
 		assertNull(clientsRepository.get("05934ae338bf6793b2416946b7"));
 		
@@ -56,9 +58,10 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void testAdd() {
 		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e2f").withBirthdate(new DateTime("2017-03-31"), true)
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+		
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientsRepository.add(client);
-		assertEquals(16, clientsRepository.getAll().size());
+		assertEquals(22, clientsRepository.getAll().size());
 		
 		Client savedClient = clientsRepository.findByBaseEntityId("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -97,14 +100,13 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testGetAll() {
-		assertEquals(15, clientsRepository.getAll().size());
-		
+		assertEquals(21, clientsRepository.getAll().size());
 		clientsRepository.safeRemove(clientsRepository.get("05934ae338431f28bf6793b24164cbd9"));
 		
 		List<Client> clients = clientsRepository.getAll();
 		
 		//test deleted clients
-		assertEquals(14, clients.size());
+		assertEquals(20, clients.size());
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
 		
@@ -117,7 +119,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		Client client = clientsRepository.get("05934ae338431f28bf6793b2416946b7");
 		clientsRepository.safeRemove(client);
 		List<Client> clients = clientsRepository.getAll();
-		assertEquals(14, clients.size());
+		assertEquals(20, clients.size());
 		
 		for (Client cl : clients)
 			assertNotEquals("05934ae338431f28bf6793b2416946b7", cl.getId());
@@ -142,13 +144,13 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllClients() {
-		assertEquals(15, clientsRepository.findAllClients().size());
+		assertEquals(21, clientsRepository.findAllClients().size());
 		
 		clientsRepository.safeRemove(clientsRepository.get("05934ae338431f28bf6793b24164cbd9"));
 		
 		List<Client> clients = clientsRepository.findAllClients();
 		
-		assertEquals(14, clients.size());
+		assertEquals(20, clients.size());
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
 		
@@ -161,8 +163,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertTrue(clientsRepository.findAllByIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "ab91df5d-e433-40f3-b44f-427b73ca")
 		        .isEmpty());
 		
-		assertTrue(
-		    clientsRepository.findAllByIdentifier("identifier_type", "ab91df5d-e433-40f3-b44f-427b73c9ae2a").isEmpty());
+		assertTrue(clientsRepository.findAllByIdentifier("identifier_type", "ab91df5d-e433-40f3-b44f-427b73c9ae2a")
+		        .isEmpty());
 		
 		List<Client> clients = clientsRepository.findAllByIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE,
 		    "ab91df5d-e433-40f3-b44f-427b73c9ae2a");
@@ -174,8 +176,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		
 		//test deleted clients
 		clientsRepository.safeRemove(clients.get(0));
-		assertTrue(clientsRepository
-		        .findAllByIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "ab91df5d-e433-40f3-b44f-427b73c9ae2a").isEmpty());
+		assertTrue(clientsRepository.findAllByIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE,
+		    "ab91df5d-e433-40f3-b44f-427b73c9ae2a").isEmpty());
 		
 	}
 	
@@ -202,7 +204,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllByMatchingName() {
-		assertEquals(5, clientsRepository.findAllByMatchingName("b").size());
+		assertEquals(7, clientsRepository.findAllByMatchingName("b").size());
 		
 		List<Client> clients = clientsRepository.findAllByMatchingName("babytwo");
 		
@@ -213,9 +215,9 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("218227-7", clients.get(0).getIdentifier("ZEIR_ID"));
 		assertEquals("ba5d3927-414f-4796-ae1e-9b73b50a5573", clients.get(0).getIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE));
 		
-		assertEquals(6, clientsRepository.findAllByMatchingName("a").size());
+		assertEquals(11, clientsRepository.findAllByMatchingName("a").size());
 		
-		assertEquals(5, clientsRepository.findAllByMatchingName("Ja").size());
+		assertEquals(6, clientsRepository.findAllByMatchingName("Ja").size());
 		
 		assertEquals(4, clientsRepository.findAllByMatchingName("Janu").size());
 		
@@ -230,8 +232,10 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByRelationshipIdAndDateCreated() {
-		assertEquals(2, clientsRepository.findByRelationshipIdAndDateCreated("0154839f-8766-4eda-b729-89067c7a8c5d",
-		    new DateTime("2018-03-13").toString(), new DateTime().toString()).size());
+		assertEquals(
+		    2,
+		    clientsRepository.findByRelationshipIdAndDateCreated("0154839f-8766-4eda-b729-89067c7a8c5d",
+		        new DateTime("2018-03-13").toString(), new DateTime().toString()).size());
 		
 		assertTrue(clientsRepository.findByRelationshipIdAndDateCreated("0154839f-8766-4eda-89067c7a8c5d",
 		    new DateTime("2018-03-14").toString(), new DateTime().toString()).isEmpty());
@@ -274,7 +278,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void testFindByCriteria() {
 		ClientSearchBean searchBean = new ClientSearchBean();
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
-		assertEquals(15, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		assertEquals(21, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
 		
 		searchBean.setNameLike("Janu");
 		assertEquals(4, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
@@ -323,7 +327,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindByCriteriaWithoutAddressBean() {
 		ClientSearchBean searchBean = new ClientSearchBean();
-		assertEquals(15, clientsRepository.findByCriteria(searchBean).size());
+		assertEquals(21, clientsRepository.findByCriteria(searchBean).size());
 		
 		searchBean.setNameLike("Janu");
 		assertEquals(4, clientsRepository.findByCriteria(searchBean).size());
@@ -377,7 +381,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		to = from;
 		from = new DateTime("2018-01-01");
 		clients = clientsRepository.findByCriteria(new AddressSearchBean(), from, to);
-		assertEquals(10, clients.size());
+		assertEquals(11, clients.size());
 		
 		for (Client client : clients) {
 			assertTrue(client.getDateEdited().isEqual(from) || client.getDateEdited().isAfter(from));
@@ -386,8 +390,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
 		addressSearchBean.setCityVillage("hui");
-		assertTrue(
-		    clientsRepository.findByCriteria(addressSearchBean, new DateTime("2018-01-01"), new DateTime()).isEmpty());
+		assertTrue(clientsRepository.findByCriteria(addressSearchBean, new DateTime("2018-01-01"), new DateTime()).isEmpty());
 		
 		//test deleted clients
 		for (Client client : clientsRepository.findByCriteria(new AddressSearchBean(), from, to))
@@ -434,11 +437,13 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(5, clientsRepository.findByServerVersion(1520935878136l).size());
-		
+		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l).size());
 		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
-		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce");
-		assertEquals(2, clients.size());
+		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
+		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
+		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c",
+		    "5bd3e1eb-5cd4-4e8d-9180-4293b7ea3b78", "f5934ae338431f28bf6793b24159ce5a");
+		assertEquals(8, clients.size());
 		for (Client client : clients) {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
@@ -452,20 +457,20 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByFieldValue() {
-		assertEquals(3,
-		    clientsRepository
-		            .findByFieldValue(BASE_ENTITY_ID, Arrays.asList(new String[] { "86c039a2-0b68-4166-849e-f49897e3a510",
-		                    "f33c71c7-a9a4-495d-8028-b6d59e4034b3", "fe7b6350-16d2-41d0-8574-c194088705df" }))
-		            .size());
+		assertEquals(
+		    3,
+		    clientsRepository.findByFieldValue(
+		        BASE_ENTITY_ID,
+		        Arrays.asList(new String[] { "86c039a2-0b68-4166-849e-f49897e3a510", "f33c71c7-a9a4-495d-8028-b6d59e4034b3",
+		                "fe7b6350-16d2-41d0-8574-c194088705df" })).size());
 		
 		assertTrue(clientsRepository.findByFieldValue("Firstname", Arrays.asList(new String[] { "Baby", "Jan" })).isEmpty());
 		
-		assertTrue(
-		    clientsRepository.findByFieldValue(BASE_ENTITY_ID, Arrays.asList(new String[] { "Baby", "Jan" })).isEmpty());
+		assertTrue(clientsRepository.findByFieldValue(BASE_ENTITY_ID, Arrays.asList(new String[] { "Baby", "Jan" }))
+		        .isEmpty());
 		
-		Client client = clientsRepository
-		        .findByFieldValue(BASE_ENTITY_ID, Arrays.asList(new String[] { "f33c71c7-a9a4-495d-8028-b6d59e4034b3" }))
-		        .get(0);
+		Client client = clientsRepository.findByFieldValue(BASE_ENTITY_ID,
+		    Arrays.asList(new String[] { "f33c71c7-a9a4-495d-8028-b6d59e4034b3" })).get(0);
 		
 		assertEquals("05934ae338431f28bf6793b241679500", client.getId());
 		assertEquals("Jan", client.getFirstName());
@@ -474,9 +479,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		
 		//test deleted clients
 		clientsRepository.safeRemove(client);
-		assertTrue(clientsRepository
-		        .findByFieldValue(BASE_ENTITY_ID, Arrays.asList(new String[] { "f33c71c7-a9a4-495d-8028-b6d59e4034b3" }))
-		        .isEmpty());
+		assertTrue(clientsRepository.findByFieldValue(BASE_ENTITY_ID,
+		    Arrays.asList(new String[] { "f33c71c7-a9a4-495d-8028-b6d59e4034b3" })).isEmpty());
 	}
 	
 	@Test
@@ -497,4 +501,162 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		clientsRepository.safeRemove(client);
 		assertTrue(clientsRepository.notInOpenMRSByServerVersion(0l, Calendar.getInstance()).isEmpty());
 	}
+	
+	@Test
+	public void shouldFindMembersByRelationshipId() {
+		List<Client> expectedClient = clientsRepository.findMembersByRelationshipId("43930c23-c787-4ddb-ab76-770f77e7b17d");
+		assertNotNull(expectedClient);
+		assertEquals(1, expectedClient.size());
+		
+	}
+	
+	@Test
+	public void shouldGetMemberCountHouseholdHeadProviderByClients() {
+		List<String> id = new ArrayList<String>();
+		id.add("43930c23-c787-4ddb-ab76-770f77e7b17d");
+		List<HouseholdClient> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
+		    "mother");
+		
+		assertEquals("biddemo", householdClient.get(0).getProviderId());
+		assertEquals(1, householdClient.get(0).getMemebrCount());
+	}
+	
+	@Test
+	public void shouldFindAllClientsByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType("ec_family");
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("42abc582-6658-488b-922e-7be500c070f3");
+		searchBean.setLocations(locationUuids);
+		List<Client> clients = clientsRepository.findAllClientsByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(2, clients.size());
+	}
+	
+	@Test
+	public void shouldFindCountAllClientsByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType("ec_family");
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("42abc582-6658-488b-922e-7be500c070f3");
+		searchBean.setLocations(locationUuids);
+		HouseholdClient householdClient = clientsRepository.findCountAllClientsByCriteria(searchBean, addressSearchBean);
+		assertNotNull(householdClient.getTotalCount());
+		assertEquals(2, householdClient.getTotalCount());
+	}
+	
+	@Test
+	public void shouldFindHouseholdByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("Haran Mia");
+		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindHouseholdByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("e3170b23-bb22-42a4-875d-35c7f32c28ae");
+		searchBean.setLocations(locationUuids);
+		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldCountHouseholdByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("e3170b23-bb22-42a4-875d-35c7f32c28ae");
+		searchBean.setLocations(locationUuids);
+		HouseholdClient clients = clientsRepository.findTotalCountHouseholdByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.getTotalCount());
+	}
+	
+	@Test
+	public void shouldCountHouseholdByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("Haran Mia");
+		HouseholdClient clients = clientsRepository.findTotalCountHouseholdByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.getTotalCount());
+	}
+	
+	@Test
+	public void shouldFindANCByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("Nobonita");
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findANCByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindAllANCByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findANCByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindChildByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("mala");
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindANCByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<String> locations = new ArrayList<>();
+		locations.add("ce39f858-a2f6-4676-8db1-81fbb1891b01");
+		searchBean.setLocations(locations);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindAllChildByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindChildByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<String> locations = new ArrayList<>();
+		locations.add("ce39f858-a2f6-4676-8db1-81fbb1891b01");
+		searchBean.setLocations(locations);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
 }

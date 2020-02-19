@@ -148,7 +148,7 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 	
 	@Override
 	public List<Action> findByCaseIdScheduleAndTimeStamp(String baseEntityId, String schedule, DateTime start,
-	                                                     DateTime end) {
+	        DateTime end) {
 		if (start == null || end == null)
 			throw new IllegalArgumentException("start and/or end date is null");
 		ActionMetadataExample example = new ActionMetadataExample();
@@ -216,7 +216,7 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 	
 	@Override
 	public List<Action> findByCriteria(String team, String providerId, long timeStamp, String sortBy, String sortOrder,
-	                                   int limit) {
+	        int limit) {
 		ActionMetadataExample metadataExample = new ActionMetadataExample();
 		Criteria criteria = metadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(timeStamp);
 		

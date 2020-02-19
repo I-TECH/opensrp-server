@@ -14,13 +14,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AllUsers extends MotechBaseRepository<User> {
-
+	
 	@Autowired
-	protected AllUsers(
-			@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {
+	protected AllUsers(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {
 		super(User.class, db);
 	}
-
+	
 	@GenerateView
 	public User findByBaseEntityId(String baseEntityId) {
 		List<User> users = queryView("by_baseEntityId", baseEntityId);
@@ -29,21 +28,19 @@ public class AllUsers extends MotechBaseRepository<User> {
 		}
 		return users.get(0);
 	}
-
+	
 	public boolean exists(String caseId) {
 		return findByBaseEntityId(caseId) != null;
 	}
 	
 	@View(name = "all_users", map = "function(doc) { if (doc.type === 'User') { emit(doc.baseEntityId); } }")
 	public List<User> findAllUsers() {
-		return db.queryView(createQuery("all_users").includeDocs(true),
-				User.class);
+		return db.queryView(createQuery("all_users").includeDocs(true), User.class);
 	}
-
+	
 	@View(name = "all_users_by_CaseIDs", map = "function(doc) { if (doc.type === 'User' && doc.baseEntityId) { emit(doc.baseEntityId); } }")
 	public List<User> findAllByUserByIds(List<String> Ids) {
-		return db.queryView(createQuery("all_users_by_CaseIDs").keys(Ids)
-				.includeDocs(true), User.class);
+		return db.queryView(createQuery("all_users_by_CaseIDs").keys(Ids).includeDocs(true), User.class);
 	}
-
+	
 }

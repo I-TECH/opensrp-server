@@ -14,26 +14,31 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FormSubmissionRouter {
+	
 	private static Logger logger = LoggerFactory.getLogger(FormSubmissionRouter.class.toString());
+	
 	private FormSubmissionService formSubmissionService;
+	
 	private HandlerMapper handlerMapper;
-
+	
 	@Autowired
 	public FormSubmissionRouter(FormSubmissionService formSubmissionService, HandlerMapper handlerMapper) {
-
+		
 		this.formSubmissionService = formSubmissionService;
 		this.handlerMapper = handlerMapper;
 	}
 	
 	public void formSubmissionProcessed(String client, List<String> dependents, FormSubmission formSubmission) {
-		FormSubmissionProcessedListener handler = handlerMapper.formSubmissionProcessedListenerMap().get(formSubmission.formName());
-		if(handler != null){
-			logger.info(format("Found a post processor handler for form submission ( {0} ) with instance Id: {1} for entity: {2}",
-					formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId()));
+		FormSubmissionProcessedListener handler = handlerMapper.formSubmissionProcessedListenerMap()
+		        .get(formSubmission.formName());
+		if (handler != null) {
+			logger.info(
+			    format("Found a post processor handler for form submission ( {0} ) with instance Id: {1} for entity: {2}",
+			        formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId()));
 			handler.onFormSubmissionProcessed(client, dependents, formSubmission);
 		}
 	}
-
+	
 	public void route(String instanceId) throws Exception {
 		FormSubmission submission = formSubmissionService.findByInstanceId(instanceId);
 		route(submission);
@@ -42,17 +47,20 @@ public class FormSubmissionRouter {
 	public void route(FormSubmission formSubmission) throws Exception {
 		CustomFormSubmissionHandler handler = handlerMapper.customFormSubmissionHandlerMap().get(formSubmission.formName());// handlerMap.get(submission.formName());
 		if (handler == null) {
-			logger.warn(format("Could not find a handler due to unknown form submission ( {0} ) with instance Id: {1} for entity: {2}",
-				formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId()));
+			logger.warn(format(
+			    "Could not find a handler due to unknown form submission ( {0} ) with instance Id: {1} for entity: {2}",
+			    formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId()));
 			return;
 		}
-		logger.info(format("Handling {0} form submission with instance Id: {1} for entity: {2}",
-				formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId()));
+		logger.info(format("Handling {0} form submission with instance Id: {1} for entity: {2}", formSubmission.formName(),
+		    formSubmission.instanceId(), formSubmission.entityId()));
 		try {
 			handler.handle(formSubmission);
-		} catch (Exception e) {
-			logger.error(format("Handling {0} form submission with instance Id: {1} for entity: {2} failed with exception : {3}",
-					formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId(), getFullStackTrace(e)));
+		}
+		catch (Exception e) {
+			logger.error(format(
+			    "Handling {0} form submission with instance Id: {1} for entity: {2} failed with exception : {3}",
+			    formSubmission.formName(), formSubmission.instanceId(), formSubmission.entityId(), getFullStackTrace(e)));
 			throw e;
 		}
 	}

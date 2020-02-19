@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("couchReportsRepository")
 @Primary
-public class AllReports extends MotechBaseRepository<Report> implements ReportsRepository{
+public class AllReports extends MotechBaseRepository<Report> implements ReportsRepository {
 	
 	private LuceneReportRepository lrr;
 	
@@ -66,8 +66,8 @@ public class AllReports extends MotechBaseRepository<Report> implements ReportsR
 	public List<Report> findByServerVersion(long serverVersion) {
 		ComplexKey startKey = ComplexKey.of(serverVersion + 1);
 		ComplexKey endKey = ComplexKey.of(Long.MAX_VALUE);
-		return db.queryView(createQuery("reports_by_version").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true),
-		    Report.class);
+		return db.queryView(
+		    createQuery("reports_by_version").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true), Report.class);
 	}
 	
 	@View(name = "all_reports_by_base_entity_and_form_submission", map = "function(doc) { if (doc.type === 'Report'){  emit([doc.baseEntityId, doc.formSubmissionId], doc); } }")
@@ -78,12 +78,12 @@ public class AllReports extends MotechBaseRepository<Report> implements ReportsR
 	}
 	
 	public List<Report> findReports(String team, String providerId, String locationId, String baseEntityId,
-	                                Long serverVersion, String sortBy, String sortOrder, int limit) {
+	        Long serverVersion, String sortBy, String sortOrder, int limit) {
 		return lrr.getByCriteria(team, providerId, locationId, baseEntityId, serverVersion, sortBy, sortOrder, limit);
 	}
 	
 	public List<Report> findReports(String baseEntityId, DateTime from, DateTime to, String reportType, String providerId,
-	                                String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
+	        String locationId, DateTime lastEditFrom, DateTime lastEditTo) {
 		return lrr.getByCriteria(baseEntityId, from, to, reportType, providerId, locationId, lastEditFrom, lastEditTo);
 	}
 	

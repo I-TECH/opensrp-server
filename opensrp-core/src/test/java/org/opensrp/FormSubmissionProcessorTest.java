@@ -33,58 +33,66 @@ import org.opensrp.service.formSubmission.handler.FormSubmissionRouter;
 import org.opensrp.service.formSubmission.ziggy.ZiggyService;
 import org.opensrp.util.TestResourceLoader;
 
-public class FormSubmissionProcessorTest extends TestResourceLoader{
-
+public class FormSubmissionProcessorTest extends TestResourceLoader {
+	
 	@Mock
 	private FormSubmissionProcessor fsp;
+	
 	@Mock
 	private ZiggyService ziggyService;
+	
 	@Mock
 	private FormSubmissionRouter formSubmissionRouter;
+	
 	@Mock
 	private FormEntityConverter formEntityConverter;
+	
 	@Mock
 	private HealthSchedulerService scheduleService;
+	
 	@Mock
 	private ClientService clientService;
+	
 	@Mock
 	private EventService eventService;
+	
 	@Mock
 	private AllClients allClients;
+	
 	@Mock
 	private AllEvents allEvents;
-
+	
 	public FormSubmissionProcessorTest() throws IOException {
 		super();
 	}
-
+	
 	@Before
-	public void setup() throws IOException{
+	public void setup() throws IOException {
 		initMocks(this);
 		FormEntityConverter fec = new FormEntityConverter(new FormAttributeParser("/form"));
-		fsp = new FormSubmissionProcessor(ziggyService, formSubmissionRouter,
-				fec, scheduleService, clientService,allClients, eventService,allEvents);
+		fsp = new FormSubmissionProcessor(ziggyService, formSubmissionRouter, fec, scheduleService, clientService,
+		        allClients, eventService, allEvents);
 	}
-
+	
 	@Test
-	@Ignore//FIXME
-	public void testFormSubmission() throws Exception{
+	@Ignore //FIXME
+	public void testFormSubmission() throws Exception {
 		FormSubmission submission = getFormSubmissionFor("pnc_reg_form");
-
+		
 		List<Schedule> schl = new ArrayList<Schedule>();
-		schl.add(new Schedule(ActionType.enroll, new String[]{submission.formName()}, "Boosters", "REMINDER", new String[]{"birthdate"}, "child", ""));
+		schl.add(new Schedule(ActionType.enroll, new String[] { submission.formName() }, "Boosters", "REMINDER",
+		        new String[] { "birthdate" }, "child", ""));
 		when(scheduleService.findAutomatedSchedules(submission.formName())).thenReturn(schl);
-
+		
 		fsp.processFormSubmission(submission);
-
-
+		
 		int totalEntities = 1;
 		for (SubFormData e : submission.subForms()) {
 			totalEntities += e.instances().size();
 		}
 		verify(clientService, times(totalEntities)).addClient(any(Client.class));
 		verify(eventService, times(totalEntities)).addEvent(any(Event.class));
-		verify(scheduleService, times(totalEntities-1)).enrollIntoSchedule(any(String.class),
-				eq("Boosters"), eq("REMINDER"), any(String.class), eq(submission.getInstanceId()));
+		verify(scheduleService, times(totalEntities - 1)).enrollIntoSchedule(any(String.class), eq("Boosters"),
+		    eq("REMINDER"), any(String.class), eq(submission.getInstanceId()));
 	}
 }

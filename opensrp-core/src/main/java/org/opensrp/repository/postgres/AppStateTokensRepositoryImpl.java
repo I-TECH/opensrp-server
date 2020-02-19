@@ -81,7 +81,7 @@ public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {
 	}
 	
 	private org.opensrp.domain.postgres.AppStateToken getPostgresEntity(org.opensrp.domain.postgres.AppStateToken token,
-	                                                                    AppStateToken entity) {
+	        AppStateToken entity) {
 		if (entity == null)
 			return null;
 		token.setDescription(entity.getDescription());

@@ -16,16 +16,14 @@ public interface CustomEventMapper extends EventMapper {
 	List<Event> selectByIdentifier(String identifier);
 	
 	List<Event> selectByIdentifierOfType(@Param("identifierType") String identifierType,
-	                                     @Param("identifier") String identifier);
+	        @Param("identifier") String identifier);
 	
 	List<Event> selectByBaseEntityIdConceptAndDate(@Param("baseEntityId") String baseEntityId,
-	                                               @Param("concept") String concept,
-	                                               @Param("conceptValue") String conceptValue,
-	                                               @Param("dateFrom") Date dateFrom, @Param("dateTo") Date dateTo);
+	        @Param("concept") String concept, @Param("conceptValue") String conceptValue, @Param("dateFrom") Date dateFrom,
+	        @Param("dateTo") Date dateTo);
 	
 	List<Event> selectByBaseEntityIdAndConceptParentCode(@Param("baseEntityId") String baseEntityId,
-	                                                     @Param("concept") String concept,
-	                                                     @Param("parentCode") String parentCode);
+	        @Param("concept") String concept, @Param("parentCode") String parentCode);
 	
 	List<Event> selectByConceptAndValue(@Param("concept") String concept, @Param("conceptValue") String conceptValue);
 	

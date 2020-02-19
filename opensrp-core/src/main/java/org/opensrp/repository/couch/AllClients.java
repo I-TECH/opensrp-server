@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.lucene.LuceneClientRepository;
 import org.opensrp.search.AddressSearchBean;
@@ -28,16 +29,15 @@ import com.mysql.jdbc.StringUtils;
 @Repository("couchClientsRepository")
 @Primary
 public class AllClients extends MotechBaseRepository<Client> implements ClientsRepository {
-
+	
 	private LuceneClientRepository lcr;
-
+	
 	@Autowired
-	protected AllClients(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db,
-						 LuceneClientRepository lcr) {
+	protected AllClients(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db, LuceneClientRepository lcr) {
 		super(Client.class, db);
 		this.lcr = lcr;
 	}
-
+	
 	@GenerateView
 	public Client findByBaseEntityId(String baseEntityId) {
 		if (StringUtils.isEmptyOrWhitespaceOnly(baseEntityId))
@@ -48,7 +48,7 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		}
 		return clients.get(0);
 	}
-
+	
 	@GenerateView
 	public Client findByBaseEntityId(CouchDbConnector targetDb, String baseEntityId) {
 		if (StringUtils.isEmptyOrWhitespaceOnly(baseEntityId))
@@ -59,41 +59,40 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		}
 		return clients.get(0);
 	}
-
+	
 	@View(name = "all_clients", map = "function(doc) { if (doc.type === 'Client') { emit(doc.baseEntityId); } }")
 	public List<Client> findAllClients() {
 		return db.queryView(createQuery("all_clients").includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "all_clients_by_identifier", map = "function(doc) {if (doc.type === 'Client') {for(var key in doc.identifiers) {emit(doc.identifiers[key]);}}}")
 	public List<Client> findAllByIdentifier(String identifier) {
 		return db.queryView(createQuery("all_clients_by_identifier").key(identifier).includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "all_clients_by_identifier", map = "function(doc) {if (doc.type === 'Client') {for(var key in doc.identifiers) {emit(doc.identifiers[key]);}}}")
 	public List<Client> findAllByIdentifier(CouchDbConnector targetDb, String identifier) {
 		return targetDb.queryView(createQuery("all_clients_by_identifier").key(identifier).includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "all_clients_by_identifier_of_type", map = "function(doc) {if (doc.type === 'Client') {for(var key in doc.identifiers) {emit([key, doc.identifiers[key]]);}}}")
 	public List<Client> findAllByIdentifier(String identifierType, String identifier) {
 		ComplexKey ckey = ComplexKey.of(identifierType, identifier);
 		return db.queryView(createQuery("all_clients_by_identifier_of_type").key(ckey).includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "all_clients_by_attribute_of_type", map = "function(doc) {if (doc.type === 'Client') {for(var key in doc.attributes) {emit([key, doc.attributes[key]]);}}}")
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		ComplexKey ckey = ComplexKey.of(attributeType, attribute);
 		return db.queryView(createQuery("all_clients_by_attribute_of_type").key(ckey).includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "all_clients_by_matching_name", map = "function(doc) {if(doc.type === 'Client'){emit(doc.firstName, doc);emit(doc.lastName, doc);}}")
 	public List<Client> findAllByMatchingName(String nameMatches) {
-		return db.queryView(
-				createQuery("all_clients_by_matching_name").startKey(nameMatches).endKey(nameMatches + "z").includeDocs(true),
-				Client.class);
+		return db.queryView(createQuery("all_clients_by_matching_name").startKey(nameMatches).endKey(nameMatches + "z")
+		        .includeDocs(true), Client.class);
 	}
-
+	
 	/**
 	 * Find a client based on the relationship id and between a range of date created dates e.g
 	 * given mother's id get children born at a given time
@@ -107,21 +106,19 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	public List<Client> findByRelationshipIdAndDateCreated(String relationalId, String dateFrom, String dateTo) {
 		ComplexKey startKey = ComplexKey.of(relationalId, dateFrom);
 		ComplexKey endKey = ComplexKey.of(relationalId, dateTo);
-		List<Client> clients = db.queryView(
-				createQuery("client_by_relationship_id_and_date_created").startKey(startKey).endKey(endKey).includeDocs(true),
-				Client.class);
+		List<Client> clients = db.queryView(createQuery("client_by_relationship_id_and_date_created").startKey(startKey)
+		        .endKey(endKey).includeDocs(true), Client.class);
 		return clients;
 	}
-
+	
 	//	@View(name = "client_by_relationship", map = "function(doc) {if (doc.type === 'Client') {for(var key in doc.relationships) {emit([key, doc.relationships[key]]);}}}")
 	//	@View(name = "client_by_relationship", map = "function(doc) { if(doc.type == 'Client' && doc.relationships.mother[0]) {emit(null, doc._id)} }")
 	@View(name = "client_by_relationship", map = "function(doc) { if(doc.type === 'Client' && doc.relationships) { for (var key in doc.relationships) { var entityid = doc.relationships[key][0]; if (key === 'mother') {emit([key, entityid], doc);}}}}")
-
 	public List<Client> findByRelationshipId(String relationshipType, String entityId) {
 		return db.queryView(createQuery("client_by_relationship").startKey(entityId).endKey(entityId).includeDocs(true),
-				Client.class);
+		    Client.class);
 	}
-
+	
 	//	@View(name = "clients_by_relationship", map = "function(doc) {if (doc.type === 'Client' && doc.relationships.mother) {for(var key in doc.relationships) {emit(doc.relationships.mother[key]);}}}")
 	//	public List<Client> findByRelationshipId(String identifier) {
 	//		return db.queryView(createQuery("clients_by_relationship").key(identifier).includeDocs(true), Client.class);
@@ -129,25 +126,25 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	public List<Client> findByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		return lcr.getByCriteria(searchBean, addressSearchBean, null);//db.queryView(q.includeDocs(true), Client.class);
 	}
-
+	
 	public List<Client> findByDynamicQuery(String query) {
 		return lcr.getByCriteria(query);//db.queryView(q.includeDocs(true), Client.class);
 	}
-
+	
 	public List<Client> findByCriteria(ClientSearchBean searchBean) {
 		return lcr.getByCriteria(searchBean, new AddressSearchBean(), null);
 	}
-
+	
 	public List<Client> findByCriteria(AddressSearchBean addressSearchBean, DateTime lastEditFrom, DateTime lastEditTo) {
-		ClientSearchBean clientSearchBean=new ClientSearchBean();
+		ClientSearchBean clientSearchBean = new ClientSearchBean();
 		clientSearchBean.setLastEditFrom(lastEditFrom);
 		return lcr.getByCriteria(clientSearchBean, addressSearchBean, null);
 	}
-
+	
 	public List<Client> findByRelationShip(String motherIndentier) {
 		return lcr.getByClientByMother("mother", motherIndentier);
 	}
-
+	
 	/**
 	 * Query view from the specified db
 	 *
@@ -159,7 +156,7 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	public List<Client> queryView(CouchDbConnector targetDb, String viewName, String key) {
 		return targetDb.queryView(createQuery(viewName).includeDocs(true).key(key), Client.class);
 	}
-
+	
 	/**
 	 * Save client to the specified db
 	 *
@@ -170,7 +167,7 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		Assert.isTrue(Documents.isNew(client), "entity must be new");
 		targetDb.create(client);
 	}
-
+	
 	/**
 	 * Get all clients without a server version
 	 *
@@ -180,19 +177,19 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	public List<Client> findByEmptyServerVersion() {
 		return db.queryView(createQuery("clients_by_empty_server_version").limit(200).includeDocs(true), Client.class);
 	}
-
+	
 	@View(name = "events_by_version", map = "function(doc) { if (doc.type === 'Client') { emit([doc.serverVersion], null); } }")
 	public List<Client> findByServerVersion(long serverVersion) {
 		ComplexKey startKey = ComplexKey.of(serverVersion + 1);
 		ComplexKey endKey = ComplexKey.of(System.currentTimeMillis());
-		return db.queryView(createQuery("events_by_version").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true),
-				Client.class);
+		return db.queryView(
+		    createQuery("events_by_version").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true), Client.class);
 	}
-
+	
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return lcr.getByFieldValue(field, ids);
 	}
-
+	
 	@View(name = "clients_not_in_OpenMRS", map = "function(doc) { if (doc.type === 'Client' && doc.serverVersion) { var noId = true; for(var key in doc.identifiers) {if(key == 'OPENMRS_UUID' && doc.identifiers.OPENMRS_UUID !== null) {noId = false;}}if(noId){emit([doc.serverVersion],  null); }} }")
 	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
 		long serverStartKey = serverVersion + 1;
@@ -200,10 +197,70 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		if (serverStartKey < serverEndKey) {
 			ComplexKey startKey = ComplexKey.of(serverStartKey);
 			ComplexKey endKey = ComplexKey.of(serverEndKey);
-			return db.queryView(
-					createQuery("clients_not_in_OpenMRS").startKey(startKey).endKey(endKey).limit(1000).includeDocs(true),
-					Client.class);
+			return db.queryView(createQuery("clients_not_in_OpenMRS").startKey(startKey).endKey(endKey).limit(1000)
+			        .includeDocs(true), Client.class);
 		}
 		return new ArrayList<>();
 	}
+	
+	@Override
+	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
+	                                                                             String clientType) {
+		return null;
+	}
+	
+	@Override
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		
+		return null;
+	}
+	
+	@Override
+	public List<Client> findMembersByRelationshipId(String baseEntityId) {
+		
+		return null;
+	}
+	
+	@Override
+	public HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

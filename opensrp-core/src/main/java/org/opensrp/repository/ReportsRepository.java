@@ -22,10 +22,10 @@ public interface ReportsRepository extends BaseRepository<Report> {
 	List<Report> findByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId);
 	
 	List<Report> findReports(String team, String providerId, String locationId, String baseEntityId, Long serverVersion,
-	                         String sortBy, String sortOrder, int limit);
+	        String sortBy, String sortOrder, int limit);
 	
 	List<Report> findReports(String baseEntityId, DateTime from, DateTime to, String reportType, String providerId,
-	                         String locationId, DateTime lastEditFrom, DateTime lastEditTo);
+	        String locationId, DateTime lastEditFrom, DateTime lastEditTo);
 	
 	List<Report> findReportsByDynamicQuery(String query);
 }

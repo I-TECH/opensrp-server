@@ -115,7 +115,6 @@ public class LuceneSearchRepositoryTest extends BaseIntegrationTest {
 		queryAttributes.put("inactive", "false");
 		queryAttributes.put("lost_to_follow_up", "true");
 		
-		
 		ClientSearchBean clientSearchBean = new ClientSearchBean();
 		clientSearchBean.setNameLike("first");
 		clientSearchBean.setGender(expectedClient.getGender());

@@ -25,23 +25,23 @@ import org.opensrp.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseEntityServiceTest extends BaseIntegrationTest {
-
+	
 	@Autowired
 	public AllBaseEntities allBaseEntities;
-
+	
 	@Autowired
 	public BaseEntityService baseEntityService;
-
+	
 	@Before
 	public void setUp() {
 		allBaseEntities.removeAll();
 	}
-
+	
 	@After
 	public void cleanUp() {
 		allBaseEntities.removeAll();
 	}
-
+	
 	@Test
 	public void shouldGetAllBaseEntities() {
 		BaseEntity baseEntity = getBaseEntity();
@@ -49,24 +49,24 @@ public class BaseEntityServiceTest extends BaseIntegrationTest {
 		baseEntity1.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
 		List<BaseEntity> expectedBaseEntities = asList(baseEntity, baseEntity1);
 		addObjectToRepository(expectedBaseEntities, allBaseEntities);
-
+		
 		List<BaseEntity> actualBaseEntities = baseEntityService.getAllBaseEntities();
-
+		
 		assertTwoListAreSameIgnoringOrder(expectedBaseEntities, actualBaseEntities);
 	}
-
+	
 	@Test
 	public void shouldFindByEntityId() {
 		BaseEntity expectedBaseEntity = getBaseEntity();
 		BaseEntity invalidBaseEntity = getBaseEntity();
 		invalidBaseEntity.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
 		addObjectToRepository(asList(expectedBaseEntity, invalidBaseEntity), allBaseEntities);
-
+		
 		BaseEntity actualBaseEntity = baseEntityService.findByBaseEntityId(BASE_ENTITY_ID);
-
+		
 		assertEquals(expectedBaseEntity, actualBaseEntity);
 	}
-
+	
 	@Test
 	public void shouldFindByIdentifierValue() {
 		BaseEntity expectedBaseEntity = getBaseEntity();
@@ -77,12 +77,12 @@ public class BaseEntityServiceTest extends BaseIntegrationTest {
 		invalidBaseEntity.setIdentifiers(differentIdentifiers);
 		List<BaseEntity> expectedBaseEntities = asList(expectedBaseEntity, expectedBaseEntity1);
 		addObjectToRepository(asList(expectedBaseEntity, expectedBaseEntity1, invalidBaseEntity), allBaseEntities);
-
+		
 		List<BaseEntity> actualBaseEntities = baseEntityService.findByIdentifier(IDENTIFIER_VALUE);
-
+		
 		assertTwoListAreSameIgnoringOrder(expectedBaseEntities, actualBaseEntities);
 	}
-
+	
 	@Test
 	public void shouldFindByIdentifierTypeAndValue() {
 		BaseEntity expectedBaseEntity = getBaseEntity();
@@ -93,9 +93,9 @@ public class BaseEntityServiceTest extends BaseIntegrationTest {
 		invalidBaseEntity.setIdentifiers(differentIdentifiers);
 		List<BaseEntity> expectedBaseEntities = asList(expectedBaseEntity, expectedBaseEntity1);
 		addObjectToRepository(asList(expectedBaseEntity, expectedBaseEntity1, invalidBaseEntity), allBaseEntities);
-
+		
 		List<BaseEntity> actualBaseEntities = baseEntityService.findByIdentifier(IDENTIFIER_TYPE, IDENTIFIER_VALUE);
-
+		
 		assertTwoListAreSameIgnoringOrder(expectedBaseEntities, actualBaseEntities);
 	}
 }

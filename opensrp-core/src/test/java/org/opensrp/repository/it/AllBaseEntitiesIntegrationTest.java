@@ -1,9 +1,9 @@
 package org.opensrp.repository.it;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.junit.Assert.*;
 
-import java.util.Date;
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
@@ -26,32 +26,30 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
 public class AllBaseEntitiesIntegrationTest {
-
+	
 	@Autowired
 	@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR)
 	CouchDbConnector db;
-
+	
 	@Autowired
 	private AllBaseEntities allBaseEntities;
+	
 	@Autowired
 	private AllClients allClients;
-
+	
 	@Before
 	public void setUp() throws Exception {
 		allClients.removeAll();
 		initMocks(this);
 	}
-
+	
 	@Test
 	public void shouldFetchBaseEntityForClientData() throws Exception {
 		String baseEntityId = "testclient1";
-		Client c = new Client(baseEntityId)
-			.withBirthdate(new DateTime(), false)
-			.withFirstName("C first n")
-			.withLastName("C last n")
-			.withMiddleName("C middle n")
-			.withGender(Gender.FEMALE);
-		c.withAddress(new Address("birthplace", new DateTime(System.currentTimeMillis()-1000*60*60*24*2), DateTime.now(), null, "lat", "lon", "75210", "Sindh", "Pakistan"));
+		Client c = new Client(baseEntityId).withBirthdate(new DateTime(), false).withFirstName("C first n")
+		        .withLastName("C last n").withMiddleName("C middle n").withGender(Gender.FEMALE);
+		c.withAddress(new Address("birthplace", new DateTime(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 2),
+		        DateTime.now(), null, "lat", "lon", "75210", "Sindh", "Pakistan"));
 		c.withAttribute("ETHNICITY", "Mughal");
 		c.withIdentifier("Program ID", "01001221");
 		
@@ -76,13 +74,10 @@ public class AllBaseEntitiesIntegrationTest {
 	@Test
 	public void shouldFetchBaseEntityByIdentifier() throws Exception {
 		String baseEntityId = "testclient2";
-		Client c = new Client(baseEntityId)
-			.withBirthdate(new DateTime(), false)
-			.withFirstName("C first n")
-			.withLastName("C last n")
-			.withMiddleName("C middle n")
-			.withGender(Gender.MALE);
-		c.withAddress(new Address("birthplace", new DateTime(System.currentTimeMillis()-1000*60*60*24*2), DateTime.now(), null, "lat", "lon", "75210", "Sindh", "Pakistan"));
+		Client c = new Client(baseEntityId).withBirthdate(new DateTime(), false).withFirstName("C first n")
+		        .withLastName("C last n").withMiddleName("C middle n").withGender(Gender.MALE);
+		c.withAddress(new Address("birthplace", new DateTime(System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 2),
+		        DateTime.now(), null, "lat", "lon", "75210", "Sindh", "Pakistan"));
 		c.withAttribute("ETHNICITY", "Mughal");
 		c.withIdentifier("Program ID", "01001222");
 		
@@ -101,5 +96,5 @@ public class AllBaseEntitiesIntegrationTest {
 		assertTrue(be3.size() == 1);
 		assertEquals("testclient2", be3.get(0).getBaseEntityId());
 	}
-
+	
 }

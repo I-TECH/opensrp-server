@@ -55,8 +55,8 @@ public class Query {
 	}
 	
 	public Query between(String name, DateTime from, DateTime to) {
-		addToQuery(name + "<date>:[" + from.toString("yyyy-MM-dd'T'HH:mm:ss") + " TO "
-		        + to.toString("yyyy-MM-dd'T'HH:mm:ss") + "] ");
+		addToQuery(name + "<date>:[" + from.toString("yyyy-MM-dd'T'HH:mm:ss") + " TO " + to.toString("yyyy-MM-dd'T'HH:mm:ss")
+		        + "] ");
 		return this;
 	}
 	
@@ -103,20 +103,20 @@ public class Query {
 		}
 		String first = iterator.next();
 		if (!iterator.hasNext()) {
-			return "\""+first+"\"";
+			return "\"" + first + "\"";
 		}
 		
 		// two or more elements
 		StringBuffer buf = new StringBuffer(256); // Java default is 16, probably too small
 		if (first != null) {
-			buf.append("\""+first+"\"");
+			buf.append("\"" + first + "\"");
 		}
 		
 		while (iterator.hasNext()) {
 			buf.append(separator);
 			String s = iterator.next();
 			if (s != null) {
-				buf.append("\""+s+"\"");
+				buf.append("\"" + s + "\"");
 			}
 		}
 		

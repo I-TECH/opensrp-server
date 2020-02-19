@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.opensrp.domain.Event;
@@ -33,7 +34,7 @@ public interface EventsRepository extends BaseRepository<Event> {
 	List<Event> notInOpenMRSByServerVersionAndType(String type, long serverVersion, Calendar calendar);
 	
 	List<Event> findByClientAndConceptAndDate(String baseEntityId, String concept, String conceptValue, String dateFrom,
-	                                          String dateTo);
+	        String dateTo);
 	
 	List<Event> findByBaseEntityIdAndConceptParentCode(String baseEntityId, String concept, String parentCode);
 	
@@ -44,7 +45,9 @@ public interface EventsRepository extends BaseRepository<Event> {
 	List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit);
 	
 	List<Event> findEventByEventTypeBetweenTwoDates(String eventType);
-
+	
 	List<Event> findByProvider(String provider);
 
+	List<String> findIdsByEventType(String eventType, Date dateDeleted);
+	
 }

@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(value = "prototype")
 public class DataAccessTemplate extends HibernateTemplate {
-
-    @Autowired
-    public DataAccessTemplate(SessionFactory sessionFactory) {
-        super(sessionFactory);
-        setAllowCreate(false);
-    }
-    public Object getUniqueResult(String namedQueryName, String[] parameterNames, Object[] parameterValues) {
-        return DataAccessUtils.uniqueResult(findByNamedQueryAndNamedParam(namedQueryName, parameterNames, parameterValues));
-    }
+	
+	@Autowired
+	public DataAccessTemplate(SessionFactory sessionFactory) {
+		super(sessionFactory);
+		setAllowCreate(false);
+	}
+	
+	public Object getUniqueResult(String namedQueryName, String[] parameterNames, Object[] parameterValues) {
+		return DataAccessUtils.uniqueResult(findByNamedQueryAndNamedParam(namedQueryName, parameterNames, parameterValues));
+	}
 }

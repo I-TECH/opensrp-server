@@ -71,30 +71,30 @@ public class HouseholdTracker extends DHIS2Service implements DHIS2Tracker {
 			logger.info("No Address found for base entity id:" + client.getBaseEntityId());
 		}
 		
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("division")
-		        .toString(), division));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("district")
-		        .toString(), district));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("upazilla")
-		        .toString(), upazilla));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("union")
-		        .toString(), union));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("ward")
-		        .toString(), ward));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("sub_unit")
-		        .toString(), subUnit));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(
-		    DHIS2Settings.HOUSEHOLDIDMAPPING.get("vaccination_center").toString(), vaccinationCenter));
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.COMMONMAPPING.get("client_type")
-		        .toString(), "Household"));
+		generateTrackCaptureData.put(
+		    dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("division").toString(), division));
+		generateTrackCaptureData.put(
+		    dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("district").toString(), district));
+		generateTrackCaptureData.put(
+		    dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("upazilla").toString(), upazilla));
+		generateTrackCaptureData
+		        .put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("union").toString(), union));
+		generateTrackCaptureData
+		        .put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("ward").toString(), ward));
+		generateTrackCaptureData.put(
+		    dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("sub_unit").toString(), subUnit));
+		generateTrackCaptureData.put(dhis2TrackerService
+		        .withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("vaccination_center").toString(), vaccinationCenter));
+		generateTrackCaptureData.put(
+		    dhis2TrackerService.withKnownValue(DHIS2Settings.COMMONMAPPING.get("client_type").toString(), "Household"));
 		
 		// name
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get(firstName)
-		        .toString(), client.fullName()));
+		generateTrackCaptureData.put(dhis2TrackerService
+		        .withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get(firstName).toString(), client.fullName()));
 		
 		//Gender
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("gender")
-		        .toString(), client.getGender()));
+		generateTrackCaptureData.put(dhis2TrackerService
+		        .withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("gender").toString(), client.getGender()));
 		//"householdCode/Household ID
 		generateTrackCaptureData.put(dhis2TrackerService.getTrackCaptureData(attributesAsJson,
 		    DHIS2Settings.HOUSEHOLDIDMAPPING.get("Household_ID").toString(), "householdCode"));
@@ -104,8 +104,8 @@ public class HouseholdTracker extends DHIS2Service implements DHIS2Tracker {
 		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(
 		    DHIS2Settings.HOUSEHOLDIDMAPPING.get("base_entity_id").toString(), client.getBaseEntityId()));
 		//birthdate		
-		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.HOUSEHOLDIDMAPPING.get("birthdate")
-		        .toString(), client.getBirthdate().toString()));
+		generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(
+		    DHIS2Settings.HOUSEHOLDIDMAPPING.get("birthdate").toString(), client.getBirthdate().toString()));
 		/*JSONObject data = new JSONObject();
 		data.put(attributeKey, DHIS2Settings.HOUSEHOLDIDMAPPING.get("birthdate").toString());
 		data.put(valueKey, client.getBirthdate());

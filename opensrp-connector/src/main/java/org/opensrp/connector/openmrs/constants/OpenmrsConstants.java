@@ -22,10 +22,16 @@ public class OpenmrsConstants {
 	
 	public enum SchedulerConfig {
 		openmrs_syncer_sync_schedule_tracker_by_last_update_enrollment,
-		openmrs_syncer_sync_client_by_date_updated, openmrs_syncer_sync_client_by_date_voided, 
-		openmrs_syncer_sync_event_by_date_updated, openmrs_syncer_sync_event_by_date_voided, 
-		openmrs_syncer_sync_status, openmrs_syncer_sync_timestamp, 
-		openmrs_client_sync_validator_timestamp, openmrs_event_sync_validator_timestamp,
-		openmrs_birth_reg_event_sync_validator_timestamp, openmrs_growth_mon_event_sync_validator_timestamp, openmrs_vaccine_event_sync_validator_timestamp
+		openmrs_syncer_sync_client_by_date_updated,
+		openmrs_syncer_sync_client_by_date_voided,
+		openmrs_syncer_sync_event_by_date_updated,
+		openmrs_syncer_sync_event_by_date_voided,
+		openmrs_syncer_sync_status,
+		openmrs_syncer_sync_timestamp,
+		openmrs_client_sync_validator_timestamp,
+		openmrs_event_sync_validator_timestamp,
+		openmrs_birth_reg_event_sync_validator_timestamp,
+		openmrs_growth_mon_event_sync_validator_timestamp,
+		openmrs_vaccine_event_sync_validator_timestamp
 	}
 }

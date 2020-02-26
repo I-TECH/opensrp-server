@@ -67,8 +67,8 @@ public class VaccinationTracker extends DHIS2Service {
 		
 		try {
 			//Name
-			generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(DHIS2Settings.VACCINATIONMAPPING.get(firstName)
-			        .toString(), client.fullName()));
+			generateTrackCaptureData.put(dhis2TrackerService
+			        .withKnownValue(DHIS2Settings.VACCINATIONMAPPING.get(firstName).toString(), client.fullName()));
 			generateTrackCaptureData.put(dhis2TrackerService.withKnownValue(
 			    DHIS2Settings.VACCINATIONMAPPING.get("base_entity_id").toString(), client.getBaseEntityId()));
 			

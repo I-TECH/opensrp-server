@@ -22,26 +22,26 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MessageService {
-
+	
 	private static Logger logger = LoggerFactory.getLogger(MessageService.class.toString());
-
+	
 	private RapidProServiceImpl rapidproService;
-
+	
 	private ClientService clientService;
-
+	
 	public MessageService() {
-
+		
 	}
-
+	
 	@Autowired
 	public MessageService(RapidProServiceImpl rapidproService, ClientService clientService) {
-
+		
 		this.rapidproService = rapidproService;
 		this.clientService = clientService;
 	}
-
+	
 	public void sentMessageToClient(MessageFactory messageFactory, List<Event> events, Camp camp) throws JSONException {
-
+		
 		if (events != null) {
 			for (Event event : events) {
 				/*				Map<String, String> data = action.data();
@@ -50,7 +50,7 @@ public class MessageService {
 					Client child = clientService.find(event.getBaseEntityId());
 					if (child != null) {
 						logger.info("sending message to child childBaseEntityId:" + child.getBaseEntityId());
-						Map<String, Map<String,String>> relationships = child.getRelationships();
+						Map<String, List<String>> relationships = child.getRelationships();
 						String motherId = relationships.get("mother").get(0);
 						Client mother = clientService.find(motherId);
 						logger.info("sending message to mother moterBaseEntityId:" + mother.getBaseEntityId());
@@ -62,19 +62,19 @@ public class MessageService {
 						logger.info("sending message to mother moterBaseEntityId:" + mother.getBaseEntityId());
 						generateDataAndsendMessageToRapidpro(mother, ClientType.mother, messageFactory, camp);
 					}
-
+					
 				} else {
-
+					
 				}
 			}
 		} else {
 			logger.info("No vaccine data Found Today");
 		}
 	}
-
+	
 	private void generateDataAndsendMessageToRapidpro(Client client, ClientType clientType, MessageFactory messageFactory,
-													  Camp camp) {
-
+	        Camp camp) {
+		
 		Map<String, Object> attributes = new HashMap<>();
 		attributes = client.getAttributes();
 		List<String> urns;
@@ -86,17 +86,17 @@ public class MessageService {
 			contacts = new ArrayList<String>();
 			List<String> groups = new ArrayList<String>();
 			rapidproService.sendMessage(urns, contacts, groups,
-					messageFactory.getClientType(clientType).message(client, camp, null), "");
+			    messageFactory.getClientType(clientType).message(client, camp, null), "");
 		}
 	}
-
+	
 	private boolean isEligible(Map<String, String> data) {
 		boolean status = false;
 		if (data.get("alertStatus").equalsIgnoreCase(normal.name())) {
 			if (DateUtil.dateDiff(data.get("expiryDate")) == 0) {
 				status = true;
 			}
-
+			
 		} else if (data.get("alertStatus").equalsIgnoreCase(upcoming.name())) {
 			if (DateUtil.dateDiff(data.get("startDate")) == 0) {
 				status = true;
@@ -104,20 +104,20 @@ public class MessageService {
 		}
 		return status;
 	}
-
+	
 	private String addExtensionToMobile(String mobile) {
 		if (mobile.length() == 10) {
 			mobile = "+880" + mobile;
-
+			
 		} else if (mobile.length() > 10) {
 			mobile = mobile.substring(mobile.length() - 10);
 			mobile = "+880" + mobile;
 		} else {
-
+			
 			throw new IllegalArgumentException("invalid mobile no!!");
 		}
 		return mobile;
-
+		
 	}
-
+	
 }

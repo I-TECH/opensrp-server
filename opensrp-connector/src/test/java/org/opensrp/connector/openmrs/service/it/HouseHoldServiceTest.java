@@ -159,7 +159,7 @@ public class HouseHoldServiceTest extends OpenmrsApiService {
 			household.addHHMember((Client) dep.get(hhmid).get("client"), (Event) dep.get(hhmid).get("event"));
 		}
 		
-		JSONObject pr = us.getProvider(fs.anmId(),null);
+		JSONObject pr = us.getProvider(fs.anmId(), null);
 		if (pr == null) {
 			us.createProvider(fs.anmId(), fs.anmId());
 		}

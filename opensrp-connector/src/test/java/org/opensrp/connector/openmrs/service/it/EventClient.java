@@ -59,18 +59,17 @@ public class EventClient extends OpenmrsApiService {
 	}
 	
 	public static Client getMotherClient() {
-		Client expectedClient = new Client("127").withFirstName("monika").withGender("male")
-		        .withBirthdate(new DateTime(), false);
+		Client expectedClient = new Client("127").withFirstName("monika").withGender("male").withBirthdate(new DateTime(),
+		    false);
 		Map<String, String> identifiers = new HashMap<>();
 		identifiers.put(M_ZEIR_ID, "159451-r7_mother3s");
 		expectedClient.setIdentifiers(identifiers);
 		return expectedClient;
 	}
-
-	/*
+	
 	public static Client getChildClient() {
-		Client expectedClient = new Client("129").withFirstName("momima").withGender("male")
-		        .withBirthdate(new DateTime(), false);
+		Client expectedClient = new Client("129").withFirstName("momima").withGender("male").withBirthdate(new DateTime(),
+		    false);
 		Map<String, String> identifiers = new HashMap<>();
 		identifiers.put(ZEIR_ID, "159451-r7r_child");
 		//identifiers.put("OPENMRS_UUID", "b1def4fa-fed8-4d54-a6aa-cbb7523b6f24");
@@ -81,7 +80,7 @@ public class EventClient extends OpenmrsApiService {
 		relationships.put(mother, list);
 		expectedClient.setRelationships(relationships);
 		return expectedClient;
-	}*/
+	}
 	
 	public static Client getMother1Client() {
 		Client expectedClient = new Client("53").withFirstName("testmotherName").withGender("male")
@@ -91,8 +90,7 @@ public class EventClient extends OpenmrsApiService {
 		expectedClient.setIdentifiers(identifiers);
 		return expectedClient;
 	}
-
-	/*
+	
 	public static Client getChild1Client() {
 		Client expectedClient = new Client("52").withFirstName("testchildName").withGender("male")
 		        .withBirthdate(new DateTime(), false);
@@ -105,10 +103,10 @@ public class EventClient extends OpenmrsApiService {
 		relationships.put(mother, list);
 		expectedClient.setRelationships(relationships);
 		return expectedClient;
-	}*/
+	}
 	
 	public static JSONObject getCreatedPatientData(String fn, String mn, String ln, String OpenSRPThriveUID,
-	                                               String attributeName, String baseEntityId) throws JSONException {
+	        String attributeName, String baseEntityId) throws JSONException {
 		
 		Map<String, String> addressFields = new HashMap<>();
 		addressFields.put("ADDRESS1", "testAdress1");
@@ -121,10 +119,10 @@ public class EventClient extends OpenmrsApiService {
 		
 		attributes.put(attributeName, "test value");
 		List<Address> addresses = new ArrayList<>();
-		addresses.add(new Address("BIRTH", DateTime.now(), DateTime.now(), addressFields, "LAT", "LON", "PCODE", "SINDH",
-		        "PK"));
-		addresses.add(new Address("DEATH", DateTime.now(), DateTime.now(), addressFields, "LATd", "LONd", "dPCODE", "KPK",
-		        "PKA"));
+		addresses.add(
+		    new Address("BIRTH", DateTime.now(), DateTime.now(), addressFields, "LAT", "LON", "PCODE", "SINDH", "PK"));
+		addresses.add(
+		    new Address("DEATH", DateTime.now(), DateTime.now(), addressFields, "LATd", "LONd", "dPCODE", "KPK", "PKA"));
 		Map<String, Object> attribs = new HashMap<>();
 		
 		Client c = new Client(baseEntityId).withFirstName(fn).withMiddleName(mn).withLastName(ln)

@@ -65,8 +65,7 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		//allEvents.removeAll();
 		//allClients.removeAll();
 	}
-
-	/*
+	
 	@Test
 	public void testPushClient() throws JSONException {
 		
@@ -123,9 +122,8 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		assertEquals(expectedChildClient.fullName() + " -", actualChildNname);
 		assertEquals(expectedMotherClient.fullName() + " -", actualMotherName);
 		
-	}*/
-
-	/*
+	}
+	
 	@Test
 	public void testPushEvent() throws JSONException {
 		
@@ -146,7 +144,7 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		
 		openmrsUserService.createProvider(userName, IdentifierType);
 		
-		JSONObject provider = openmrsUserService.getProvider(IdentifierType,null);
+		JSONObject provider = openmrsUserService.getProvider(IdentifierType, null);
 		JSONObject personObject = provider.getJSONObject(personKey);
 		String actualEncounterType = "TestEncounterType";
 		JSONObject returnEncounterType = encounterService.createEncounterType(actualEncounterType, "Test desc");
@@ -154,7 +152,7 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		System.err.println("expectedEvent:" + expectedEvent);
 		openmrsSyncerListener.pushEvent(0);
 		
-
+		/** Data cleaning ***/
 		deletePerson(person.getString(uuidKey));
 		deleteUser(usr.getString(uuidKey));
 		deleteIdentifierType(identifierUuid);
@@ -178,5 +176,5 @@ public class OpenmrsSyncerListenerTest extends OpenmrsApiService {
 		assertEquals(expectedEncounterProvider, actualEncounterProvider);
 		assertEquals(expectedEncounterType, actualEncounterType);
 	}
-	*/
+	
 }

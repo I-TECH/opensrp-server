@@ -104,8 +104,8 @@ public class DHIS2AggregateConnectorTest extends TestResourceLoader {
 		expectedEvent.setObs(firstObservations);
 		allEvents.add(expectedEvent);
 		
-		Event anotherExpectedEvent = new Event("049e6b44-a9b5-4553-b463-004fa6743d34", eventType, new DateTime(0l,
-		        DateTimeZone.UTC), entityType, provider, locationId, formSubmissionId);
+		Event anotherExpectedEvent = new Event("049e6b44-a9b5-4553-b463-004fa6743d34", eventType,
+		        new DateTime(0l, DateTimeZone.UTC), entityType, provider, locationId, formSubmissionId);
 		anotherExpectedEvent.addIdentifier("vaccineIdentifierKeyTest", "vaccineIdentifierValueTest");
 		List<Obs> secondObservations = new ArrayList<>();
 		
@@ -116,8 +116,8 @@ public class DHIS2AggregateConnectorTest extends TestResourceLoader {
 		
 		allEvents.add(anotherExpectedEvent);
 		
-		Event expectedVaccineEvent = new Event("049e6b4r-a9b5-4553-b463-004fa6743d34", "Vaccination", new DateTime(0l,
-		        DateTimeZone.UTC), entityType, provider, locationId, formSubmissionId);
+		Event expectedVaccineEvent = new Event("049e6b4r-a9b5-4553-b463-004fa6743d34", "Vaccination",
+		        new DateTime(0l, DateTimeZone.UTC), entityType, provider, locationId, formSubmissionId);
 		anotherExpectedEvent.addIdentifier("vaccineIdentifierKey", "vaccineIdentifierValue");
 		List<Obs> vaccineObservations = new ArrayList<>();
 		

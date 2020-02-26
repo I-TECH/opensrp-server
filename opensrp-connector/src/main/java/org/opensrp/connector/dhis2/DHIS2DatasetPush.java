@@ -27,7 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 enum DhisSchedulerConfig {
-	dhis2_syncer_sync_report_by_date_updated, dhis2_syncer_sync_report_by_date_voided
+	dhis2_syncer_sync_report_by_date_updated,
+	dhis2_syncer_sync_report_by_date_voided
 }
 
 @Component

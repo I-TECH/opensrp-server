@@ -21,10 +21,10 @@ import org.motechproject.model.Time;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.EnrollmentStatus;
 import org.motechproject.scheduletracking.api.domain.Schedule;
-import org.opensrp.domain.Client;
-import org.opensrp.domain.Event;
 import org.opensrp.connector.openmrs.constants.OpenmrsConstants;
 import org.opensrp.connector.openmrs.constants.OpenmrsHouseHold;
+import org.opensrp.domain.Client;
+import org.opensrp.domain.Event;
 import org.opensrp.dto.ActionData;
 import org.opensrp.form.domain.FormSubmission;
 import org.opensrp.form.service.FormAttributeParser;
@@ -153,7 +153,7 @@ public class OpenmrsSchedulerServiceTest extends TestResourceLoader {
 			household.addHHMember((Client) dep.get(hhmid).get("client"), (Event) dep.get(hhmid).get("event"));
 		}
 		if (pushToOpenmrsForTest) {
-			JSONObject pr = us.getProvider(fs.anmId(),null);
+			JSONObject pr = us.getProvider(fs.anmId(), null);
 			if (pr == null) {
 				us.createProvider(fs.anmId(), fs.anmId());
 			}

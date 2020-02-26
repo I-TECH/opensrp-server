@@ -78,9 +78,10 @@ public class DHIS2Connector extends DHIS2Service {
 		
 		String reference = "reference";
 		try {
-			JSONObject responseTrackEntityInstance = new JSONObject(Dhis2HttpUtils.post(
-			    DHIS2_BASE_URL.replaceAll("\\s+", "") + "trackedEntityInstances", "", prepareClientData().toString(),
-			    DHIS2_USER.replaceAll("\\s+", ""), DHIS2_PWD.replaceAll("\\s+", "")).body());
+			JSONObject responseTrackEntityInstance = new JSONObject(Dhis2HttpUtils
+			        .post(DHIS2_BASE_URL.replaceAll("\\s+", "") + "trackedEntityInstances", "",
+			            prepareClientData().toString(), DHIS2_USER.replaceAll("\\s+", ""), DHIS2_PWD.replaceAll("\\s+", ""))
+			        .body());
 			JSONObject trackEntityReference = (JSONObject) responseTrackEntityInstance.get("response");
 			
 			JSONObject enroll = new JSONObject();

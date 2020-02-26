@@ -20,11 +20,12 @@ import com.mysql.jdbc.StringUtils;
 
 @Repository
 public class AllMarkersCouchImpl extends MotechBaseRepository<Marker> implements AllMarkers {
-
+	
 	private CouchDbConnector db;
+	
 	@Autowired
 	public AllMarkersCouchImpl(@Value("#{opensrp['couchdb.atomfeed-db.revision-limit']}") int revisionLimit,
-			@Qualifier(OpenmrsConstants.ATOMFEED_DATABASE_CONNECTOR) CouchDbConnector db) {
+	    @Qualifier(OpenmrsConstants.ATOMFEED_DATABASE_CONNECTOR) CouchDbConnector db) {
 		super(Marker.class, db);
 		this.db = db;
 		this.db.setRevisionLimit(revisionLimit);
@@ -32,7 +33,7 @@ public class AllMarkersCouchImpl extends MotechBaseRepository<Marker> implements
 	
 	@GenerateView
 	public Marker findByfeedUri(String feedUri) {
-		if(StringUtils.isEmptyOrWhitespaceOnly(feedUri))
+		if (StringUtils.isEmptyOrWhitespaceOnly(feedUri))
 			return null;
 		List<Marker> ol = queryView("by_feedUri", feedUri);
 		if (ol == null || ol.isEmpty()) {
@@ -40,7 +41,7 @@ public class AllMarkersCouchImpl extends MotechBaseRepository<Marker> implements
 		}
 		return ol.get(0);
 	}
-
+	
 	@View(name = "all_markers", map = "function(doc) { if (doc.type === 'Marker') { emit(doc.feedUri); } }")
 	public List<Marker> findAllMarkers() {
 		return db.queryView(createQuery("all_markers").includeDocs(true), Marker.class);
@@ -51,12 +52,13 @@ public class AllMarkersCouchImpl extends MotechBaseRepository<Marker> implements
 		Marker marker = findByfeedUri(feedUri.toString());
 		try {
 			return marker == null ? null : marker.toMarker();
-		} catch (URISyntaxException e) {
+		}
+		catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	@Override
 	public void put(URI feedUri, String entryId, URI entryFeedUri) {
 		Marker doc = findByfeedUri(feedUri.toString());
@@ -69,5 +71,5 @@ public class AllMarkersCouchImpl extends MotechBaseRepository<Marker> implements
 			add(doc);
 		}
 	}
-
+	
 }

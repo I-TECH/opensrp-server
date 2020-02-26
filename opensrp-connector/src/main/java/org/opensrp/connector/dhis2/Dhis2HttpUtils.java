@@ -74,8 +74,8 @@ public class Dhis2HttpUtils extends DHIS2Service {
 	}
 	
 	public JSONObject get(String url, String payload) throws JSONException {
-		HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(this.DHIS2_BASE_URL) + "/" + url, payload,
-		    this.DHIS2_USER, this.DHIS2_PWD);
+		HttpResponse op = HttpUtil.get(HttpUtil.removeEndingSlash(this.DHIS2_BASE_URL) + "/" + url, payload, this.DHIS2_USER,
+		    this.DHIS2_PWD);
 		JSONObject response = new JSONObject(op.body());
 		
 		return response;

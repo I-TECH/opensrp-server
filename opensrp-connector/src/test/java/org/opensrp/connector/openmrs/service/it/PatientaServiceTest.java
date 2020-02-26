@@ -77,7 +77,6 @@ public class PatientaServiceTest extends OpenmrsApiService {
 		multimedia.setContentType("Image");
 		String expectedResponse = "Patient Image is  successfully uploaded !";
 		List<String> resposne = patientService.patientImageUpload(multimedia);
-		patientService.patientImageUpload(multimedia);
 		String uuids = patient.getString(uuidKey);
 		deletePerson(uuids);
 		

@@ -40,8 +40,8 @@ public class PatientTest extends TestResourceLoader {
 		c.withAddresses(addresses).withAttributes(attribs);
 		//.withIdentifier("Birth Reg Num", "b-8912819"+new Random().nextInt(99))
 		//.withIdentifier("Death Reg Num", "d-ewj-js3u2"+new Random().nextInt(99))
-		if (pushToOpenmrsForTest && s.getPatientByIdentifierUUID(c.getBaseEntityId()) == null){
-				System.out.println(s.createPatient(c));
+		if (pushToOpenmrsForTest && s.getPatientByIdentifierUUID(c.getBaseEntityId()) == null) {
+			System.out.println(s.createPatient(c));
 		}
 	}
 }

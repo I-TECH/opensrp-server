@@ -21,20 +21,21 @@ public class DHIS2AggregateConnector extends DHIS2Service {
 	
 	@Autowired
 	private EventsRepository allEvents;
-	public DHIS2AggregateConnector(){
+	
+	public DHIS2AggregateConnector() {
 		
 	}
 	
 	public DHIS2AggregateConnector(String dhis2Url, String user, String password) {
 		super(dhis2Url, user, password);
 	}
-
-	public JSONObject getAggregateDataCount() throws JSONException{
-		JSONObject vaccineCountObj =	new JSONObject();
-		JSONArray vaccineCountArray =	new JSONArray();		
+	
+	public JSONObject getAggregateDataCount() throws JSONException {
+		JSONObject vaccineCountObj = new JSONObject();
+		JSONArray vaccineCountArray = new JSONArray();
 		
 		Date date = new Date();
-		String modifiedDate= new SimpleDateFormat("yyyy-MM-dd").format(date);
+		String modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
 		
 		JSONObject vaccineAttrObj1 = new JSONObject();
 		vaccineAttrObj1.put("dataElement", "bDl4fsu1QIj");//Bcg given (0-11m)
@@ -49,17 +50,17 @@ public class DHIS2AggregateConnector extends DHIS2Service {
 		vaccineAttrObj2.put("value", 45);
 		
 		vaccineCountArray.put(vaccineAttrObj1);
-	    vaccineCountArray.put(vaccineAttrObj2);
-	    
-	    vaccineCountObj.put("dataSet", "wn53Io9MM6B");
+		vaccineCountArray.put(vaccineAttrObj2);
+		
+		vaccineCountObj.put("dataSet", "wn53Io9MM6B");
 		vaccineCountObj.put("completeData", modifiedDate);
 		vaccineCountObj.put("period", 201610);
 		vaccineCountObj.put("orgUnit", "IDc0HEyjhvL");
 		vaccineCountObj.put("dataValues", vaccineCountArray);
-	 return vaccineCountObj;
-	
+		return vaccineCountObj;
+		
 	}
-
+	
 	public JSONObject getAggregatedDataCount() throws JSONException {
 		Date date = new Date();
 		String modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
@@ -193,7 +194,8 @@ public class DHIS2AggregateConnector extends DHIS2Service {
 				if (!obs.isEmpty()) {
 					for (Obs obs2 : obs) {
 						
-						if (obs2.getFormSubmissionField() != null && obs2.getFormSubmissionField().equalsIgnoreCase("opv_0")) {
+						if (obs2.getFormSubmissionField() != null
+						        && obs2.getFormSubmissionField().equalsIgnoreCase("opv_0")) {
 							opv_0++;
 						} else if (obs2.getFormSubmissionField() != null
 						        && obs2.getFormSubmissionField().equalsIgnoreCase("opv_1")) {

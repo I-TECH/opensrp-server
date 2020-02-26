@@ -67,8 +67,8 @@ public class AllFailedEventsCouchImplTest extends TestResourceLoader {
 		
 		allFailedEventsCouchImpl.addOrUpdate(expectedFailedEvent);
 		allFailedEventsCouchImpl.addOrUpdate(expectedFailedEvent);
-		org.ict4h.atomfeed.client.domain.FailedEvent actualFailedEvent = allFailedEventsCouchImpl
-		        .get(feedUri, event.getId());
+		org.ict4h.atomfeed.client.domain.FailedEvent actualFailedEvent = allFailedEventsCouchImpl.get(feedUri,
+		    event.getId());
 		
 		allFailedEventsCouchImpl.remove(expectedFailedEvent);
 		assertEquals(expectedFailedEvent.toString(), actualFailedEvent.toString());

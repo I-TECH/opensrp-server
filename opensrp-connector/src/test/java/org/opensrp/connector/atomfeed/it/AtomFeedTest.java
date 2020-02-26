@@ -62,9 +62,6 @@ public class AtomFeedTest extends OpenmrsApiService {
 	
 	@Autowired
 	private EncounterService encounterService;
-
-	@Autowired
-	private EventService eventService;
 	
 	public AtomFeedTest() throws IOException {
 		super();
@@ -95,10 +92,10 @@ public class AtomFeedTest extends OpenmrsApiService {
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put(attributeName, "test value");
 		List<Address> addresses = new ArrayList<>();
-		addresses.add(new Address("BIRTH", DateTime.now(), DateTime.now(), addressFields, "LAT", "LON", "PCODE", "SINDH",
-		        "PK"));
-		addresses.add(new Address("DEATH", DateTime.now(), DateTime.now(), addressFields, "LATd", "LONd", "dPCODE", "KPK",
-		        "PKD"));
+		addresses.add(
+		    new Address("BIRTH", DateTime.now(), DateTime.now(), addressFields, "LAT", "LON", "PCODE", "SINDH", "PK"));
+		addresses.add(
+		    new Address("DEATH", DateTime.now(), DateTime.now(), addressFields, "LATd", "LONd", "dPCODE", "KPK", "PKD"));
 		Map<String, Object> attribs = new HashMap<>();
 		
 		String baseEntity = UUID.randomUUID().toString();
@@ -142,11 +139,7 @@ public class AtomFeedTest extends OpenmrsApiService {
 		
 		/**** start atomfeed for patient ****/
 		PatientAtomfeed paf = new PatientAtomfeed(new AllMarkersInMemoryImpl(), new AllFailedEventsInMemoryImpl(),
-<<<<<<< HEAD
-		        openmrsOpenmrsUrl, patientService, cs, eventService);
-=======
-		        openmrsOpenmrsUrl, patientService, cs,es);
->>>>>>> 9ad058aa6c5a38d9bf24deb9cf894e7e5495ac47
+		        openmrsOpenmrsUrl, patientService, cs, es);
 		
 		paf.processEvents();
 		

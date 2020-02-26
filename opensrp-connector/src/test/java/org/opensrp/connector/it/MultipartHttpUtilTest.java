@@ -51,16 +51,18 @@ public class MultipartHttpUtilTest extends OpenmrsApiService {
 		personAttributeType.put(description, "Description");
 		personAttributeType.put(nameKey, attributeName);
 		personAttributeType.put(formatKey, typeString);
-		String responseFromPostRequest = MultipartHttpUtil.post(
-		    MultipartHttpUtil.removeEndingSlash(OPENMRS_URL) + "/" + PERSON_ATTRIBUTE_TYPE, "",
-		    personAttributeType.toString(), openmrsUsername, openmrsPassword).body();
+		String responseFromPostRequest = MultipartHttpUtil
+		        .post(MultipartHttpUtil.removeEndingSlash(OPENMRS_URL) + "/" + PERSON_ATTRIBUTE_TYPE, "",
+		            personAttributeType.toString(), openmrsUsername, openmrsPassword)
+		        .body();
 		
 		JSONObject personAttributeTypeCreatedResponse = new JSONObject(responseFromPostRequest);
 		String uuid = personAttributeTypeCreatedResponse.getString(uuidKey);
 		assertEquals(attributeName, personAttributeTypeCreatedResponse.getString(displayKey));
 		
-		HttpResponse responseFromGetRequest = MultipartHttpUtil.get(MultipartHttpUtil.removeEndingSlash(OPENMRS_URL) + "/"
-		        + PERSON_ATTRIBUTE_TYPE + "/" + uuid + "?v=full", "", openmrsUsername, openmrsPassword);
+		HttpResponse responseFromGetRequest = MultipartHttpUtil.get(
+		    MultipartHttpUtil.removeEndingSlash(OPENMRS_URL) + "/" + PERSON_ATTRIBUTE_TYPE + "/" + uuid + "?v=full", "",
+		    openmrsUsername, openmrsPassword);
 		deletePersonAttributeType(personAttributeTypeCreatedResponse.getString(uuidKey));
 		
 		JSONObject personAttributeTypeGetResponse = new JSONObject(responseFromGetRequest.body());

@@ -3,7 +3,7 @@
 					"name": "BCG",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -45,7 +45,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "BCG 2",
@@ -99,13 +99,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "OPV 0",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -147,13 +147,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "OPV 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -195,13 +195,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PCV 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -243,13 +243,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PENTA 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -291,13 +291,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ROTA 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -339,7 +339,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "OPV 2",
@@ -376,7 +376,7 @@
 									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								}
-
+								
 							],
 							"fulfillment_fields": [
 								{
@@ -394,7 +394,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PCV 2",
@@ -448,7 +448,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PENTA 2",
@@ -502,7 +502,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ROTA 2",
@@ -539,7 +539,7 @@
 									"parent_code": "159698AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								}
-
+								
 							],
 							"fulfillment_fields": [
 								{
@@ -557,7 +557,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "OPV 3",
@@ -611,7 +611,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PCV 3",
@@ -665,7 +665,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "PENTA 3",
@@ -719,13 +719,61 @@
 							"action": "fulfill"
 						}
 					]
-
+	
+},
+{
+					"name": "OPV 4",
+					"events": [
+						{
+							"types": ["Birth Registration"],
+							"pass_logic": "AND",
+							"enrollment_fields": [
+								{
+									"field": "eventDate",
+									"value": "NOT_EMPTY"
+								}
+							],
+							"milestone": "opv4",
+							"reference_date_fields": [
+				                {
+				                  "type": "client",
+				                  "field": "birthdate"
+				                }
+				             ],
+							"action": "enroll"
+						},
+						{
+							"types": ["Vaccination"],
+							"pass_logic": "AND",
+							"fulfillment_date_fields": [
+								{
+									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+								}
+							],
+							"fulfillment_fields": [
+								{
+									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "NOT_EMPTY"
+								},
+								{
+									"parent_code": "783AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "4"
+								}
+							],
+							"milestone": "opv4",
+							"action": "fulfill"
+						}
+					]
+	
 },
 {
 					"name": "MEASLES 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -767,7 +815,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "MEASLES 2",
@@ -793,7 +841,7 @@
 									"parent_code": "36AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 								},
-
+								
 				             ],
 							"action": "enroll"
 						},
@@ -822,13 +870,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "MR 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -870,7 +918,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "MR 2",
@@ -924,13 +972,58 @@
 							"action": "fulfill"
 						}
 					]
-
+	
+},
+{
+					"name": "VIT A IFC 2",
+					"events": [
+						{
+							"types": ["Birth Registration"],
+							"pass_logic": "AND",
+							"enrollment_fields": [
+								{
+									"field": "eventDate",
+									"value": "NOT_EMPTY"
+								}
+							],
+							"milestone": "vitaifc2",
+							"reference_date_fields": [
+				                {
+				                  "type": "client",
+				                  "field": "birthdate"
+				                }
+				             ],
+							"action": "enroll"
+						},
+						{
+							"types": ["Recurring Service"],
+							"pass_logic": "AND",
+							"fulfillment_fields": [
+								{
+									"concept": "161534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "NOT_EMPTY"
+								},
+								{
+									"concept": "1639AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+									"value": "0"
+								}
+							],
+							"fulfillment_date_fields": [
+								{
+									"field": "eventDate"
+								}
+							],
+							"milestone": "vitaifc2",
+							"action": "fulfill"
+						}
+					]
+	
 },
 {
 					"name": "VIT A 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -990,7 +1083,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 2",
@@ -1038,7 +1131,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 3",
@@ -1086,7 +1179,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 4",
@@ -1134,7 +1227,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 5",
@@ -1182,7 +1275,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 6",
@@ -1230,7 +1323,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 7",
@@ -1278,7 +1371,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 8",
@@ -1326,7 +1419,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 9",
@@ -1374,7 +1467,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "VIT A 10",
@@ -1422,13 +1515,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -1467,7 +1560,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 2",
@@ -1515,7 +1608,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 3",
@@ -1563,7 +1656,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 4",
@@ -1611,7 +1704,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 5",
@@ -1659,7 +1752,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 6",
@@ -1707,7 +1800,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 7",
@@ -1755,7 +1848,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 8",
@@ -1803,7 +1896,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "DEWORMING 9",
@@ -1851,13 +1944,13 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ITN 1",
 					"events": [
 						{
-							"types": ["Child Enrollment"],
+							"types": ["Birth Registration"],
 							"pass_logic": "AND",
 							"enrollment_fields": [
 								{
@@ -1896,7 +1989,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ITN 2",
@@ -1944,7 +2037,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ITN 3",
@@ -1992,7 +2085,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ITN 4",
@@ -2040,7 +2133,7 @@
 							"action": "fulfill"
 						}
 					]
-
+	
 },
 {
 					"name": "ITN 5",
@@ -2088,149 +2181,5 @@
 							"action": "fulfill"
 						}
 					]
-
-},
-{
-					"name": "YELLOW FEVER",
-					"events": [
-						{
-							"types": ["Child Enrollment"],
-							"pass_logic": "AND",
-							"enrollment_fields": [
-								{
-									"field": "eventDate",
-									"value": "NOT_EMPTY"
-								}
-							],
-							"milestone": "yf",
-							"reference_date_fields": [
-				                {
-				                  "type": "client",
-				                  "field": "birthdate"
-				                }
-				             ],
-							"action": "enroll"
-						},
-						{
-							"types": ["Vaccination"],
-							"pass_logic": "AND",
-							"fulfillment_date_fields": [
-								{
-									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-								}
-							],
-							"fulfillment_fields": [
-								{
-									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "NOT_EMPTY"
-								},
-								{
-									"parent_code": "5864AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "1"
-								}
-							],
-							"milestone": "yf",
-							"action": "fulfill"
-						}
-					]
-
-},
-{
-					"name": "MR - CE",
-					"events": [
-						{
-							"types": ["Child Enrollment"],
-							"pass_logic": "AND",
-							"enrollment_fields": [
-								{
-									"field": "eventDate",
-									"value": "NOT_EMPTY"
-								}
-							],
-							"milestone": "mr_ce",
-							"reference_date_fields": [
-				                {
-				                  "type": "client",
-				                  "field": "birthdate"
-				                }
-				             ],
-							"action": "enroll"
-						},
-						{
-							"types": ["Vaccination"],
-							"pass_logic": "AND",
-							"fulfillment_date_fields": [
-								{
-									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-								}
-							],
-							"fulfillment_fields": [
-								{
-									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "NOT_EMPTY"
-								},
-								{
-									"parent_code": "162586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "1"
-								}
-							],
-							"milestone": "mr_ce",
-							"action": "fulfill"
-						}
-					]
-
-},
-{
-					"name": "IPV",
-					"events": [
-						{
-							"types": ["Child Enrollment"],
-							"pass_logic": "AND",
-							"enrollment_fields": [
-								{
-									"field": "eventDate",
-									"value": "NOT_EMPTY"
-								}
-							],
-							"milestone": "ipv",
-							"reference_date_fields": [
-				                {
-				                  "type": "client",
-				                  "field": "birthdate"
-				                }
-				             ],
-							"action": "enroll"
-						},
-						{
-							"types": ["Vaccination"],
-							"pass_logic": "AND",
-							"fulfillment_date_fields": [
-								{
-									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-								}
-							],
-							"fulfillment_fields": [
-								{
-									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "NOT_EMPTY"
-								},
-								{
-									"parent_code": "1422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"concept": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-									"value": "0"
-								}
-							],
-							"milestone": "ipv",
-							"action": "fulfill"
-						}
-					]
-
+	
 }

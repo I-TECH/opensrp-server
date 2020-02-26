@@ -5,27 +5,27 @@
         {
             "name": "ipv",
             "scheduleWindows": {
-                "earliest": ["14 Weeks"],
-                "due": ["14 Weeks", "10 Days"],
+                "earliest": ["4 Weeks"],
+                "due": ["6 Weeks"],
                 "late": ["5 Years"],
                 "max": ["5 Years", "1 Day"]
             },
             "alerts": [
             	{
                     "window": "earliest",
-                    "offset": ["12 Weeks"],
+                    "offset": ["0 Weeks"],
                     "interval": ["1 Day"],
-                    "count": "14"
+                    "count": "30"
                 },
                 {
                     "window": "due",
-                    "offset": ["14 Weeks"],
+                    "offset": ["4 Weeks"],
                     "interval": ["1 Day"],
-                    "count": "14"
+                    "count": "30"
                 },
                 {
                     "window": "late",
-                    "offset": ["16 Weeks"],
+                    "offset": ["6 Weeks"],
                     "interval": ["1 Day"],
                     "count": "1900"
                 },

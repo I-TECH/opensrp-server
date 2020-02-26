@@ -11,6 +11,8 @@ select doc as json from couchdb
 where doc->>'type'='Report';
 
 /* Insert into report metadata */
+
+/* Insert into report metadata */
 INSERT INTO core.report_metadata
 (report_id, document_id,form_submission_id, base_entity_id,server_version,report_type,report_date, provider_id,
  location_id,team,team_id,date_edited)

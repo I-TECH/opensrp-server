@@ -67,13 +67,13 @@ public class FormSubmission extends MotechBaseDataObject {
     }
 
     public String bindType() {
-        return formInstance.bindType();
-    }
-
+		return formInstance.bindType();
+	}
+    
     public String defaultBindPath() {
-        return formInstance.defaultBindPath();
-    }
-
+		return formInstance.defaultBindPath();
+	}
+    
     public FormInstance instance() {
         return formInstance;
     }
@@ -113,33 +113,33 @@ public class FormSubmission extends MotechBaseDataObject {
     public SubFormData getSubFormByName(String name) {
         return formInstance.getSubFormByName(name);
     }
-
+    
     public List<SubFormData> subForms() {
         return formInstance.subForms();
     }
 
     public Map<String, Object> getMetadata() {
-        return metadata;
-    }
+		return metadata;
+	}
 
     public Object getMetadata(String key) {
-        if(metadata == null){
-            return null;
-        }
-        return metadata.get(key);
-    }
-
+    	if(metadata == null){
+    		return null;
+    	}
+		return metadata.get(key);
+	}
+    
     void addMetadata(String key, Object value) {
-        if(metadata == null){
-            metadata = new HashMap<>();
-        }
-        metadata.put(key, value);
-    }
-
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata;
-    }
-
+    	if(metadata == null){
+    		metadata = new HashMap<>();
+    	}
+		metadata.put(key, value);
+	}
+    
+	public void setMetadata(Map<String, Object> metadata) {
+		this.metadata = metadata;
+	}
+	
     @Override
     public boolean equals(Object o) {
         return EqualsBuilder.reflectionEquals(o, this, "id", "revision");

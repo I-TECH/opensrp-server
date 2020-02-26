@@ -50,13 +50,13 @@ public class FormData {
     }
 
     public String bindType() {
-        return bind_type;
-    }
-
+		return bind_type;
+	}
+    
     public String defaultBindPath() {
-        return default_bind_path;
-    }
-
+		return default_bind_path;
+	}
+    
     private void createFieldMapByName() {
         mapOfFieldsByName = new HashMap<>();
         for (FormField field : fields) {
@@ -65,12 +65,12 @@ public class FormData {
     }
 
     public Map<String, String> getFieldsAsMap() {
-        if (mapOfFieldsByName == null) {
+    	if (mapOfFieldsByName == null) {
             createFieldMapByName();
         }
         return mapOfFieldsByName;
-    }
-
+	}
+    
     public SubFormData getSubFormByName(String name) {
         for (SubFormData sub_form : sub_forms) {
             if (StringUtils.equalsIgnoreCase(name, sub_form.name()))
@@ -82,8 +82,8 @@ public class FormData {
     public List<SubFormData> subForms() {
         return sub_forms;
     }
-
-
+    
+    
     @Override
     public boolean equals(Object o) {
         return EqualsBuilder.reflectionEquals(this, o);

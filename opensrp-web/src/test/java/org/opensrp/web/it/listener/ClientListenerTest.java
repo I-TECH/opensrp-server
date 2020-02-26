@@ -52,24 +52,6 @@ public class ClientListenerTest {
 	@Test
 	public void testFetchClient() throws JSONException {
 		
-<<<<<<< HEAD
-		Client child = (Client) new Client("127").withFirstName("foo").withGender("female").withLastName("bae ff")
-		        .withBirthdate(new DateTime(), false).withDateCreated(new DateTime());
-		
-		List<String> motherRelationshipsList = new ArrayList<>();
-		motherRelationshipsList.add("130");
-		Map<String, Map<String, String>> motherRelationships = new HashMap<>();
-		Map<String, String> r = new HashMap<>();
-		r.put("relativeEntityId", "130");
-		r.put("relationshipType", "120");
-		motherRelationships.put("mother", r);
-		child.setRelationships(motherRelationships);
-		
-		allClients.add(child);
-		
-		Client mother = (Client) new Client("130").withFirstName("foo").withGender("female").withLastName("bae ff")
-		        .withBirthdate(new DateTime(), false).withDateCreated(new DateTime());
-=======
 		/*		Client child = (Client) new Client("127").withFirstName("foomm").withGender("female").withLastName("bae ff")
 				        .withBirthdate(new DateTime(), false).withDateCreated(new DateTime());
 				
@@ -98,7 +80,6 @@ public class ClientListenerTest {
 				allActions.add(normalAction);
 				allActions.add(upcominglAction);*/
 		//rapidProMessageListener.fetchClient();
->>>>>>> 9ad058aa6c5a38d9bf24deb9cf894e7e5495ac47
 		
 		rapidProMessageListener.campAnnouncementListener("raihan");
 		

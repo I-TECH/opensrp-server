@@ -52,7 +52,7 @@ public class ValidateResource {
 
 	/**
 	 * Validate that the client and event ids reference actual documents
-	 *
+	 * 
 	 * @param data
 	 * @return
 	 */
@@ -73,15 +73,15 @@ public class ValidateResource {
 			if (syncData.has("clients")) {
 
 				List<String> clientIds = gson.fromJson(syncData.getString("clients"),
-						new TypeToken<ArrayList<String>>() {}.getType());
+						new TypeToken<ArrayList<String>>() {
+						}.getType());
 				for (String clientId : clientIds) {
 					try {
 						Client client = clientService.getByBaseEntityId(clientId);
 						if (client == null) {
 							missingClientIds.add(clientId);
 						}
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						logger.error("Client Sync Valiation Failed, BaseEntityId: " + clientId, e);
 					}
 				}
@@ -89,8 +89,8 @@ public class ValidateResource {
 
 			List<String> missingEventIds = new ArrayList<>();
 			if (syncData.has("events")) {
-				List<String> eventIds = gson.fromJson(syncData.getString("events"),
-						new TypeToken<ArrayList<String>>() {}.getType());
+				List<String> eventIds = gson.fromJson(syncData.getString("events"), new TypeToken<ArrayList<String>>() {
+				}.getType());
 				for (String eventId : eventIds) {
 					try {
 						Event event = eventService.findByFormSubmissionId(eventId);
@@ -98,25 +98,24 @@ public class ValidateResource {
 							missingEventIds.add(eventId);
 						}
 
-					}
-					catch (Exception e) {
+					} catch (Exception e) {
 						logger.error("Event Sync Valiation Failed, FormSubmissionId: " + eventId, e);
 					}
 				}
 			}
 
-			JsonArray clientsArray = (JsonArray) gson.toJsonTree(missingClientIds,
-					new TypeToken<List<String>>() {}.getType());
+			JsonArray clientsArray = (JsonArray) gson.toJsonTree(missingClientIds, new TypeToken<List<String>>() {
+			}.getType());
 
-			JsonArray eventsArray = (JsonArray) gson.toJsonTree(missingEventIds, new TypeToken<List<String>>() {}.getType());
+			JsonArray eventsArray = (JsonArray) gson.toJsonTree(missingEventIds, new TypeToken<List<String>>() {
+			}.getType());
 
 			response.put("events", eventsArray);
 			response.put("clients", clientsArray);
 
-			return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+			return new ResponseEntity<>(gson.toJson(response), RestUtils.getJSONUTF8Headers(), HttpStatus.OK);
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(format("Validation Sync failed data processing failed with exception {0}.- ", e));
 			response.put("msg", "Error occurred");
 			return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.INTERNAL_SERVER_ERROR);

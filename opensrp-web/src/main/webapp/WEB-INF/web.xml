@@ -56,6 +56,16 @@
         <filter-name>GZipFilter</filter-name>
         <filter-class>org.opensrp.web.GZipCompressionFilter</filter-class>
     </filter>
+    
+     <filter>
+        <filter-name>GzipBodyDecompressFilter</filter-name>
+        <filter-class>org.opensrp.web.GzipBodyDecompressFilter</filter-class>
+    </filter>
+    
+     <filter>
+        <filter-name>CORSFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
@@ -82,6 +92,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+	<filter-mapping>
+		<filter-name>GzipBodyDecompressFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+    
+     <filter-mapping>
+        <filter-name>CORSFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Creates the Spring Container shared by all Servlets and Filters -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -89,7 +109,7 @@
 
 	<context-param>
 		<param-name>spring.profiles.active</param-name>
-		<param-value>${opensrp.database.profile},${opensrp.redis.client.profile}</param-value>
+		<param-value>${opensrp.database.profile},${opensrp.redis.client.profile},${opensrp.security.profile},${openmrs.sync.enabled},${dhis2.sync.enabled}</param-value>
 	</context-param>
 
     <!-- Handles Spring requests -->

@@ -1,8 +1,21 @@
 package org.opensrp.web.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.mysql.jdbc.StringUtils;
+import static org.opensrp.web.HttpHeaderFactory.allowOrigin;
+import static org.springframework.http.HttpStatus.OK;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,10 +26,21 @@ import org.opensrp.api.domain.User;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.common.domain.UserDetail;
+import org.opensrp.common.util.OpenMRSCrossVariables;
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.LocationProperty.PropertyStatus;
+import org.opensrp.domain.Organization;
+import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.domain.Practitioner;
+import org.opensrp.service.OrganizationService;
+import org.opensrp.service.PhysicalLocationService;
+import org.opensrp.service.PractitionerService;
+import org.opensrp.web.rest.RestUtils;
 import org.opensrp.web.security.DrishtiAuthenticationProvider;
+import org.opensrp.web.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,166 +56,326 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.Charset;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
-
-import static org.opensrp.web.HttpHeaderFactory.allowOrigin;
-import static org.springframework.http.HttpStatus.OK;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.mysql.jdbc.StringUtils;
 
 @Controller
 public class UserController {
 
-    private static Logger logger = LoggerFactory.getLogger(UserController.class);
+	private static Logger logger = LoggerFactory.getLogger(UserController.class.toString());
 
-    @Value("#{opensrp['opensrp.site.url']}")
-    private String opensrpSiteUrl;
+	@Value("#{opensrp['opensrp.cors.allowed.source']}")
+	private String opensrpAllowedSources;
 
-    private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
+	private DrishtiAuthenticationProvider opensrpAuthenticationProvider;
 
-    private OpenmrsLocationService openmrsLocationService;
+	private OpenmrsLocationService openmrsLocationService;
 
-    private OpenmrsUserService openmrsUserService;
-    private OpenmrsRelationshipService openmrsRelationshipService;
+	private OpenmrsUserService openmrsUserService;
 
-    @Autowired
-    public UserController(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService,
-                          DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
-        this.openmrsLocationService = openmrsLocationService;
-        this.openmrsUserService = openmrsUserService;
-        this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
-        this.openmrsRelationshipService = openmrsRelationshipService;
-    }
+	private OrganizationService organizationService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/authenticate-user")
-    public ResponseEntity<HttpStatus> authenticateUser() {
-        return new ResponseEntity<>(null, allowOrigin(opensrpSiteUrl), OK);
-    }
+	private PractitionerService practitionerService;
 
-    public Authentication getAuthenticationAdvisor(HttpServletRequest request) {
-        final String authorization = request.getHeader("Authorization");
-        if (authorization != null && authorization.startsWith("Basic")) {
-            // Authorization: Basic base64credentials
-            String base64Credentials = authorization.substring("Basic".length()).trim();
-            String credentials = new String(Base64.decode(base64Credentials.getBytes()), Charset.forName("UTF-8"));
-            // credentials = username:password
-            final String[] values = credentials.split(":", 2);
+	private PhysicalLocationService locationService;
 
-            return new UsernamePasswordAuthenticationToken(values[0], values[1]);
-        }
-        return null;
-    }
+	private OpenmrsRelationshipService openmrsRelationshipService;
 
-    public DrishtiAuthenticationProvider getAuthenticationProvider() {
-        return opensrpAuthenticationProvider;
-    }
+	@Value("#{opensrp['openmrs.version']}")
+	protected String OPENMRS_VERSION;
 
-    public User currentUser(HttpServletRequest request) {
-        Authentication a = getAuthenticationAdvisor(request);
-        return getAuthenticationProvider().getDrishtiUser(a, a.getName());
-    }
+	@Value("#{opensrp['use.opensrp.team.module']}")
+	protected boolean useOpenSRPTeamModule = false;
 
-    public Time getServerTime() {
-        return new Time(Calendar.getInstance().getTime(), TimeZone.getDefault());
-    }
+	@Autowired
+	public UserController(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService,
+			DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
+		this.openmrsLocationService = openmrsLocationService;
+		this.openmrsUserService = openmrsUserService;
+		this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
+		this.openmrsRelationshipService = openmrsRelationshipService;
+	}
 
-    @RequestMapping(method = RequestMethod.GET, value = "/user-details")
-    public ResponseEntity<UserDetail> userDetail(@RequestParam("anm-id") String anmIdentifier, HttpServletRequest request) {
-        Authentication a = getAuthenticationAdvisor(request);
-        User user = opensrpAuthenticationProvider.getDrishtiUser(a, anmIdentifier);
-        return new ResponseEntity<>(new UserDetail(user.getUsername(), user.getRoles()), allowOrigin(opensrpSiteUrl), OK);
-    }
+	/**
+	 * @param organizationService the organizationService to set
+	 */
+	@Autowired
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
+	}
 
-    @RequestMapping("/security/authenticate")
-    @ResponseBody
-    public ResponseEntity<String> authenticate(HttpServletRequest request) throws JSONException {
-        User u = currentUser(request);
-        System.out.println(u);
-        String lid = "";
-        JSONObject tm = null;
-        try {
-            tm = openmrsUserService.getTeamMember(u.getAttribute("_PERSON_UUID").toString());
-            JSONArray locs = tm.getJSONArray("location");
-            for (int i = 0; i < locs.length(); i++) {
-                lid += locs.getJSONObject(i).getString("uuid") + ";;";
-            }
-        }
-        catch (Exception e) {
-            System.out.println("USER Location info not mapped in team management module. Now trying Person Attribute");
-        }
-        if (StringUtils.isEmptyOrWhitespaceOnly(lid)) {
-            lid = (String) u.getAttribute("Location");
-            if (StringUtils.isEmptyOrWhitespaceOnly(lid)) {
-                String lids = (String) u.getAttribute("Locations");
+	/**
+	 * @param practitionerService the practitionerService to set
+	 */
+	@Autowired
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
 
-                if (lids == null) {
-                    throw new RuntimeException(
-                            "User not mapped on any location. Make sure that user have a person attribute Location or Locations with uuid(s) of valid OpenMRS Location(s) separated by ;;");
-                }
+	/**
+	 * @param locationService the locationService to set
+	 */
+	@Autowired
+	public void setLocationService(PhysicalLocationService locationService) {
+		this.locationService = locationService;
+	}
 
-                lid = lids;
-            }
-        }
-        LocationTree l = openmrsLocationService.getLocationTreeOf(lid.split(";;"));
+	@RequestMapping(method = RequestMethod.GET, value = "/authenticate-user")
+	public ResponseEntity<HttpStatus> authenticateUser() {
+		return new ResponseEntity<>(null, allowOrigin(opensrpAllowedSources), OK);
+	}
 
-        Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy();
+	public Authentication getAuthenticationAdvisor(HttpServletRequest request) {
+		final String authorization = request.getHeader("Authorization");
+		if (authorization != null && authorization.startsWith("Basic")) {
+			// Authorization: Basic base64credentials
+			String base64Credentials = authorization.substring("Basic".length()).trim();
+			String credentials = new String(Base64.decode(base64Credentials.getBytes()), Charset.forName("UTF-8"));
+			// credentials = username:password
+			final String[] values = credentials.split(":", 2);
 
-        String lids = "";
-        for(String k : userLocations.keySet()){
-            TreeNode<String, Location> t = userLocations.get(k);
-            lids += t.getId() + ";;";
-        }
-        JSONObject locations;
-        if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
-            locations = openmrsLocationService.getLocationTree(lids.split(";;"));
-        } else{
-            locations = new JSONObject();
-        }
+			return new UsernamePasswordAuthenticationToken(values[0], values[1]);
+		}
+		return null;
+	}
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("user", u);
-        try{
-            Map<String, Object> tmap = new Gson().fromJson(tm.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
-            map.put("team", tmap);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        map.put("locations", l);
+	public DrishtiAuthenticationProvider getAuthenticationProvider() {
+		return opensrpAuthenticationProvider;
+	}
 
-        try{
-            Map<String, Object> lMap = new Gson().fromJson(locations.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
-            map.put("userLocations", lMap);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+	public User currentUser(HttpServletRequest request,Authentication authentication) {
+		return getAuthenticationProvider().getDrishtiUser(authentication, authentication.getName());
+	}
 
-        Time t = getServerTime();
-        map.put("time", t);
+	public Time getServerTime() {
+		return new Time(Calendar.getInstance().getTime(), TimeZone.getDefault());
+	}
 
-        try{
-            JSONObject relationshipTypes = openmrsRelationshipService.getRelationshipTypes();
-            Map<String, Object> rmap = new Gson().fromJson(relationshipTypes.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
-            map.put("relationshipTypes", rmap);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+	@RequestMapping(method = RequestMethod.GET, value = "/user-details")
+	public ResponseEntity<UserDetail> getUserDetails(Authentication authentication,
+			@RequestParam(value = "anm-id", required = false) String anmIdentifier, HttpServletRequest request) {
+		Authentication auth;
+		if (authentication == null) {
+			auth = getAuthenticationAdvisor(request);
+		} else {
+			auth = authentication;
+		}
+		if (auth != null) {
+			User user;
+			try {
+				String userName = org.apache.commons.lang.StringUtils.isBlank(anmIdentifier) ? auth.getName()
+						: anmIdentifier;
+				user = openmrsUserService.getUser(userName);
+				UserDetail userDetail = new UserDetail(user.getUsername(), user.getRoles());
+				userDetail.setPreferredName(user.getPreferredName());
+				return new ResponseEntity<>(userDetail, RestUtils.getJSONUTF8Headers(), OK);
+			} catch (JSONException e) {
+				logger.error("Error getting user details", e);
+				return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 
-        logger.info("UserController Response: " + new Gson().toJson(map));
+		} else {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 
-        return new ResponseEntity<>(new Gson().toJson(map), allowOrigin(opensrpSiteUrl), OK);
-    }
+	}
 
-    @RequestMapping("/security/configuration")
-    @ResponseBody
-    public ResponseEntity<String> configuration() throws JSONException {
-        Map<String, Object> map = new HashMap<>();
-        map.put("serverDatetime", DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
-        return new ResponseEntity<>(new Gson().toJson(map), allowOrigin(opensrpSiteUrl), OK);
-    }
+	@RequestMapping("/security/authenticate")
+	@ResponseBody
+	public ResponseEntity<String> authenticate(HttpServletRequest request, Authentication authentication) throws JSONException {
+		if (useOpenSRPTeamModule) {
+			return authenticateUsingOrganization(request,authentication);
+		}
+		User u = currentUser(request,authentication);
+		System.out.println(u);
+		String lid = "";
+		JSONObject tm = null;
+		try {
+			tm = openmrsUserService.getTeamMember(u.getAttribute("_PERSON_UUID").toString());
+			JSONArray locs = tm.getJSONArray(OpenMRSCrossVariables.LOCATIONS_JSON_KEY.makeVariable(OPENMRS_VERSION));
+
+			for (int i = 0; i < locs.length(); i++) {
+				lid += locs.getJSONObject(i).getString("uuid") + ";;";
+			}
+		} catch (Exception e) {
+			logger.error("USER Location info not mapped in team management module. Now trying Person Attribute", e);
+		}
+		if (StringUtils.isEmptyOrWhitespaceOnly(lid)) {
+			lid = (String) u.getAttribute("Location");
+			if (StringUtils.isEmptyOrWhitespaceOnly(lid)) {
+				lid = (String) u.getAttribute("Locations");
+				if (lid == null) {
+					throw new IllegalStateException(
+							"User not mapped on any location. Make sure that user have a person attribute Location or Locations with uuid(s) of valid OpenMRS Location(s) separated by ;;");
+				}
+
+			}
+		}
+		LocationTree l = openmrsLocationService.getLocationTreeOf(lid.split(";;"));
+
+		Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy();
+
+		String lids = "";
+		for(String k : userLocations.keySet()){
+			TreeNode<String, Location> t = userLocations.get(k);
+			lids += t.getId() + ";;";
+		}
+		JSONObject locations;
+		if(org.apache.commons.lang3.StringUtils.isNotBlank(lids)){
+			locations = openmrsLocationService.getLocationTree(lids.split(";;"));
+		} else{
+			locations = new JSONObject();
+		}
+		Map<String, Object> map = new HashMap<>();
+		map.put("user", u);
+		try {
+			Map<String, Object> tmap = new Gson().fromJson(tm.toString(), new TypeToken<HashMap<String, Object>>() {
+
+			}.getType());
+			map.put("team", tmap);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		map.put("locations", l);
+
+		try{
+			Map<String, Object> lMap = new Gson().fromJson(locations.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
+			map.put("userLocations", lMap);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		Time t = getServerTime();
+		map.put("time", t);
+
+		try{
+			JSONObject relationshipTypes = openmrsRelationshipService.getRelationshipTypes();
+			Map<String, Object> rmap = new Gson().fromJson(relationshipTypes.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
+			map.put("relationshipTypes", rmap);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(new Gson().toJson(map), RestUtils.getJSONUTF8Headers(), OK);
+	}
+
+	private ResponseEntity<String> authenticateUsingOrganization(HttpServletRequest request,Authentication authentication) throws JSONException {
+		User u = currentUser(request,authentication);
+		System.out.println(u);
+
+		Map<String, String> openMRSIdsMap = new HashMap<>();
+		Set<String> openMRSIds = new HashSet<>();
+		ImmutablePair<Practitioner, List<Long>> practionerOrganizationIds = null;
+		List<PhysicalLocation> jurisdictions = null;
+		Set<String> locationIds = new HashSet<>();
+		Set<String> jurisdictionNames = new HashSet<>();
+		Map<String, String> locationAndParent = new HashMap<>();
+		try {
+			String userId = u.getBaseEntityId();
+			practionerOrganizationIds = practitionerService.getOrganizationsByUserId(userId);
+
+			for (AssignedLocations assignedLocation : organizationService
+					.findAssignedLocationsAndPlans(practionerOrganizationIds.right)) {
+				locationIds.add(assignedLocation.getJurisdictionId());
+			}
+
+			jurisdictions = locationService.findLocationsByIdsOrParentIds(false, new ArrayList<>(locationIds));
+
+			for (PhysicalLocation jurisdiction : jurisdictions) {
+				if (PropertyStatus.INACTIVE.equals(jurisdiction.getProperties().getStatus()))
+					continue;
+				String openMRSId = jurisdiction.getProperties().getCustomProperties().get("OpenMRS_Id");
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(openMRSId)) {
+					String parentId = jurisdiction.getProperties().getParentId();
+					openMRSIdsMap.put(jurisdiction.getId(), openMRSId);
+					locationAndParent.put(jurisdiction.getId(), parentId);
+				}
+				jurisdictionNames.add(jurisdiction.getProperties().getName());
+			}
+
+			Set<String> parentLocations = LocationUtils.getRootLocation(locationAndParent);
+			if (parentLocations.size() == 1) {
+				openMRSIds.addAll(openMRSIdsMap.values());
+			} else {
+				for (String locationId : parentLocations) {
+					if (openMRSIdsMap.containsKey(locationId)) {
+						openMRSIds.add(openMRSIdsMap.get(locationId));
+					} else {
+						openMRSIds.add(locationService.getLocation(locationId, false).getProperties().getCustomProperties()
+						        .get("OpenMRS_Id"));
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("USER Location info not mapped to an organization", e);
+		}
+		if (openMRSIds.isEmpty()) {
+			throw new IllegalStateException(
+					"User not mapped on any location. Make sure that user is assigned to an organization with valid Location(s) including OpenMRS ");
+		}
+
+		LocationTree l = openmrsLocationService.getLocationTreeOf(openMRSIds.toArray(new String[] {}));
+		Map<String, Object> map = new HashMap<>();
+		map.put("user", u);
+
+		JSONObject teamMemberJson = new JSONObject();
+		teamMemberJson.put("identifier", practionerOrganizationIds.left.getIdentifier());
+		teamMemberJson.put("uuid", practionerOrganizationIds.left.getUserId());
+
+		JSONObject teamJson = new JSONObject();
+		// TODO populate organizations if user has many organizations
+		Organization organization = organizationService.getOrganization(practionerOrganizationIds.right.get(0));
+		teamJson.put("teamName", organization.getName());
+		teamJson.put("display", organization.getName());
+		teamJson.put("uuid", organization.getIdentifier());
+		teamJson.put("organizationIds", practionerOrganizationIds.right);
+
+		JSONObject teamLocation = new JSONObject();
+		// TODO populate jurisdictions if user has many jurisdictions
+		PhysicalLocation jurisdiction = jurisdictions.get(0);
+		teamLocation.put("uuid", openMRSIds.iterator().next());
+		teamLocation.put("name", jurisdiction.getProperties().getName());
+		teamLocation.put("display", jurisdiction.getProperties().getName());
+		teamJson.put("location", teamLocation);
+
+		JSONArray locations = new JSONArray();
+		locations.put(teamLocation);
+		teamMemberJson.put("locations", locations);
+		teamMemberJson.put("team", teamJson);
+
+		try {
+			Map<String, Object> tmap = new Gson().fromJson(teamMemberJson.toString(),
+					new TypeToken<HashMap<String, Object>>() {
+
+					}.getType());
+			map.put("team", tmap);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+		map.put("locations", l);
+		Time t = getServerTime();
+		map.put("time", t);
+		map.put("jurisdictions", jurisdictionNames);
+		return new ResponseEntity<>(new Gson().toJson(map), RestUtils.getJSONUTF8Headers(), OK);
+	}
+
+	@RequestMapping("/security/configuration")
+	@ResponseBody
+	public ResponseEntity<String> configuration() throws JSONException {
+		Map<String, Object> map = new HashMap<>();
+		map.put("serverDatetime", DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+		return new ResponseEntity<>(new Gson().toJson(map), RestUtils.getJSONUTF8Headers(), OK);
+	}
+
+	public void setOpenmrsUserService(OpenmrsUserService openmrsUserService) {
+		this.openmrsUserService = openmrsUserService;
+	}
+
+	public void setOpensrpAuthenticationProvider(DrishtiAuthenticationProvider opensrpAuthenticationProvider) {
+		this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
+	}
+
 }

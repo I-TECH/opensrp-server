@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
 import org.opensrp.service.ClientService;
@@ -43,9 +42,6 @@ public class XlsDataImportControllerTest {
 	
 	@Mock
 	OpenmrsIDService openmrsIDService;
-
-	@Mock
-	OpenmrsRelationshipService openmrsRelationshipService;
 	
 	@Before
 	public void setUp() {
@@ -60,11 +56,13 @@ public class XlsDataImportControllerTest {
 		List<String> openmrsIds = new ArrayList<String>();
 		openmrsIds.add("12345-1");
 		openmrsIds.add("12345-2");
-		
+		//mothers' id
+		openmrsIds.add("12345-3");
+		openmrsIds.add("12345-4");
 
 		when(this.openmrsIDService.downloadOpenmrsIds(anyInt())).thenReturn(openmrsIds);
 		
-		XlsDataImportController controller = new XlsDataImportController(clientService, eventService, openmrsIDService, openmrsRelationshipService);
+		XlsDataImportController controller = new XlsDataImportController(clientService, eventService, openmrsIDService);
 		ResponseEntity<String> response = controller.importXlsData(file);
 		String responseBody = response.getBody();
 		JSONObject responseJson = new JSONObject(responseBody);

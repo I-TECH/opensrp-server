@@ -72,7 +72,7 @@ public class StockResource extends RestResource<Stock> {
 
 	/**
 	 * Fetch all the stocks
-	 *
+	 * 
 	 * @param none
 	 * @return a map response with stocks, and optionally msg when an error occurs
 	 */
@@ -84,11 +84,11 @@ public class StockResource extends RestResource<Stock> {
 		try {
 			List<Stock> stocks = new ArrayList<Stock>();
 			stocks = stockService.findAllStocks();
-			JsonArray stocksArray = (JsonArray) gson.toJsonTree(stocks, new TypeToken<List<Stock>>() {}.getType());
+			JsonArray stocksArray = (JsonArray) gson.toJsonTree(stocks, new TypeToken<List<Stock>>() {
+			}.getType());
 			response.put("stocks", stocksArray);
-			return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
-		}
-		catch (Exception e) {
+			return new ResponseEntity<>(gson.toJson(response), RestUtils.getJSONUTF8Headers(), HttpStatus.OK);
+		} catch (Exception e) {
 			response.put("msg", "Error occurred");
 			logger.error("", e);
 			return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,9 +110,10 @@ public class StockResource extends RestResource<Stock> {
 
 	/**
 	 * Fetch stocks ordered by serverVersion ascending order
-	 *
+	 * 
 	 * @param request
-	 * @return a map response with events, clients and optionally msg when an error occurs
+	 * @return a map response with events, clients and optionally msg when an error
+	 *         occurs
 	 */
 	@RequestMapping(value = "/sync", method = RequestMethod.GET)
 	@ResponseBody
@@ -132,14 +133,14 @@ public class StockResource extends RestResource<Stock> {
 
 			List<Stock> stocks = new ArrayList<Stock>();
 			stocks = stockService.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc", limit);
-			JsonArray stocksArray = (JsonArray) gson.toJsonTree(stocks, new TypeToken<List<Stock>>() {}.getType());
+			JsonArray stocksArray = (JsonArray) gson.toJsonTree(stocks, new TypeToken<List<Stock>>() {
+			}.getType());
 
 			response.put("stocks", stocksArray);
 
-			return new ResponseEntity<>(gson.toJson(response), HttpStatus.OK);
+			return new ResponseEntity<>(gson.toJson(response), RestUtils.getJSONUTF8Headers(), HttpStatus.OK);
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			response.put("msg", "Error occurred");
 			logger.error("", e);
 			return new ResponseEntity<>(new Gson().toJson(response), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -155,17 +156,16 @@ public class StockResource extends RestResource<Stock> {
 				return new ResponseEntity<>(BAD_REQUEST);
 			}
 			ArrayList<Stock> stocks = (ArrayList<Stock>) gson.fromJson(syncData.getString("stocks"),
-					new TypeToken<ArrayList<Stock>>() {}.getType());
+					new TypeToken<ArrayList<Stock>>() {
+					}.getType());
 			for (Stock stock : stocks) {
 				try {
 					stockService.addorUpdateStock(stock);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					logger.error("Stock" + stock.getId() + " failed to sync", e);
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(format("Sync data processing failed with exception {0}.- ", e));
 			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
 		}
@@ -196,9 +196,8 @@ public class StockResource extends RestResource<Stock> {
 		StockSearchBean searchBean = populateSearchBean(request);
 
 		String serverVersion = getStringFilter(TIMESTAMP, request);
-		if(serverVersion!=null)
+		if (serverVersion != null)
 			searchBean.setServerVersion(Long.valueOf(serverVersion));
-
 
 		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getIdentifier())) {
 			Stock stock = stockService.find(searchBean.getIdentifier());

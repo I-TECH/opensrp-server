@@ -1,39 +1,17 @@
 package org.opensrp.web.security;
 
-import com.google.gson.Gson;
-import org.opensrp.domain.DrishtiUser;
-import org.opensrp.repository.AllOpenSRPUsers;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.UUID;
-
-import static java.util.Arrays.asList;
-import static java.util.UUID.randomUUID;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import org.opensrp.web.security.DrishtiAuthenticationProvider;
 
 public class DrishtiAuthenticationProviderTest {
-    @Mock
-    private AllOpenSRPUsers allOpenSRPUsers;
     @Mock
     private ShaPasswordEncoder passwordEncoder;
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private DrishtiAuthenticationProvider authenticationProvider;
+    //private DrishtiAuthenticationProvider authenticationProvider;
 
     /*@Before
     public void setUp() throws Exception {
@@ -86,7 +64,7 @@ public class DrishtiAuthenticationProviderTest {
         verify(allOpenSRPUsers).findByUsername("user 1");
     }*/
 
-    @Test
+    /*@Test
     @Ignore
     public void toGenerateUserPasswordsAndSalt() throws Exception {
         String username = "username";
@@ -94,5 +72,5 @@ public class DrishtiAuthenticationProviderTest {
         UUID salt = randomUUID();
         String hashedPassword = new ShaPasswordEncoder().encodePassword(password, salt);
         System.out.println(new Gson().toJson(new DrishtiUser(username, hashedPassword, salt.toString(), asList("ROLE_USER"), true)));
-    }
+    }*/
 }

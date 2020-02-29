@@ -1,120 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.smartregister</groupId>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-        <artifactId>opensrp</artifactId>
-        <groupId>org.opensrp</groupId>
-        <version>0.1-SNAPSHOT</version>
-    </parent>
-
-    <artifactId>opensrp-connector</artifactId>
+    <artifactId>opensrp-server-connector</artifactId>
     <packaging>jar</packaging>
-    <name>opensrp-connector</name>
-    <url>http://github.com/OpenSRP/opensrp-server</url>
 
-	<properties>
-		<jetty.port>9977</jetty.port>
-        <release.version>0.1-SNAPSHOT</release.version>
-		<main.basedir>${project.basedir}/..</main.basedir>
-	</properties>
-	
-	<build>
-		<finalName>opensrp-connector</finalName>
-        <resources>
-			<resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <directory>../assets/config</directory>
-            </resource>
-            <resource>
-                <directory>../build</directory>
-                <filtering>true</filtering>
-                <includes>
-                	<include>maven.properties</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>../opensrp-core/src/main/resources</directory>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.0.1.v20110908</version>
-                <configuration>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>jetty.port</name>
-                            <value>${jetty.port}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>slf4j</name>
-                            <value>false</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>log4j.configuration</name>
-                            <value>file:${main.basedir}/assets/config/log4j.xml</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <webAppConfig>
-                        <contextPath>/</contextPath>
-                    </webAppConfig>
-                    <stopKey>secret</stopKey>
-                    <stopPort>6679</stopPort>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>${jetty.port}</port>
-                        </connector>
-                        <connector implementation="org.eclipse.jetty.server.ssl.SslSelectChannelConnector">
-                            <port>8443</port>
-                            <keystore>${main.basedir}/assets/security/drishti_server.keystore</keystore>
-                            <keyPassword>mouse monitor cube</keyPassword>
-                            <password>mouse monitor cube</password>
-                        </connector>
-                    </connectors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>start-jetty</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <daemon>true</daemon>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>stop-jetty</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <version>1.0.6-SNAPSHOT</version>
+
+    <name>opensrp-server-connector</name>
+    <description>OpenSRP Server Connector module</description>
+    <url>http://github.com/OpenSRP/opensrp-server-connector</url>
+
+    <properties>
+        <main.basedir>${project.basedir}</main.basedir>
+        <spring.version>3.1.0.RELEASE</spring.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
+
+        <opensrp.api.version>1.0.1</opensrp.api.version>
+        <opensrp.core.version>1.0.1</opensrp.core.version>
+
+    </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:git:git@github.com:OpenSRP/opensrp-server-connector.git</connection>
+        <developerConnection>scm:git:git@github.com:OpenSRP/opensrp-server-connector.git
+        </developerConnection>
+        <url>https://github.com/OpenSRP/opensrp-server-connector</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>Open Smart Register Platform (OpenSRP) is Licensed under the Apache License,
+                Version 2.0
+            </comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>opensrp_developer</id>
+            <name>OpenSRP Developer</name>
+            <email>info@smartregister.org</email>
+            <url>https://groups.google.com/forum/#!forum/opensrp-dev</url>
+            <organization>OpenSRP</organization>
+            <organizationUrl>http://smartregister.org</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Africa/Nairobi</timezone>
+        </developer>
+    </developers>
+
+    <repositories>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencies>
-<!-- <dependency>
-    <groupId>org.ihs</groupId>
-    <artifactId>emailer</artifactId>
-    <version>1.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/lib/emailer-1.0.0.jar</systemPath>
-</dependency>
-<dependency>
-    <groupId>javax.mail</groupId>
-    <artifactId>mail</artifactId>
-    <version>1.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/lib/mail.jar</systemPath>
-</dependency> -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -134,27 +103,27 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson.version}</version>
+            <version>1.9.7</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson.version}</version>
+            <version>1.9.7</version>
         </dependency>
         <dependency>
-            <groupId>org.opensrp</groupId>
-            <artifactId>opensrp-api</artifactId>
-            <version>${release.version}</version>
+            <groupId>org.smartregister</groupId>
+            <artifactId>opensrp-server-api</artifactId>
+            <version>${opensrp.api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opensrp</groupId>
-            <artifactId>opensrp-core</artifactId>
-            <version>${release.version}</version>
+            <groupId>org.smartregister</groupId>
+            <artifactId>opensrp-server-core</artifactId>
+            <version>${opensrp.core.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -175,15 +144,250 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-		   <groupId>org.javassist</groupId>
-		   <artifactId>javassist</artifactId>
-		   <version>3.18.1-GA</version>
-		</dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.18.1-GA</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.6.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.ict4h</groupId>
+            <artifactId>atomfeed-client</artifactId>
+            <version>1.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.54</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-ext-jdk15on</artifactId>
+            <version>1.54</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>2.7.5</version>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <finalName>opensrp-server-connector</finalName>
+        <resources>
+            <resource>
+                <directory>configs/assets/schedules</directory>
+                <targetPath>schedules</targetPath>
+            </resource>
+            <resource>
+                <directory>../assets/config</directory>
+            </resource>
+            <resource>
+                <directory>../build</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>maven.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>../modules/core/ziggy</directory>
+                <targetPath>ziggy</targetPath>
+            </resource>
+            <resource>
+                <directory>../modules/core/queries</directory>
+                <targetPath>queries</targetPath>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.properties</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <printSummary>true</printSummary>
+                    <excludes>
+                        <exclude>**/it/**</exclude>
+                    </excludes>
+
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <serverId>nexus-snapshots</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <skipStaging>true</skipStaging>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.9</version>
+                <configuration>
+                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.0.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>skip-integration-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.9</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <argLine>-XX:MaxPermSize=1024M</argLine>
+                                    <excludes>
+                                        <exclude>**/it/**</exclude>
+                                    </excludes>
+                                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.5.1</version>
+                        <executions>
+                            <execution>
+                                <id>default-deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <serverId>nexus-releases</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <skipStaging>false</skipStaging>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -1,155 +1,369 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-import org.opensrp.api.domain.BaseEntity;
-import org.opensrp.api.domain.Client;
-import org.opensrp.api.domain.Event;
-import org.opensrp.api.domain.Obs;
-import org.opensrp.repository.AllBaseEntities;
-import org.opensrp.repository.AllEvents;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.json.JSONException;
+import org.opensrp.common.AllConstants.Client;
+import org.opensrp.domain.Event;
+import org.opensrp.domain.Obs;
+import org.opensrp.repository.EventsRepository;
+import org.opensrp.search.EventSearchBean;
+import org.opensrp.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EventService {
-
-	private final AllEvents allEvents;
-	private final  AllBaseEntities allBaseEntities;
+	
+	private final EventsRepository allEvents;
+	
+	private ClientService clientService;
 	
 	@Autowired
-	public EventService(AllEvents allEvents, AllBaseEntities allBaseEntities)
-	{
+	public EventService(EventsRepository allEvents, ClientService clientService) {
 		this.allEvents = allEvents;
-		this.allBaseEntities = allBaseEntities;
+		this.clientService = clientService;
 	}
 	
-	public Event getEventByBaseEntityId(String baseEntityId)
-	{
-		org.opensrp.domain.Event event = allEvents.findByBaseEntityId(baseEntityId);
-		org.opensrp.domain.BaseEntity baseEntity = allBaseEntities.findByBaseEntityId(baseEntityId);
+	public List<Event> findAllByIdentifier(String identifier) {
+		return allEvents.findAllByIdentifier(identifier);
+	}
+	
+	public List<Event> findAllByIdentifier(String identifierType, String identifier) {
+		return allEvents.findAllByIdentifier(identifierType, identifier);
+	}
+	
+	public Event getById(String id) {
+		return allEvents.findById(id);
+	}
+	
+	public Event getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
+		return allEvents.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
+	}
+	
+	public List<Event> findByBaseEntityId(String baseEntityId) {
+		return allEvents.findByBaseEntityId(baseEntityId);
+	}
+	
+	public Event findByFormSubmissionId(String formSubmissionId) {
+		return allEvents.findByFormSubmissionId(formSubmissionId);
+	}
+	
+	public List<Event> findEventsBy(EventSearchBean eventSearchBean) {
+		return allEvents.findEvents(eventSearchBean);
+	}
+	
+	public List<Event> findEventsByDynamicQuery(String query) {
+		return allEvents.findEventsByDynamicQuery(query);
+	}
+	
+	private static Logger logger = LoggerFactory.getLogger(EventService.class.toString());
+	
+	public Event find(String uniqueId) {
+		try {
+			List<Event> el = allEvents.findAllByIdentifier(uniqueId);
+			return getUniqueEventFromEventList(el);
+		}
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
+		}
+	}
+	
+	public Event find(Event event) {
+		for (String idt : event.getIdentifiers().keySet()) {
+			try {
+				List<Event> el = allEvents.findAllByIdentifier(event.getIdentifier(idt));
+				return getUniqueEventFromEventList(el);
+			}
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+				        "Multiple events with identifier type " + idt + " and ID " + event.getIdentifier(idt) + " exist.");
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Find an event using the event Id
+	 * @param eventId the if for the event
+	 * @return an event matching the eventId
+	 */
+	public Event findById(String eventId) {
+		try {
+			if (StringUtils.isEmpty(eventId) ) {
+				return null;
+			}
+			return allEvents.findById(eventId);
+		}
+		catch (Exception e) {
+			logger.error("", e);
+		}
+		return null;
+	}
+	
+	/**
+	 * Find an event using an event Id or form Submission Id
+	 * @param eventId the if for the event
+	 * @param formSubmissionId form submission id for the events
+	 * @return an event matching the eventId or formsubmission id
+	 */
+	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
+		Event event=null;
+		try {	
+			if(StringUtils.isNotEmpty(eventId)) {
+				 event = findById(eventId);
+			}
+			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
+				return findByFormSubmissionId(formSubmissionId);
+			}
+		}
+		catch (Exception e) {
+			logger.error("", e);
+		}
+		return event;
+	}
+	
+	public synchronized Event addEvent(Event event) {
+		Event e = find(event);
+		if (e != null) {
+			throw new IllegalArgumentException(
+			        "An event already exists with given list of identifiers. Consider updating data.[" + e + "]");
+		}
 		
-			BaseEntity apiBaseEntity = new BaseEntity()
-										   .withFirstName(baseEntity.getFirstName())
-										   .withMiddleName(baseEntity.getMiddleName())
-										   .withLastName(baseEntity.getLastName())
-										   .withGender(baseEntity.getGender())
-										   .withBirthdate(baseEntity.getBirthdate(),baseEntity.getBirthdateApprox())
-								 		   .withDeathdate(baseEntity.getDeathdate(), baseEntity.getDeathdateApprox());
+		if (event.getFormSubmissionId() != null
+		        && getByBaseEntityAndFormSubmissionId(event.getBaseEntityId(), event.getFormSubmissionId()) != null) {
+			throw new IllegalArgumentException(
+			        "An event already exists with given baseEntity and formSubmission combination. Consider updating");
+		}
+		
+		event.setDateCreated(DateTime.now());
+		allEvents.add(event);
+		return event;
+	}
+	
+	/**
+	 * An out of area event is used to record services offered outside a client's catchment area.
+	 * The event usually will have a client unique identifier(ZEIR_ID) as the only way to identify
+	 * the client.This method finds the client based on the identifier and assigns a basentityid to
+	 * the event
+	 *
+	 * @param event
+	 * @return
+	 */
+	public synchronized Event processOutOfArea(Event event) {
+		try {
+			final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
+			final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
+			final String VACCINATION_EVENT = "Vaccination";
+			final String OUT_OF_AREA_SERVICE = "Out of Area Service";
+			final String NFC_CARD_IDENTIFIER = "NFC_Card_Identifier";
+			final String CARD_ID_PREFIX = "c_";
 			
-			//#TODO: Have to add User
-			/*org.opensrp.domain.User userCreator  = baseEntity.getCreator().withBaseEntityId(baseEntityId);
-			
-			
-							  apiBaseEntity.withCreator(userCreator);
-							  apiBaseEntity.withEditor(baseEntity.getEditor());
-							  apiBaseEntity.withVoider(baseEntity.getVoider());
-							  apiBaseEntity.withDateCreated(baseEntity.getDateCreated());
-							  apiBaseEntity.withDateEdited(baseEntity.getDateEdited());
-							  apiBaseEntity.withDateVoided(baseEntity.getDateVoided());
-							  apiBaseEntity.withVoided(baseEntity.getVoided());
-							  apiBaseEntity.withVoidReason(baseEntity.getRevision());
-							  
-							  
-							  
-*/			
-			List<org.opensrp.domain.Obs> domainObss = event.getObs();
-			List<Obs> obss = new ArrayList<>();
-			for(org.opensrp.domain.Obs domainObs : domainObss)
-			{
-				Obs obs = new Obs()
-								.withFieldDataType(domainObs.getFieldDataType())
-								.withFieldCode(domainObs.getFieldCode())
-								.withParentCode(domainObs.getParentCode())
-								.withFormSubmissionField(domainObs.getFormSubmissionField())
-								.withValue(domainObs.getValue())
-								.withComments(domainObs.getComments());
-				
-				
-				obss.add(obs);
+			if (StringUtils.isNotBlank(event.getBaseEntityId())) {
+				return event;
 			}
 			
-			Event apiEvent = new Event()
-								   .withBaseEntityId(event.getBaseEntityId())
-								   .withBaseEntity(apiBaseEntity)
-								   .withLocationId(event.getLocationId())
-								   .withEventType(event.getEventType())
-								   .withEventDate(event.getEventDate())
-								   .withProviderId(event.getProviderId())
-								   .withFormSubmissionId(event.getFormSubmissionId())
-								   .withObs(obss);
+			//get events identifiers; 
+			String identifier = event.getIdentifier(Client.ZEIR_ID);
+			if (StringUtils.isBlank(identifier)) {
+				return event;
+			}
 			
-		//#TODO: Have to add User	
-						/*  apiClient.withCreator(client.getCreator());
-						  apiClient.withEditor(client.getEditor());
-						  apiClient.withVoider(client.getVoider());
-						  apiClient.withDateCreated(client.getDateCreated());
-						  apiClient.withDateEdited(client.getDateEdited());
-						  apiClient.withDateVoided(client.getDateVoided());
-						  apiClient.withVoided(client.getVoided());
-						  apiClient.withVoidReason(client.getRevision());*/
+			boolean isCardId = identifier.startsWith(CARD_ID_PREFIX);
 			
-		return apiEvent;
-	}
-	
-	public void addEvent(Event event)
-	{
-		List<Obs> apiObss = event.getObs();
-		List<org.opensrp.domain.Obs> obss = new ArrayList<>();
-		for(Obs apiObs : apiObss)
-		{
-			org.opensrp.domain.Obs obs = new org.opensrp.domain.Obs()
-											.withFieldDataType(apiObs.getFieldDataType())
-											.withFieldCode(apiObs.getFieldCode())
-											.withParentCode(apiObs.getParentCode())
-											.withFormSubmissionField(apiObs.getFormSubmissionField())
-											.withValue(apiObs.getValue())
-											.withComments(apiObs.getComments());
+			List<org.opensrp.domain.Client> clients =
+			        
+			        isCardId ? clientService
+			                .findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
+			                : clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(), identifier);
 			
+			if (clients == null || clients.isEmpty()) {
+				return event;
+			}
 			
-			obss.add(obs);
+			for (org.opensrp.domain.Client client : clients) {
+				
+				//set providerid to the last providerid who served this client in their catchment (assumption)
+				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
+				
+				if (existingEvents == null || existingEvents.isEmpty()) {
+					return event;
+				}
+				
+				Event birthRegEvent = existingEvents.get(0);
+				event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
+				event.setBaseEntityId(client.getBaseEntityId());
+				//Map<String, String> identifiers = event.getIdentifiers();
+				//event identifiers are unique so removing zeir_id since baseentityid has been found
+				//also out of area service events stick with the providerid so that they can sync back to them for reports generation
+				if (!event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
+					event.setProviderId(birthRegEvent.getProviderId());
+					event.setLocationId(birthRegEvent.getLocationId());
+					Map<String, String> details = new HashMap<String, String>();
+					details.put("out_of_catchment_provider_id", event.getProviderId());
+					event.setDetails(details);
+				} else if (event.getEventType().contains(GROWTH_MONITORING_EVENT)
+				        || event.getEventType().contains(VACCINATION_EVENT)) {
+					
+					String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
+					        : event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
+					if (eventType != null) {
+						Event newEvent = new Event();
+						newEvent.withBaseEntityId(event.getBaseEntityId()).withEventType(eventType)
+						        .withEventDate(event.getEventDate()).withEntityType(event.getEntityType())
+						        .withProviderId(birthRegEvent.getProviderId()).withLocationId(birthRegEvent.getLocationId())
+						        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
+						
+						newEvent.setObs(event.getObs());
+						addEvent(newEvent);
+					}
+				}
+				//Legacy code only picked the first item so we break
+				if (!isCardId) {
+					break;
+				}
+				
+			}
+		}
+		catch (Exception e) {
+			logger.error("", e);
 		}
 		
-		org.opensrp.domain.Event domainEvent = new org.opensrp.domain.Event()
-													.withBaseEntityId(event.getBaseEntityId())
-													.withLocationId(event.getLocationId())
-													.withEventType(event.getEventType())
-													.withEventDate(event.getEventDate())
-													.withFormSubmissionId(event.getFormSubmissionId())
-													.withProviderId(event.getProviderId())
-													.withObs(obss);
-		
-												allEvents.add(domainEvent);				
+		return event;
 	}
 	
-	public void updateEvent(Event event)
-	{
-		List<Obs> apiObss = event.getObs();
-		List<org.opensrp.domain.Obs> obss = new ArrayList<>();
-		for(Obs apiObs : apiObss)
-		{
-			org.opensrp.domain.Obs obs = new org.opensrp.domain.Obs()
-											.withFieldDataType(apiObs.getFieldDataType())
-											.withFieldCode(apiObs.getFieldCode())
-											.withParentCode(apiObs.getParentCode())
-											.withFormSubmissionField(apiObs.getFormSubmissionField())
-											.withValue(apiObs.getValue())
-											.withComments(apiObs.getComments());
+	public synchronized Event addorUpdateEvent(Event event) {
+		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
+		if (existingEvent != null) {
+			event.setId(existingEvent.getId());
+			event.setRevision(existingEvent.getRevision());
+			event.setDateEdited(DateTime.now());
+			event.setServerVersion(null);
+			event.setRevision(existingEvent.getRevision());
+			allEvents.update(event);
 			
+		} else {
+			event.setDateCreated(DateTime.now());
+			allEvents.add(event);
 			
-								obss.add(obs);
 		}
 		
-		org.opensrp.domain.Event domainEvent = new org.opensrp.domain.Event()
-													.withBaseEntityId(event.getBaseEntityId())
-													.withLocationId(event.getLocationId())
-													.withEventType(event.getEventType())
-													.withEventDate(event.getEventDate())
-													.withFormSubmissionId(event.getFormSubmissionId())
-													.withProviderId(event.getProviderId())
-													.withObs(obss);
+		return event;
+	}
+	
+	public void updateEvent(Event updatedEvent) {
+		// If update is on original entity
+		if (updatedEvent.isNew()) {
+			throw new IllegalArgumentException(
+			        "Event to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
+		}
 		
-												allEvents.update(domainEvent);					
+		updatedEvent.setDateEdited(DateTime.now());
+		
+		allEvents.update(updatedEvent);
+	}
+	
+	//TODO Review and add test cases as well
+	public Event mergeEvent(Event updatedEvent) {
+		try {
+			Event original = find(updatedEvent);
+			if (original == null) {
+				throw new IllegalArgumentException("No event found with given list of identifiers. Consider adding new!");
+			}
+			
+			original = (Event) Utils.getMergedJSON(original, updatedEvent, Arrays.asList(Event.class.getDeclaredFields()),
+			    Event.class);
+			for (Obs o : updatedEvent.getObs()) {
+				// TODO handle parent
+				if (original.getObs(null, o.getFieldCode()) == null) {
+					original.addObs(o);
+				} else {
+					original.getObs(null, o.getFieldCode()).setComments(o.getComments());
+					original.getObs(null, o.getFieldCode()).setEffectiveDatetime(o.getEffectiveDatetime());
+					original.getObs(null, o.getFieldCode())
+					        .setValue(o.getValues().size() < 2 ? o.getValue() : o.getValues());
+				}
+			}
+			for (String k : updatedEvent.getIdentifiers().keySet()) {
+				original.addIdentifier(k, updatedEvent.getIdentifier(k));
+			}
+			
+			original.setDateEdited(DateTime.now());
+			allEvents.update(original);
+			return original;
+		}
+		catch (JSONException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public List<Event> findByServerVersion(long serverVersion) {
+		return allEvents.findByServerVersion(serverVersion);
+	}
+	
+	public List<Event> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
+		return allEvents.notInOpenMRSByServerVersion(serverVersion, calendar);
+	}
+	
+	public List<Event> notInOpenMRSByServerVersionAndType(String type, long serverVersion, Calendar calendar) {
+		return allEvents.notInOpenMRSByServerVersionAndType(type, serverVersion, calendar);
+	}
+	
+	public List<Event> getAll() {
+		return allEvents.getAll();
+	}
+	
+	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
+		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
+	}
+	
+	public List<Event> findEvents(EventSearchBean eventSearchBean) {
+		return allEvents.findEvents(eventSearchBean);
+	}
+	
+	public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
+		return allEvents.findByConceptAndValue(concept, conceptValue);
+		
+	}
+	
+	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
+		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
+		
+	}
+	
+	private Event getUniqueEventFromEventList(List<Event> events) throws IllegalArgumentException {
+		if (events.size() > 1) {
+			throw new IllegalArgumentException();
+		}
+		if (events.size() == 0) {
+			return null;
+		}
+		return events.get(0);
+	}
+	
+	public List<Event> findByProviderAndEntityType(String provider) {
+		return allEvents.findByProvider(provider);
+	}
+
+	/**
+	 * This method searches for event ids filtered by eventType
+	 * and the date they were deleted
+	 *
+	 * @param eventType used to filter the event ids
+	 * @param dateDeleted date  on or after which deleted event ids should be returned
+	 * @return a list of event ids
+	 */
+	public List<String> findAllIdsByEventType(String eventType, Date dateDeleted) {
+		return allEvents.findIdsByEventType(eventType, dateDeleted);
 	}
 }

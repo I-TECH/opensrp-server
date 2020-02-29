@@ -9,15 +9,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AggregateReportsEventListener {
-    private AggregateReportsService aggregateReportsService;
-
-    @Autowired
-    public AggregateReportsEventListener(AggregateReportsService aggregateReportsService) {
-        this.aggregateReportsService = aggregateReportsService;
-    }
-
-    @MotechListener(subjects = AggregateReportsScheduler.SUBJECT)
-    public void aggregate(MotechEvent event) {
-        aggregateReportsService.sendReportsToAggregator();
-    }
+	
+	private AggregateReportsService aggregateReportsService;
+	
+	@Autowired
+	public AggregateReportsEventListener(AggregateReportsService aggregateReportsService) {
+		this.aggregateReportsService = aggregateReportsService;
+	}
+	
+	@MotechListener(subjects = AggregateReportsScheduler.SUBJECT)
+	public void aggregate(MotechEvent event) {
+		aggregateReportsService.sendReportsToAggregator();
+	}
 }

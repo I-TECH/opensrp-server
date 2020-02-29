@@ -1,26 +1,39 @@
 package org.opensrp.common.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.io.Serializable;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class UserDetail implements Serializable {
-    @JsonProperty
-    private String userName;
-    @JsonProperty
-    private List<String> roles;
+	
+	@JsonProperty
+	private String userName;
+	
+	@JsonProperty
+	private List<String> roles;
+	
+	private String preferredName;
+	
+	public UserDetail(String userName, List<String> roles) {
+		this.userName = userName;
+		this.roles = roles;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public List<String> getRoles() {
+		return roles;
+	}
 
-    public UserDetail(String userName, List<String> roles) {
-        this.userName = userName;
-        this.roles = roles;
-    }
+	public String getPreferredName() {
+		return preferredName;
+	}
 
-    public String userName() {
-        return userName;
-    }
-
-    public List<String> roles() {
-        return roles;
-    }
+	public void setPreferredName(String preferredName) {
+		this.preferredName = preferredName;
+	}
+	
 }

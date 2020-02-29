@@ -1,139 +1,93 @@
 package org.opensrp.service;
 
-import java.io.File;
-import java.util.List;
-
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
+
 @Service
 public class MultimediaService {
-	private static Logger logger = LoggerFactory.getLogger(MultimediaService.class
-			.toString());
+
+	public static final String VIDEOS_DIR = "videos";
+
+	public static final String IMAGES_DIR = "patient_images";
+
+	public static final String MULTI_VERSION = "multi_version";
 
 	private final MultimediaRepository multimediaRepository;
-	private String multimediaDirPath;
+
+	private MultimediaFileManager fileManager;
+
+	private ClientService clientService;
 
 	@Autowired
-	public MultimediaService(MultimediaRepository multimediaRepository, @Value("#{opensrp['multimedia.directory.name']}") String multimediaDirName) {
+	public MultimediaService(MultimediaRepository multimediaRepository, ClientService clientService) {
 		this.multimediaRepository = multimediaRepository;
-		this.multimediaDirPath = multimediaDirName;
+		this.clientService = clientService;
 	}
 
-	public String saveMultimediaFile(MultimediaDTO multimediaDTO, MultipartFile file) {
-		
-		boolean uploadStatus = uploadFile(multimediaDTO, file);
-         
-		String[] multimediaDirPathSplit =  multimediaDirPath.split("/", 3);
-		String multimediaDirPathDB = File.separator + multimediaDirPathSplit[2];
-		
-		if (uploadStatus) {
-			try {
-				logger.info("Image path : " + multimediaDirPath);
-				
-				Multimedia multimediaFile = new Multimedia()
-						.withCaseId(multimediaDTO.caseId())
-						.withProviderId(multimediaDTO.providerId())
-						.withContentType(multimediaDTO.contentType())
-						.withFilePath(multimediaDirPathDB)
-						.withFileCategory(multimediaDTO.fileCategory());
-
-				multimediaRepository.add(multimediaFile);
-
-				return "success";
-
-			} catch (Exception e) {
-				e.getMessage();
-			}
-		}
-
-		return "fail";
-
-	}
-
-	public boolean uploadFile(MultimediaDTO multimediaDTO,
-			MultipartFile multimediaFile) {
-		 
-		if (!multimediaFile.isEmpty()) {
-			try {
-
-				 multimediaDirPath += File.separator + multimediaDTO.providerId()+ File.separator;
-
-				switch (multimediaDTO.contentType()) {
-				
-				case "application/octet-stream":
-					String videoDirPath = multimediaDirPath += "videos";
-					makeMultimediaDir(videoDirPath);
-					multimediaDirPath += File.separator
-							+ multimediaDTO.caseId() + ".mp4";
-					break;
-
-				case "image/jpeg":
-					String jpgImgDirPath = multimediaDirPath += "images";
-					makeMultimediaDir(jpgImgDirPath);
-					multimediaDirPath += File.separator
-							+ multimediaDTO.caseId() + ".jpg";
-					break;
-
-				case "image/gif":
-					String gifImgDirPath = multimediaDirPath += "images";
-					makeMultimediaDir(gifImgDirPath);
-					multimediaDirPath += File.separator
-							+ multimediaDTO.caseId() + ".gif";
-					break;
-
-				case "image/png":
-					String pngImgDirPath = multimediaDirPath += "images";
-					makeMultimediaDir(pngImgDirPath);
-					multimediaDirPath += File.separator
-							+ multimediaDTO.caseId() + ".png";
-					break;
-
-				default:
-					String defaultDirPath = multimediaDirPath += "images";
-					makeMultimediaDir(defaultDirPath);
-					multimediaDirPath += File.separator
-							+ multimediaDTO.caseId() + ".jpg";
-					break;
-
-				}
-
-				File multimediaDir = new File(multimediaDirPath);
-
-				 multimediaFile.transferTo(multimediaDir);
-
-			/*
-			 byte[] bytes = multimediaFile.getBytes();
-			 	
-			 BufferedOutputStream stream = new BufferedOutputStream(
-						new FileOutputStream(multimediaDirPath));
-				stream.write(bytes);
-				stream.close();*/
-				 
-				return true;
-				
-			} catch (Exception e) {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-    private void makeMultimediaDir(String dirPath)
-    {
-    	File file = new File(dirPath);
-		 if(!file.exists())
-			 file.mkdirs();
-			 
-    }
 	public List<Multimedia> getMultimediaFiles(String providerId) {
 		return multimediaRepository.all(providerId);
+	}
+	
+	public Multimedia findByCaseId(String entityId) {
+		return multimediaRepository.findByCaseId(entityId);
+	}
+
+	/**
+	 * Returns a {@link List} of {@link Multimedia} objects that match the given parameters
+	 *
+	 * @param entityId The baseEntityId of the client who owns the multimedia file(s)
+	 * @param contentType The contentType of the multimedia file(s) to be fetched
+	 * @param fileCategory The file category of the multimedia file(s)
+	 *
+	 * @return A {@link List} of {@link Multimedia} objects
+	 */
+	public List<Multimedia> getMultimediaFiles(String entityId, String contentType, String fileCategory) {
+		return multimediaRepository.get(entityId, contentType, fileCategory);
+	}
+
+	/**
+	 *
+	 * Persists a {@link MultipartFile} to storage
+	 *
+	 * @param multimedia
+	 * @param file
+	 * @return
+	 */
+	public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
+		return fileManager.saveFile(multimedia, file);
+	}
+
+	/**
+	 *
+	 * Retrieves a file from storage or null if it doesn't exist
+	 *
+	 * @param filePath
+	 * @return
+	 */
+	public File retrieveFile(String filePath) {
+		return fileManager.retrieveFile(filePath);
+	}
+
+	@Autowired
+	@Qualifier("multimedia_file_manager")
+	public void setFileManager(MultimediaFileManager fileManager) {
+		this.fileManager = fileManager;
+	}
+
+	public MultimediaFileManager getFileManager() {
+		return fileManager;
+	}
+
+	public ClientService getClientService() {
+		return clientService;
 	}
 }

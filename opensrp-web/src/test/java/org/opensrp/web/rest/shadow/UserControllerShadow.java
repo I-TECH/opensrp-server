@@ -1,6 +1,7 @@
 package org.opensrp.web.rest.shadow;
 
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
+import org.opensrp.connector.openmrs.service.OpenmrsRelationshipService;
 import org.opensrp.connector.openmrs.service.OpenmrsUserService;
 import org.opensrp.service.OrganizationService;
 import org.opensrp.service.PhysicalLocationService;
@@ -11,12 +12,12 @@ import org.opensrp.web.security.DrishtiAuthenticationProvider;
 public class UserControllerShadow extends UserController {
 
 	public UserControllerShadow(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService,
-								DrishtiAuthenticationProvider opensrpAuthenticationProvider) {
-		super(openmrsLocationService, openmrsUserService, opensrpAuthenticationProvider);
+								DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
+		super(openmrsLocationService, openmrsUserService, opensrpAuthenticationProvider, openmrsRelationshipService);
 	}
 
 	public UserControllerShadow() {
-		super(null, null, null);
+		super(null, null, null, null);
 	}
 
 	@Override

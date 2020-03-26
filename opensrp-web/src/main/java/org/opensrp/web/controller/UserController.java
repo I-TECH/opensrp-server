@@ -90,7 +90,7 @@ public class UserController {
 
 	@Autowired
 	public UserController(OpenmrsLocationService openmrsLocationService, OpenmrsUserService openmrsUserService,
-			DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
+						  DrishtiAuthenticationProvider opensrpAuthenticationProvider, OpenmrsRelationshipService openmrsRelationshipService) {
 		this.openmrsLocationService = openmrsLocationService;
 		this.openmrsUserService = openmrsUserService;
 		this.opensrpAuthenticationProvider = opensrpAuthenticationProvider;
@@ -154,7 +154,7 @@ public class UserController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/user-details")
 	public ResponseEntity<UserDetail> getUserDetails(Authentication authentication,
-			@RequestParam(value = "anm-id", required = false) String anmIdentifier, HttpServletRequest request) {
+													 @RequestParam(value = "anm-id", required = false) String anmIdentifier, HttpServletRequest request) {
 		Authentication auth;
 		if (authentication == null) {
 			auth = getAuthenticationAdvisor(request);
@@ -304,7 +304,7 @@ public class UserController {
 						openMRSIds.add(openMRSIdsMap.get(locationId));
 					} else {
 						openMRSIds.add(locationService.getLocation(locationId, false).getProperties().getCustomProperties()
-						        .get("OpenMRS_Id"));
+								.get("OpenMRS_Id"));
 					}
 				}
 			}

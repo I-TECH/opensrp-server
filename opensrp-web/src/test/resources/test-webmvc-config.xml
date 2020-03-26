@@ -22,6 +22,5 @@
 	<bean class="org.opensrp.web.rest.shadow.PractitionerResourceShadow" />
 	<bean class="org.opensrp.web.rest.shadow.PractitionerRoleResourceShadow" />
 	<bean class="org.opensrp.web.rest.shadow.UserResourceShadow" />
-	<bean class="org.opensrp.web.rest.shadow.EventResourceShadow" />
 
 </beans>

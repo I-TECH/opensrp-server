@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken;
 import com.mysql.jdbc.StringUtils;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -71,15 +69,13 @@ public class EventResource extends RestResource<Event> {
 	
 	@Value("#{opensrp['opensrp.sync.search.missing.client']}")
 	private boolean searchMissingClients;
-
-	public static final String DATE_DELETED = "dateDeleted";
-
+	
 	@Autowired
 	public EventResource(ClientService clientService, EventService eventService) {
 		this.clientService = clientService;
 		this.eventService = eventService;
 	}
-
+	
 	@Override
 	public Event getByUniqueId(String uniqueId) {
 		return eventService.find(uniqueId);
@@ -412,12 +408,11 @@ public class EventResource extends RestResource<Event> {
 	        MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	protected ResponseEntity<String> getAllIdsByEventType(
-	        @RequestParam(value = EVENT_TYPE, required = false) String eventType,
-			@RequestParam(value = DATE_DELETED, required = false ) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Date dateDeleted) {
-
+	        @RequestParam(value = "eventType", required = false) String eventType) {
+		
 		try {
 			
-			List<String> eventIds = eventService.findAllIdsByEventType(eventType, dateDeleted);
+			List<String> eventIds = eventService.findAllIdsByEventType(eventType);
 			return new ResponseEntity<>(gson.toJson(eventIds), RestUtils.getJSONUTF8Headers(), HttpStatus.OK);
 			
 		}
@@ -425,14 +420,6 @@ public class EventResource extends RestResource<Event> {
 			logger.error(e.getMessage(), e);
 			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
 		}
-	}
-
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
-
-	public void setClientService(ClientService clientService) {
-		this.clientService = clientService;
 	}
 	
 }

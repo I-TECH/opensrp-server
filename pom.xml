@@ -6,20 +6,13 @@
     <groupId>org.opensrp</groupId>
     <artifactId>opensrp</artifactId>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>opensrp</name>
     <url>http://github.com/OpenSRP/opensrp-server</url>
 
     <modules>
-        <module>opensrp-common</module>
-        <module>opensrp-api</module>
-        <module>opensrp-form</module>
-        <module>opensrp-core</module>
-        <module>opensrp-interface</module>
-        <module>opensrp-register</module>
         <module>opensrp-connector</module>
         <module>opensrp-web</module>
-        <!-- <module>opensrp-reporting</module> -->
     </modules>
 
     <properties>

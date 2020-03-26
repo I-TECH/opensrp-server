@@ -24,7 +24,7 @@ public class SearchHelper {
 		
 		ClientSearchBean searchBean = new ClientSearchBean();
 		
-		String ZEIR_ID = "zeir_id";
+		String ZEIR_ID = "OPENMRS_ID";
 		String OPENSRP_ID = "opensrp_id";
 
 		String SIM_PRINT_GUID = "simprints_guid";
@@ -77,7 +77,7 @@ public class SearchHelper {
 		//
 		if (!StringUtils.isEmptyOrWhitespaceOnly(zeirId)) {
 			identifiers.put(ZEIR_ID, zeirId);
-			identifiers.put("ZEIR_ID", zeirId); //Maintains backward compatibility with upper case key
+			identifiers.put("OPENMRS_ID", zeirId); //Maintains backward compatibility with upper case key
 		}
 
 		if (!StringUtils.isEmptyOrWhitespaceOnly(opensrpId)) {

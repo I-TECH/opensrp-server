@@ -107,7 +107,7 @@ public class GzipBodyDecompressFilter implements Filter {
 		 * stream.
 		 *
 		 * @param request request which input stream will be wrapped.
-		 * @throws IOException when input stream reqtieval failed.
+		 * @throws java.io.IOException when input stream reqtieval failed.
 		 */
 		public GzippedInputStreamWrapper(final HttpServletRequest request) throws IOException {
 			super(request);

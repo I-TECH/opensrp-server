@@ -23,7 +23,7 @@ public class TurnOffCertificateValidation {
 	public void ForHTTPSConnections() {
 		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 			
-			public X509Certificate[] getAcceptedIssuers() {
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 				return null;
 			}
 			

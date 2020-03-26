@@ -62,12 +62,12 @@ public class AllFailedEventsCouchImplTest extends TestResourceLoader {
 		Event event = new Event(entryId, "/apis/v2/some");
 		String errorMessage = "error";
 		int retries = 0;
-		FailedEvent expectedFailedEvent = new FailedEvent(
+		org.ict4h.atomfeed.client.domain.FailedEvent expectedFailedEvent = new org.ict4h.atomfeed.client.domain.FailedEvent(
 		        feedUri, event, errorMessage, retries);
 		
 		allFailedEventsCouchImpl.addOrUpdate(expectedFailedEvent);
 		allFailedEventsCouchImpl.addOrUpdate(expectedFailedEvent);
-		FailedEvent actualFailedEvent = allFailedEventsCouchImpl.get(feedUri,
+		org.ict4h.atomfeed.client.domain.FailedEvent actualFailedEvent = allFailedEventsCouchImpl.get(feedUri,
 		    event.getId());
 		
 		allFailedEventsCouchImpl.remove(expectedFailedEvent);
@@ -77,7 +77,7 @@ public class AllFailedEventsCouchImplTest extends TestResourceLoader {
 	@Test(expected = NullPointerException.class)
 	public void testGetNullPointerException() {
 		
-		FailedEvent actualFailedEvent = allFailedEventsCouchImpl.get(feedUri, feedUriId);
+		org.ict4h.atomfeed.client.domain.FailedEvent actualFailedEvent = allFailedEventsCouchImpl.get(feedUri, feedUriId);
 		
 	}
 	
@@ -94,7 +94,7 @@ public class AllFailedEventsCouchImplTest extends TestResourceLoader {
 		Event event = new Event(entryId, "/apis/v2/somes");
 		String errorMessage = "error";
 		int retries = 0;
-		FailedEvent failedEvent = new FailedEvent(feedUri,
+		org.ict4h.atomfeed.client.domain.FailedEvent failedEvent = new org.ict4h.atomfeed.client.domain.FailedEvent(feedUri,
 		        event, errorMessage, retries);
 		
 		allFailedEventsCouchImpl.addOrUpdate(failedEvent);
@@ -115,7 +115,7 @@ public class AllFailedEventsCouchImplTest extends TestResourceLoader {
 		Event event = new Event(entryId, "/apis/v2/somes");
 		String errorMessage = "error";
 		int retries = 0;
-		FailedEvent failedEvent = new FailedEvent(feedUri,
+		org.ict4h.atomfeed.client.domain.FailedEvent failedEvent = new org.ict4h.atomfeed.client.domain.FailedEvent(feedUri,
 		        event, errorMessage, retries);
 		
 		allFailedEventsCouchImpl.addOrUpdate(failedEvent);

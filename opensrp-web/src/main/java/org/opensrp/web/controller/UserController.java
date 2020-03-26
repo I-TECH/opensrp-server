@@ -214,7 +214,7 @@ public class UserController {
 		}
 		LocationTree l = openmrsLocationService.getLocationTreeOf(lid.split(";;"));
 
-		Map<String, TreeNode<String, Location>> userLocations = l.getLocationsHierarchy();
+		Map<String, org.opensrp.api.util.TreeNode<String, org.opensrp.api.domain.Location>> userLocations = l.getLocationsHierarchy();
 
 		String lids = "";
 		for(String k : userLocations.keySet()){

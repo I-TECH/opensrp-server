@@ -24,7 +24,7 @@ public class SearchHelper {
 		
 		ClientSearchBean searchBean = new ClientSearchBean();
 		
-		String ZEIR_ID = "OPENMRS_ID";
+		String ZEIR_ID = "zeir_id";
 		String OPENSRP_ID = "opensrp_id";
 
 		String SIM_PRINT_GUID = "simprints_guid";
@@ -73,11 +73,17 @@ public class SearchHelper {
 			searchBean.setBirthdateFrom(birthdate[0]);
 			searchBean.setBirthdateTo(birthdate[1]);
 		}
+		String OPENMRS_ID_KEY = "OPENMRS_ID";
 		Map<String, String> identifiers = new HashMap<String, String>();
 		//
 		if (!StringUtils.isEmptyOrWhitespaceOnly(zeirId)) {
 			identifiers.put(ZEIR_ID, zeirId);
 			identifiers.put("OPENMRS_ID", zeirId); //Maintains backward compatibility with upper case key
+		}
+
+		if (!StringUtils.isEmptyOrWhitespaceOnly(zeirId)) {
+			zeirId = formatChildUniqueId(zeirId);
+			identifiers.put(OPENMRS_ID_KEY, zeirId);
 		}
 
 		if (!StringUtils.isEmptyOrWhitespaceOnly(opensrpId)) {
@@ -299,5 +305,17 @@ public class SearchHelper {
 		}
 		
 		return null;
+	}
+
+	private static String formatChildUniqueId(String unformattedId) {
+		if (!StringUtils.isEmptyOrWhitespaceOnly(unformattedId)) {
+			if (unformattedId.contains("-")) {
+				unformattedId = unformattedId.split("-")[0];
+			} else if (unformattedId.length() > 6) {
+				unformattedId = unformattedId.substring(0, 6);
+			}
+		}
+
+		return unformattedId;
 	}
 }

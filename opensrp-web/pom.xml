@@ -29,7 +29,7 @@
         <nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
         <opensrp.core.version>1.3.4-SNAPSHOT</opensrp.core.version>
         <opensrp.connector.version>1.0.6KIP-SNAPSHOT</opensrp.connector.version>
-        <opensrp.register.version>1.0.0-SNAPSHOT</opensrp.register.version>
+        <opensrp.register.version>1.0.1-KIP-SNAPSHOT</opensrp.register.version>
         <opensrp.common.version>1.0.3-SNAPSHOT</opensrp.common.version>
 
     </properties>
@@ -333,6 +333,14 @@
             <resource>
                 <directory>../assets/form</directory>
                 <targetPath>form</targetPath>
+            </resource>
+            <resource>
+                <directory>../assets/security</directory>
+                <targetPath>security</targetPath>
+            </resource>
+            <resource>
+                <directory>../assets/security/certificates</directory>
+                <targetPath>certificates</targetPath>
             </resource>
             <resource>
                 <directory>../build</directory>

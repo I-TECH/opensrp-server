@@ -13,6 +13,7 @@
     <modules>
         <module>opensrp-connector</module>
         <module>opensrp-web</module>
+        <module>opensrp-register</module>
     </modules>
 
     <properties>
